@@ -41,6 +41,9 @@ android {
 
 dependencies {
 
+    implementation(fileTree("libs") { include("*.*") })
+    implementation(files("libs/jxl.jar"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
