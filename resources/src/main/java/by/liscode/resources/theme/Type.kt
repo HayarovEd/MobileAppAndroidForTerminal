@@ -1,4 +1,4 @@
-package by.liscode.mobileappandroidforterminal.ui.theme
+package by.liscode.resources.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

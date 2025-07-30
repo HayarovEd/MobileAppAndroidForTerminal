@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "MobileAppAndroidForTerminal"
 include(":app")
- 
+include(":data")
+include(":domain")
+include(":resources")
