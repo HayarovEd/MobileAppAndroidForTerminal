@@ -37,6 +37,9 @@ android {
 dependencies {
 
     implementation(project(":domain"))
+    
+    api(fileTree("libs") { include("*.*") })
+    api(files("libs/jxl.jar"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

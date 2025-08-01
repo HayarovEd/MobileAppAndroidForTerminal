@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -43,8 +41,6 @@ android {
 
 dependencies {
 
-    implementation(fileTree("libs") { include("*.*") })
-    implementation(files("libs/jxl.jar"))
 
     implementation(project(":domain"))
     implementation(project(":data"))
