@@ -8,7 +8,6 @@ sealed interface DataError : RootError {
         BAD_REQUEST,
         NOT_FOUND,
         REQUEST_TIMEOUT,
-        REQUEST_CONFLICT,
         UNKNOWN
     }
 
@@ -18,7 +17,6 @@ sealed interface DataError : RootError {
 
     enum class PasswordError: DataError {
         PASSWORD_BLANK,
-        PASSWORDS_NOT_EQUAL,
     }
 
     enum class  DataStore: DataError {

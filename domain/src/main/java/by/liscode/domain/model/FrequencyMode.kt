@@ -1,6 +1,18 @@
 package by.liscode.domain.model
 
-enum class FrequencyMode {
-    RUSSIA,
-    ETSI
+import by.liscode.domain.utils.ETSI_FREQ
+import by.liscode.domain.utils.RUSSIA_FREQ
+
+enum class FrequencyMode(
+    val title: String,
+    val value: Int,
+) {
+    RUSSIA(
+        title = RUSSIA_FREQ,
+        value = 0x37
+    ),
+    ETSI(
+        title = ETSI_FREQ,
+        value = 0x04
+    )
 }

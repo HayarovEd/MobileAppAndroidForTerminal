@@ -20,7 +20,6 @@ suspend fun <D> handleRemoteResponse(data: suspend () -> D): ResultWork<D, DataE
                 400 -> ResultWork.Error(DataError.Network.BAD_REQUEST)
                 401 -> ResultWork.Error(DataError.Network.UNAUTHORIZED)
                 404 -> ResultWork.Error(DataError.Network.NOT_FOUND)
-                409 -> ResultWork.Error(DataError.Network.REQUEST_CONFLICT)
                 else -> ResultWork.Error(DataError.Network.UNKNOWN)
             }
         } catch (e: ServerResponseException) {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Настройки</string>
+    <string name="setting_filter">Настройка фильтра RFID меток</string>
+    <string name="power">Мощность передатчика</string>
+    <string name="protocol">Протокол</string>
+    <string name="frequency">Частота</string>
+    <string name="attribute">Атрибут</string>
+    <string name="exit_account">Выйти из аккаунта</string>
+    <string name="exit_app">Закрыть приложение</string>
+</resources>

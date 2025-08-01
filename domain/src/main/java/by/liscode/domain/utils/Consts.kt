@@ -9,3 +9,9 @@ const val LABEL_PROTOCOL = "label_protocol"
 const val LABEL_ATTRIBUTE = "label_attribute"
 const val LABEL_POWER = "label_power"
 const val LABEL_FREQ_MODE = "label_freq_mode"
+
+const val ISO18006D = "ISO 1800-6D"
+const val ISO18006C = "ISO 1800-6C"
+
+const val RUSSIA_FREQ = "Russia (866~868MHz)"
+const val ETSI_FREQ = "ETSI Standart (865~868MHz)"
