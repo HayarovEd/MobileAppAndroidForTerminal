@@ -80,8 +80,8 @@ fun UiTextField(
             }
         },
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(),
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(),
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
             cursorColor = MaterialTheme.colorScheme.onPrimaryContainer,
             focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
             unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,

@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.domain.model.FrequencyMode
 import by.liscode.domain.model.RfidAttribute
@@ -71,6 +72,32 @@ fun SettingsScreenScreen(
     var isExpandedProtocolMenu by remember { mutableStateOf(false) }
     var isExpandedFrequencyMenu by remember { mutableStateOf(false) }
 
+    if (isShowFiltersDialog) {
+        Dialog(
+            onDismissRequest = {
+                isShowFiltersDialog = false
+            }
+        ) {
+            FiltersDialog(
+                filters = state.filters,
+                value = state.query,
+                label = stringResource(R.string.mask),
+                onConfirm = {
+                    onAction(SettingsScreenAction.InsertFilter)
+                },
+                onChangeValue = {
+                    onAction(SettingsScreenAction.UpdateQuery(it))
+                },
+                onClear = {
+                    onAction(SettingsScreenAction.DeleteFilters)
+                },
+                onClose = {
+                    isShowFiltersDialog = false
+                }
+            )
+        }
+    }
+
 
     UiBaseScaffold(
         message = state.message,
@@ -88,7 +115,8 @@ fun SettingsScreenScreen(
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
-        }
+        },
+        bottomBarContent = bottomRoutes
     ) { paddingValues ->
         Column(
             modifier = modifier

@@ -8,4 +8,9 @@
     <string name="attribute">Атрибут</string>
     <string name="exit_account">Выйти из аккаунта</string>
     <string name="exit_app">Закрыть приложение</string>
+    <string name="add_new_filter">Добавить новый фильтр</string>
+    <string name="add">Добавить</string>
+    <string name="clear">Очистить</string>
+    <string name="close">Закрыть</string>
+    <string name="mask">XXXX*</string>
 </resources>
