@@ -1,3 +1,84 @@
 <resources>
     <string name="app_name">MobileAppAndroidForTerminal</string>
+
+    //settings
+    <string name="etsi_standard">Стандрат ETSI (865~868MHz)</string>
+    <string name="russia_standard">Россия (866~868MHz)</string>
+    <string-array name="arrayMode" translatable="false">
+        <item>@string/etsi_standard</item>
+        <item>@string/russia_standard</item>
+    </string-array>
+
+    <string-array name="arrayFreHop" translatable="false">
+        <item>865.000</item>
+        <item>865.700</item>
+        <item>866.300</item>
+        <item>866.900</item>
+        <item>867.500</item>
+        <item>968.000</item>
+
+    </string-array>
+
+    <string-array name="arrayFreHop_rus" translatable="false">
+        <item>866.000</item>
+        <item>866.300</item>
+        <item>866.900</item>
+        <item>867.500</item>
+        <item>968.000</item>
+
+    </string-array>
+
+    <string-array name="arrayPower" translatable="false">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+    </string-array>
+
+    <string name="iso_6c">ISO 18000–6C</string>
+    <string name="iso_6d">ISO 18000–6D</string>
+    <string-array name="arrayProtocol" translatable="false">
+        <item>ISO 18000-6C</item>
+        <item>GB/T 29768</item>
+        <item>GJB 7377.1</item>
+        <item>ISO 18000-6B</item>
+    </string-array>
+
+    <string-array name="arrayMemoryBank" translatable="false">
+        <item>EPC</item>
+        <item>TID</item>
+    </string-array>
+
+
+    <integer-array name="arrayMemoryBankValue" translatable="false">
+        <item>0</item>
+        <item>32</item>
+    </integer-array>
+
 </resources>
