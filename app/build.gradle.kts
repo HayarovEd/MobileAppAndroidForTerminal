@@ -46,6 +46,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":resources"))
     implementation(project(":settings"))
+    implementation(project(":login"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

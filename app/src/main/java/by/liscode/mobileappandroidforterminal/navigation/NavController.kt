@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import by.liscode.login.LoginScreenRoot
 import by.liscode.resources.model.NavigationRoute
 import by.liscode.resources.model.routes
 import by.liscode.resources.uikit.UiBottomNavigation
@@ -18,7 +19,14 @@ fun NavController(
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable<NavigationRoute.Login> {
-
+            LoginScreenRoot(
+                onNavigateToFundScreen = {
+                    navController.navigate(NavigationRoute.Fund)
+                },
+                onNavigateToRegisterScreen = {
+                    navController.navigate(NavigationRoute.Registration)
+                }
+            )
         }
         composable<NavigationRoute.Registration> {
 

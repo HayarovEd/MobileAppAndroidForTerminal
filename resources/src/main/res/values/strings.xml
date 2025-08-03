@@ -105,5 +105,10 @@
     <string name="fund">Фонд</string>
     <string name="orders">Заказы</string>
     <string name="settings">Настройки</string>
+    <string name="login">Логин</string>
+    <string name="enter_login">Введите логин</string>
+    <string name="password">Пароль</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="enter">Войти</string>
 
 </resources>

@@ -65,7 +65,7 @@ fun UiTextField(
         ),
         keyboardActions = keyboardActions,
         maxLines = maxLines,
-        label = {
+        placeholder = {
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall
