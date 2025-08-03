@@ -1,4 +1,9 @@
 package by.liscode.resources.model
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import by.liscode.resources.R
 import kotlinx.serialization.Serializable
 
 sealed class NavigationRoute {
@@ -6,52 +11,51 @@ sealed class NavigationRoute {
     data object Login : NavigationRoute()
 
     @Serializable
-    data class Registration(
-        val typeUser: Int
-    ) : NavigationRoute()
+    data object Registration : NavigationRoute()
 
     @Serializable
     data object Splash : NavigationRoute()
 
     @Serializable
-    data object DriverOrders : NavigationRoute()
+    data object Fund : NavigationRoute()
 
     @Serializable
-    data object DriverProfile : NavigationRoute()
+    data object WorkTake : NavigationRoute()
 
     @Serializable
-    data object DriverCabinet : NavigationRoute()
+    data object BalanceTake : NavigationRoute()
 
     @Serializable
-    data object ClientProfile : NavigationRoute()
+    data object BalanceDeduct : NavigationRoute()
 
     @Serializable
-    data object ClientCabinet : NavigationRoute()
+    data object Inventory : NavigationRoute()
 
     @Serializable
-    data object ClientExcursion : NavigationRoute()
-
-
-    @Serializable
-    data class DriverOrder(
-        val orderId: Int,
-        val isDeeplink: Boolean = false
-    ) : NavigationRoute()
+    data object Search : NavigationRoute()
 
     @Serializable
-    data class ClientOrder(
-        val orderId: Int,
-        val isDeeplink: Boolean = false
-    ) : NavigationRoute()
+    data object Orders : NavigationRoute()
 
     @Serializable
-    data class Excursion(
-        val id: Int
-    ) : NavigationRoute()
-
-    @Serializable
-    data class PaymentRoute(
-        val amount: Double,
-        val driverId: Int,
-    ) : NavigationRoute()
+    data object Settings : NavigationRoute()
 }
+
+@Composable
+fun routes() = listOf(
+    TopLevelRoute(
+        stringResource(R.string.fund),
+        NavigationRoute.Fund,
+        ImageVector.vectorResource(R.drawable.baseline_home_24)
+    ),
+    TopLevelRoute(
+        stringResource(R.string.orders),
+        NavigationRoute.Orders,
+        ImageVector.vectorResource(R.drawable.format_list_bulleted_24dp)
+    ),
+    TopLevelRoute(
+        stringResource(R.string.settings),
+        NavigationRoute.Settings,
+        ImageVector.vectorResource(R.drawable.settings_24dp)
+    )
+)

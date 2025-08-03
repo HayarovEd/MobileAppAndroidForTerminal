@@ -48,7 +48,7 @@ class DataStoreRepositoryImpl(
            RfidSetting(
                standard = when (preferences[FIELD_LABEL_PROTOCOL]) {
                    0 -> RfidProtocol.ISO180006C
-                   3 -> RfidProtocol.ISO180006D
+                  // 3 -> RfidProtocol.ISO180006D
                    else -> RfidProtocol.ISO180006C
                },
                attribute = when (preferences[FIELD_LABEL_ATTRIBUTE]) {
