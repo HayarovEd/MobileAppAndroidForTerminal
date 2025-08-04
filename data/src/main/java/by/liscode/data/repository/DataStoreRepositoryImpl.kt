@@ -5,15 +5,19 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import by.liscode.domain.model.FrequencyMode
 import by.liscode.domain.model.RfidAttribute
 import by.liscode.domain.model.RfidProtocol
 import by.liscode.domain.model.RfidSetting
 import by.liscode.domain.repository.DataStoreRepository
+import by.liscode.domain.utils.BASE_URL
 import by.liscode.domain.utils.LABEL_ATTRIBUTE
+import by.liscode.domain.utils.LABEL_BEARER
 import by.liscode.domain.utils.LABEL_FREQ_MODE
 import by.liscode.domain.utils.LABEL_POWER
 import by.liscode.domain.utils.LABEL_PROTOCOL
+import by.liscode.domain.utils.LABEL_URL
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -66,10 +70,42 @@ class DataStoreRepositoryImpl(
        }
     }
 
+    override suspend fun saveBearer(
+        bearer: String
+    ) {
+        dataStore.edit { preferences ->
+            preferences[FIELD_LABEL_BEARER] = bearer
+        }
+    }
+
+
+    override suspend fun getBearer(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[FIELD_LABEL_BEARER]
+        }
+    }
+
+    override suspend fun saveUrl(
+        url: String
+    ) {
+        dataStore.edit { preferences ->
+            preferences[FIELD_LABEL_LABEL_URL] = url
+        }
+    }
+
+
+    override suspend fun getUrl(): Flow<String> {
+        return dataStore.data.map { preferences ->
+            preferences[FIELD_LABEL_LABEL_URL]?: BASE_URL
+        }
+    }
+
     companion object {
         val FIELD_LABEL_PROTOCOL = intPreferencesKey(LABEL_PROTOCOL)
         val FIELD_LABEL_ATTRIBUTE = intPreferencesKey(LABEL_ATTRIBUTE)
         val FIELD_LABEL_POWER = floatPreferencesKey(LABEL_POWER)
         val FIELD_LABEL_FREQ_MODE = intPreferencesKey(LABEL_FREQ_MODE)
+        val FIELD_LABEL_BEARER = stringPreferencesKey(LABEL_BEARER)
+        val FIELD_LABEL_LABEL_URL = stringPreferencesKey(LABEL_URL)
     }
 }

@@ -8,14 +8,12 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import by.liscode.data.local.AppDatabase
-import by.liscode.domain.utils.BASE_URL
 import by.liscode.domain.utils.LOCAL_DB
 import by.liscode.domain.utils.PREFERENCES
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -43,9 +41,6 @@ val baseModule = module {
                 connectTimeoutMillis = 100000
                 requestTimeoutMillis = 100000
                 socketTimeoutMillis = 100000
-            }
-            defaultRequest {
-                url(BASE_URL)
             }
             install(Logging) {
                 logger = Logger.DEFAULT
