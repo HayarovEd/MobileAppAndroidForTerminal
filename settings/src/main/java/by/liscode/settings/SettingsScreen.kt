@@ -143,7 +143,7 @@ fun SettingsScreenScreen(
             state.rfidSetting?.let { settings->
                 Text(
                     modifier = modifier,
-                    text = "${stringResource(id = R.string.power) }: ${(settings.power*10).roundToInt()}",
+                    text = "${stringResource(id = R.string.power) }: ${(settings.power).roundToInt()}",
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -151,7 +151,7 @@ fun SettingsScreenScreen(
                 Slider(
                     modifier = modifier.fillMaxWidth(),
                     value = settings.power,
-                    valueRange = 0.1f..3f,
+                    valueRange = 1f..30f,
                     steps = 29,
                     onValueChange = {
                         onAction(SettingsScreenAction.UpdatePower(it))
@@ -318,7 +318,7 @@ private fun Preview() {
                 rfidSetting = RfidSetting(
                     standard = RfidProtocol.ISO180006C,
                     attribute = RfidAttribute.TID,
-                    power = 2.4f,
+                    power = 25f,
                     frequencyMode = FrequencyMode.RUSSIA
                 )
             ),
