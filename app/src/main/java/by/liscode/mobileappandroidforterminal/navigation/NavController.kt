@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import by.liscode.fund.FundScreenRoot
 import by.liscode.login.LoginScreenRoot
 import by.liscode.resources.model.NavigationRoute
 import by.liscode.resources.model.routes
@@ -32,17 +33,17 @@ fun NavController(
 
         }
         composable<NavigationRoute.Fund> {
-            /*AdminProfileScreenRoot(
+            FundScreenRoot (
                 bottomRoutes = {
                     UiBottomNavigation(
-                        routes = adminRoutes,
+                        routes = routes(),
                         navController = navController
                     )
                 },
-                onClickLogOut = {
-                    navController.navigate(NavigationRoute.Login)
-                }
-            )*/
+               onNavigateTo = {
+                   navController.navigate(it)
+               }
+            )
         }
 
         composable<NavigationRoute.Orders> {

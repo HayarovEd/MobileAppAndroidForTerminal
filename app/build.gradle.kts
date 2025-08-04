@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":resources"))
     implementation(project(":settings"))
     implementation(project(":login"))
+    implementation(project(":fund"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

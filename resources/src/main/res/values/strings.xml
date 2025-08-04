@@ -111,4 +111,10 @@
     <string name="enter_password">Введите пароль</string>
     <string name="enter">Войти</string>
 
+    <string name="take_work">Взять в работу</string>
+    <string name="take_balance">Взять на баланс</string>
+    <string name="reset_balance">Списание с баланса</string>
+    <string name="inventory">Инвентаризация</string>
+    <string name="search">Поиск</string>
+
 </resources>
