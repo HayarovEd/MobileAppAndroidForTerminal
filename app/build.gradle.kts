@@ -48,6 +48,8 @@ dependencies {
     implementation(project(":settings"))
     implementation(project(":login"))
     implementation(project(":fund"))
+    implementation(project(":regisration"))
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

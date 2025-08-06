@@ -116,5 +116,10 @@
     <string name="reset_balance">Списание с баланса</string>
     <string name="inventory">Инвентаризация</string>
     <string name="search">Поиск</string>
+    <string name="registration_terminal">Регистрация терминала</string>
+    <string name="api_url">API URL</string>
+    <string name="login_client">Логин клиента</string>
+    <string name="password_client">Пароль клиента</string>
+    <string name="regestered_terminal">Зарегистрировать терминал</string>
 
 </resources>

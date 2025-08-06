@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import by.liscode.fund.FundScreenRoot
 import by.liscode.login.LoginScreenRoot
+import by.liscode.regisration.RegistrationScreenRoot
 import by.liscode.resources.model.NavigationRoute
 import by.liscode.resources.model.routes
 import by.liscode.resources.uikit.UiBottomNavigation
@@ -30,7 +31,11 @@ fun NavController(
             )
         }
         composable<NavigationRoute.Registration> {
-
+            RegistrationScreenRoot(
+                onNavigateToLogin = {
+                    navController.navigateUp()
+                }
+            )
         }
         composable<NavigationRoute.Fund> {
             FundScreenRoot (
