@@ -85,6 +85,12 @@ class DataStoreRepositoryImpl(
         }
     }
 
+    override suspend fun removeBearer() {
+        dataStore.edit { preferences ->
+            preferences.remove(FIELD_LABEL_BEARER)
+        }
+    }
+
     override suspend fun saveUrl(
         url: String
     ) {

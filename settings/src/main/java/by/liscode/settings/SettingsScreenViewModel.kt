@@ -7,8 +7,10 @@ import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.resources.uikit.asUiText
 import com.nine.statio.domain.utils.ResultWork
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,6 +33,9 @@ class SettingsScreenViewModel(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = SettingsScreenState()
         )
+
+    private val _eventFlow = MutableSharedFlow<UiSettingsEvents>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     fun onAction(action: SettingsScreenAction) {
         when (action) {
@@ -119,7 +124,10 @@ class SettingsScreenViewModel(
             }
 
             SettingsScreenAction.Logout -> {
-                //To-DO
+                viewModelScope.launch {
+                    dataStoreRepository.removeBearer()
+                    _eventFlow.emit(UiSettingsEvents.LoginNavigateEvent)
+                }
             }
         }
     }

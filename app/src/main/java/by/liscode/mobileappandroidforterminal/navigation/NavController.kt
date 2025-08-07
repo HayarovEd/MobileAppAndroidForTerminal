@@ -11,10 +11,11 @@ import by.liscode.resources.model.NavigationRoute
 import by.liscode.resources.model.routes
 import by.liscode.resources.uikit.UiBottomNavigation
 import by.liscode.settings.SettingsScreenRoot
+import by.liscode.splash.SplashScreenRoot
 
 @Composable
 fun NavController(
-    startDestination: NavigationRoute = NavigationRoute.Login,
+    startDestination: NavigationRoute = NavigationRoute.Splash,
 ) {
     val navController = rememberNavController()
 
@@ -70,7 +71,14 @@ fun NavController(
         }
 
         composable<NavigationRoute.Splash> {
-
+            SplashScreenRoot(
+                onNavigateToFundScreen = {
+                    navController.navigate(NavigationRoute.Fund)
+                },
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                }
+            )
         }
 
         composable<NavigationRoute.BalanceDeduct> {

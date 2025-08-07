@@ -49,6 +49,7 @@ dependencies {
     implementation(project(":login"))
     implementation(project(":fund"))
     implementation(project(":regisration"))
+    implementation(project(":splash"))
 
 
     implementation(libs.androidx.core.ktx)

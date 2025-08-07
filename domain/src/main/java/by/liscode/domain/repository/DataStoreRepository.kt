@@ -10,4 +10,5 @@ interface DataStoreRepository {
     suspend fun getBearer(): Flow<String?>
     suspend fun saveUrl(url: String)
     suspend fun getUrl(): Flow<String>
+    suspend fun removeBearer()
 }
