@@ -30,7 +30,14 @@ class TakeWorkScreenViewModel(
 
     fun onAction(action: TakeWorkScreenAction) {
         when (action) {
-            else -> TODO("Handle actions")
+            is TakeWorkScreenAction.TakeMarker -> {
+                if (!state.value.markers.contains(action.marker)) {
+                    _state.value.copy(
+                        markers = state.value.markers + action.marker
+                    )
+                        .updateState()
+                }
+            }
         }
     }
 

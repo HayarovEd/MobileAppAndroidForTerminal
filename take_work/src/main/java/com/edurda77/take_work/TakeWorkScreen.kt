@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.sourceInformationMarkerEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,13 +54,19 @@ private fun TakeWorkScreenScreen(
         }
     }
 
+    LaunchedEffect(state.markers) {
+        state.markers.forEachIndexed { markerIndex, marker ->
+            Log.d("REST TERMINAL", "marker $markerIndex $marker")
+        }
+    }
+
     OnScan(
         block = {
             processScan(
                 rfid = scanner,
                 isActive = isActive,
                 block = {
-                    Log.d("REST TERMINAL", "result $it")
+                    onAction(TakeWorkScreenAction.TakeMarker(it))
                 },
                 updateIsActive = {
                     isActive = it

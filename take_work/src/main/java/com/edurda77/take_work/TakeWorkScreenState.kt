@@ -6,4 +6,5 @@ import by.liscode.resources.uikit.UiText
 data class TakeWorkScreenState(
     val settings: RfidSetting? = null,
     val message: UiText? = null,
+    val markers: List<String> = emptyList()
 )
