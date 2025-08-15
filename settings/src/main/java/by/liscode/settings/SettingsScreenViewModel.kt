@@ -117,7 +117,7 @@ class SettingsScreenViewModel(
                 actionUpdateSetting {
                     viewModelScope.launch {
                         dataStoreRepository.saveRfidSettings(
-                            rfidSetting = it.copy(standard = action.rfidProtocol)
+                            rfidSetting = it.copy(protocol = action.rfidProtocol)
                         )
                     }
                 }

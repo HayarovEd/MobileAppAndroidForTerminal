@@ -50,7 +50,7 @@ dependencies {
     implementation(project(":fund"))
     implementation(project(":regisration"))
     implementation(project(":splash"))
-
+    implementation(project(":take_work"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

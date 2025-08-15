@@ -184,7 +184,7 @@ fun SettingsScreenScreen(
                         modifier = modifier.clickable {
                             isExpandedProtocolMenu = true
                         },
-                        text = settings.standard.title,
+                        text = settings.protocol.title,
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -324,7 +324,7 @@ private fun Preview() {
         SettingsScreenScreen(
             state = SettingsScreenState(
                 rfidSetting = RfidSetting(
-                    standard = RfidProtocol.ISO180006C,
+                    protocol = RfidProtocol.ISO180006C,
                     attribute = RfidAttribute.TID,
                     power = 25f,
                     frequencyMode = FrequencyMode.RUSSIA

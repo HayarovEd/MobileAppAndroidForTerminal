@@ -29,7 +29,7 @@ class DataStoreRepositoryImpl(
         rfidSetting: RfidSetting
     ) {
         dataStore.edit { preferences ->
-            preferences[FIELD_LABEL_PROTOCOL] = rfidSetting.standard.value
+            preferences[FIELD_LABEL_PROTOCOL] = rfidSetting.protocol.value
         }
         dataStore.edit { preferences ->
             preferences[FIELD_LABEL_ATTRIBUTE] = rfidSetting.attribute.value
@@ -40,8 +40,8 @@ class DataStoreRepositoryImpl(
         }
         dataStore.edit { preferences ->
             preferences[FIELD_LABEL_FREQ_MODE] = when (rfidSetting.frequencyMode) {
-                FrequencyMode.RUSSIA -> 0x37
-                FrequencyMode.ETSI -> 0x04
+                FrequencyMode.RUSSIA -> 37
+                FrequencyMode.ETSI -> 4
             }
         }
     }
@@ -50,7 +50,7 @@ class DataStoreRepositoryImpl(
     override suspend fun getRfidSettings(): Flow<RfidSetting> {
        return dataStore.data.map { preferences ->
            RfidSetting(
-               standard = when (preferences[FIELD_LABEL_PROTOCOL]) {
+               protocol = when (preferences[FIELD_LABEL_PROTOCOL]) {
                    0 -> RfidProtocol.ISO180006C
                   // 3 -> RfidProtocol.ISO180006D
                    else -> RfidProtocol.ISO180006C
@@ -60,10 +60,10 @@ class DataStoreRepositoryImpl(
                    2 -> RfidAttribute.TID
                    else -> RfidAttribute.EPC
                },
-               power = preferences[FIELD_LABEL_POWER]?:0.1f,
+               power = preferences[FIELD_LABEL_POWER]?:0.2f,
                frequencyMode = when (preferences[FIELD_LABEL_FREQ_MODE]) {
-                   0x04 -> FrequencyMode.ETSI
-                   0x37 -> FrequencyMode.RUSSIA
+                   4 -> FrequencyMode.ETSI
+                   37 -> FrequencyMode.RUSSIA
                    else -> FrequencyMode.RUSSIA
                }
            )

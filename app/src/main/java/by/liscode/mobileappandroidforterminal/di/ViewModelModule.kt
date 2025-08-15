@@ -5,6 +5,7 @@ import by.liscode.login.LoginScreenViewModel
 import by.liscode.regisration.RegistrationScreenViewModel
 import by.liscode.settings.SettingsScreenViewModel
 import by.liscode.splash.SplashScreenViewModel
+import com.edurda77.take_work.TakeWorkScreenViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -13,5 +14,7 @@ val viewModelModule = module {
     viewModelOf(::LoginScreenViewModel)
     viewModelOf(::RegistrationScreenViewModel)
     viewModelOf(::SplashScreenViewModel)
+    viewModelOf(::TakeWorkScreenViewModel)
+
 }
 

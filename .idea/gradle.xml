@@ -15,8 +15,11 @@
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/fund" />
             <option value="$PROJECT_DIR$/login" />
+            <option value="$PROJECT_DIR$/regisration" />
             <option value="$PROJECT_DIR$/resources" />
             <option value="$PROJECT_DIR$/settings" />
+            <option value="$PROJECT_DIR$/splash" />
+            <option value="$PROJECT_DIR$/take_work" />
           </set>
         </option>
       </GradleProjectSettings>

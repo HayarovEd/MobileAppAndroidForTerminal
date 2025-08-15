@@ -6,8 +6,9 @@ import android.view.KeyEvent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -15,7 +16,8 @@ import com.rscja.deviceapi.RFIDWithUHFUART
 
 
 @Composable
-fun rememberRfid(context: Context): RFIDWithUHFUART {
+fun rememberRfid(): RFIDWithUHFUART {
+    val context = LocalContext.current
     val mReader = remember {
         RFIDWithUHFUART.getInstance()
     }
@@ -67,27 +69,37 @@ fun rememberMapLifecycleObserver(
     }
 
 @Composable
-fun Modifier.onScan(
-    onSwitch: () -> Unit
-): Modifier {
-    return this.onKeyEvent {
-        if (it.nativeKeyEvent.action == KeyEvent.ACTION_UP) {
-            Log.d("REST TERMINAL", "action ${it.nativeKeyEvent.keyCode}")
-            when (it.nativeKeyEvent.keyCode) {
-                KeyEvent.KEYCODE_F9,
-                KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP,
-                KeyEvent.KEYCODE_VIDEO_APP_3,
-                KeyEvent.KEYCODE_VIDEO_APP_5,
-                KeyEvent.KEYCODE_VIDEO_APP_6,
-                KeyEvent.KEYCODE_STYLUS_BUTTON_TAIL,
-                KeyEvent.KEYCODE_RECENT_APPS,
-                KeyEvent.KEYCODE_MACRO_1,
-                KeyEvent.KEYCODE_MACRO_3 -> {
-                    onSwitch()
+fun OnScan(
+    block: () -> Unit
+) {
+    val context = LocalContext.current
+    val view = LocalView.current
+    DisposableEffect(context) {
+        val keyEventDispatcher = ViewCompat.OnUnhandledKeyEventListenerCompat { _, event ->
+            if (event.action == KeyEvent.ACTION_UP) {
+                Log.d("REST TERMINAL", "action ${event.keyCode}")
+                when (event.keyCode) {
+                    KeyEvent.KEYCODE_F9,
+                    KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP,
+                    KeyEvent.KEYCODE_VIDEO_APP_3,
+                    KeyEvent.KEYCODE_VIDEO_APP_5,
+                    KeyEvent.KEYCODE_VIDEO_APP_6,
+                    KeyEvent.KEYCODE_STYLUS_BUTTON_TAIL,
+                    KeyEvent.KEYCODE_RECENT_APPS,
+                    KeyEvent.KEYCODE_MACRO_1,
+                    KeyEvent.KEYCODE_MACRO_3 -> {
+                        Log.d("REST TERMINAL", "result action")
+                        block()
+                    }
                 }
             }
+            true
         }
-        true
+
+        ViewCompat.addOnUnhandledKeyEventListener(view, keyEventDispatcher)
+        onDispose {
+            ViewCompat.removeOnUnhandledKeyEventListener(view, keyEventDispatcher)
+        }
     }
 }
 
