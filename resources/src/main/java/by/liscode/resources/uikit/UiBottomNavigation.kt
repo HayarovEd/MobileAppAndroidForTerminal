@@ -52,7 +52,7 @@ fun UiBottomNavigation(
         routes.forEach { destination ->
             val selectedColor = if (currentDestination?.hierarchy?.any {
                     it.hasRoute(destination.route::class)
-                } == true) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                } == true) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.outline
             val selectedBackgroundColor = if (currentDestination?.hierarchy?.any {
                     it.hasRoute(destination.route::class)
                 } == true) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else Color.Transparent

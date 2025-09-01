@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import by.liscode.mobileappandroidforterminal.navigation.NavController
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
-import com.edurda77.take_work.TakeWorkScreenRoot
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,8 +13,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MobileAppAndroidForTerminalTheme {
-                //NavController()
-                TakeWorkScreenRoot()
+                NavController()
+                //TakeWorkScreenRoot()
             }
         }
     }

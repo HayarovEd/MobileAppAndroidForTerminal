@@ -1,7 +1,12 @@
 package by.liscode.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.repository.AuthorizeRepository
+import by.liscode.domain.repository.DataStoreRepository
+import by.liscode.resources.uikit.asUiText
+import com.nine.statio.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -11,12 +16,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginScreenViewModel : ViewModel() {
+class LoginScreenViewModel(
+    private val authorizeRepository: AuthorizeRepository,
+    private val dataStoreRepository: DataStoreRepository
+) : ViewModel() {
 
 
     private val _state = MutableStateFlow(LoginScreenState())
     val state = _state
-        .onStart {}
+        .onStart {
+            getBaseUrl()
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
@@ -28,7 +38,7 @@ class LoginScreenViewModel : ViewModel() {
 
     fun onAction(action: LoginScreenAction) {
         when (action) {
-            LoginScreenAction.Login -> {
+            LoginScreenAction.OnLogin -> {
                 onLogin()
             }
             LoginScreenAction.UpdateCounter -> {
@@ -68,9 +78,45 @@ class LoginScreenViewModel : ViewModel() {
         }
     }
 
+    private fun getBaseUrl() {
+        viewModelScope.launch {
+            dataStoreRepository.getUrl().collect {
+                _state.value.copy(
+                    baseUrl = it
+                )
+                    .updateState()
+            }
+        }
+    }
+
     private fun onLogin() {
         viewModelScope.launch {
-
+            _state.value.copy(
+                isLoading = true
+            )
+                .updateState()
+            when (val result = authorizeRepository.authorization(
+                login = state.value.login,
+                password = state.value.password,
+                baseUrl = state.value.baseUrl
+            )) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        isLoading = false,
+                        message = result.error.asUiText()
+                    )
+                        .updateState()
+                }
+                is ResultWork.Success -> {
+                    dataStoreRepository.saveBearer(result.data.token)
+                    Log.d("TEST TERMINAL APP", "token ${result.data.token}")
+                    _state.value.copy(
+                        isLoading = false
+                    )
+                        .updateState()
+                    _eventFlow.emit(UiLoginEvents.FundNavigateEvent)
+                }
+            }
         }
     }
 

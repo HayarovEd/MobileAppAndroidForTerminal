@@ -118,7 +118,7 @@ private fun LoginScreenScreen(
                     onClick = {
                         if (!state.isLoading) {
                             onAction(
-                                LoginScreenAction.Login
+                                LoginScreenAction.OnLogin
                             )
                         }
                     },
