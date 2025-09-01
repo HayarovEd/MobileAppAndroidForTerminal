@@ -1,6 +1,5 @@
 package by.liscode.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.AuthorizeRepository
@@ -109,7 +108,6 @@ class LoginScreenViewModel(
                 }
                 is ResultWork.Success -> {
                     dataStoreRepository.saveBearer(result.data.token)
-                    Log.d("TEST TERMINAL APP", "token ${result.data.token}")
                     _state.value.copy(
                         isLoading = false
                     )
