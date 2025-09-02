@@ -1,5 +1,6 @@
 package com.edurda77.take_work
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
@@ -32,6 +33,7 @@ class TakeWorkScreenViewModel(
         when (action) {
             is TakeWorkScreenAction.TakeMarker -> {
                 if (!state.value.markers.contains(action.marker)) {
+                    Log.d("REST TERMINAL", "scanner marker ${action.marker}")
                     _state.value.copy(
                         markers = state.value.markers + action.marker
                     )

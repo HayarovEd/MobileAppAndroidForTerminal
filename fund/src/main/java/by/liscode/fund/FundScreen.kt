@@ -1,5 +1,6 @@
 package by.liscode.fund
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ fun FundScreenRoot(
     onNavigateTo: (NavigationRoute) -> Unit,
     bottomRoutes: @Composable () -> Unit,
 ) {
+    BackHandler {}
     val state by viewModel.state.collectAsStateWithLifecycle()
     FundScreenScreen(
         state = state,
