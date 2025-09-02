@@ -3,11 +3,13 @@ package by.liscode.data.repository
 import android.util.Base64
 import by.liscode.domain.model.UserData
 import by.liscode.domain.repository.JwtRepository
+import by.liscode.domain.utils.convertToUserRole
+import by.liscode.domain.utils.convertToUserType
 import org.json.JSONObject
 
 class JwtRepositoryImpl: JwtRepository {
 
-    fun decodeJwt(token: String): UserData? {
+    override fun decodeJwt(token: String): UserData? {
         return try {
             val parts = token.split(".")
             if (parts.size < 2) return null
@@ -19,7 +21,12 @@ class JwtRepositoryImpl: JwtRepository {
             UserData(
                 userId = dataObject.getInt("user_id"),
                 login = dataObject.getString("login"),
-                role = dataObject.getString("role")
+                userRole = convertToUserRole(dataObject.getString("role")),
+                userType = if (dataObject.has("client_type")) {
+                    convertToUserType(dataObject.getString("client_type"))
+                } else {
+                    null
+                }
             )
         } catch (e: Exception) {
             e.printStackTrace()
