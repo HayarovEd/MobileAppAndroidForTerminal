@@ -63,14 +63,14 @@ enum class LaundryStatus {
 }
 
 //контрагент
-data class Counterparty(
+/*data class Counterparty(
     val id: Int,
     val createdAt: String,
     val name: String,
     val address: String,
     val inn: String,
     val phone: String,
-)
+)*/
 
 //Белье
 data class Laundry(

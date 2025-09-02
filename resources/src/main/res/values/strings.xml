@@ -121,5 +121,6 @@
     <string name="login_client">Логин клиента</string>
     <string name="password_client">Пароль клиента</string>
     <string name="regestered_terminal">Зарегистрировать терминал</string>
+    <string name="rfid">RFID</string>
 
 </resources>
