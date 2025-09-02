@@ -54,11 +54,11 @@ private fun TakeWorkScreenScreen(
         }
     }
 
-    LaunchedEffect(state.markers) {
+    /*LaunchedEffect(state.markers) {
         state.markers.forEachIndexed { markerIndex, marker ->
             Log.d("REST TERMINAL", "marker $markerIndex $marker")
         }
-    }
+    }*/
 
     OnScan(
         block = {
@@ -76,7 +76,8 @@ private fun TakeWorkScreenScreen(
     )
 
     UiBaseScaffold(
-        message = state.message
+        message = state.message,
+
     ) {
             paddingValues ->
         Column(

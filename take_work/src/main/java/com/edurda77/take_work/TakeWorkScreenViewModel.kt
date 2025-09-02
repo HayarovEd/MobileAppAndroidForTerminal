@@ -38,6 +38,10 @@ class TakeWorkScreenViewModel(
                         .updateState()
                 }
             }
+
+            TakeWorkScreenAction.UpdateStatusToWork -> {
+
+            }
         }
     }
 
