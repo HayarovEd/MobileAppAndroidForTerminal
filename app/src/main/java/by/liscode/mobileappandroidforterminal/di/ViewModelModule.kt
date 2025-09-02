@@ -1,6 +1,7 @@
 package by.liscode.mobileappandroidforterminal.di
 
 
+import by.liscode.fund.FundScreenViewModel
 import by.liscode.login.LoginScreenViewModel
 import by.liscode.regisration.RegistrationScreenViewModel
 import by.liscode.settings.SettingsScreenViewModel
@@ -15,6 +16,7 @@ val viewModelModule = module {
     viewModelOf(::RegistrationScreenViewModel)
     viewModelOf(::SplashScreenViewModel)
     viewModelOf(::TakeWorkScreenViewModel)
+    viewModelOf(::FundScreenViewModel)
 
 }
 
