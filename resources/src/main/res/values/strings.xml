@@ -122,5 +122,10 @@
     <string name="password_client">Пароль клиента</string>
     <string name="regestered_terminal">Зарегистрировать терминал</string>
     <string name="rfid">RFID</string>
+    <string name="kind_upper_case">ВИД</string>
+    <string name="downloaded">Загружено</string>
+    <string name="scanned">Отсканировано</string>
+    <string name="our_fund">Наш фонд</string>
+    <string name="take_work_upper_case">ВЗЯТЬ В РАБОТУ</string>
 
 </resources>
