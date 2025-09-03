@@ -11,7 +11,7 @@ data class Order(
     val creatorId: String,
     val address: String,
     val comment: String,
-    val status: OrderStatus,
+    val status: StatusOrder,
     val commentStatus: String,
     val actFilePath: String
 )
