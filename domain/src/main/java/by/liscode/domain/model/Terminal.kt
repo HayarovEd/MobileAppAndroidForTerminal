@@ -100,13 +100,13 @@ enum class OrderStatus {
     ADOPTED,
 }
 
-//Заказ
+/*//Заказ
 data class Order(
     val id: Int,
     val createdAt: String,
     val orderStatus: OrderStatus,
     val clientId: Int,
     val worker: Worker
-)
+)*/
 
 
