@@ -7,9 +7,9 @@ data class Linen(
     val typeLinen: TypeLinen,
     val discount: String,
     val weight: Int,
-    val state: String,
+    val state: StateLinen,
     val washCount: Int,
-    val status: String,
+    val status: StatusLinen,
     val price: String,
     val counterpartyId: Int,
     val counterparty: Counterparty

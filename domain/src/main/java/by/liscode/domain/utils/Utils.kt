@@ -1,5 +1,9 @@
 package by.liscode.domain.utils
 
+import by.liscode.domain.model.ReasonWriteOff
+import by.liscode.domain.model.StateLinen
+import by.liscode.domain.model.StatusLinen
+import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.UserRole
 import by.liscode.domain.model.UserType
 
@@ -29,4 +33,48 @@ fun convertToUserType(type: String): UserType {
         else -> UserType.UNKNOWN_TYPE
     }
 }
+
+fun convertToReasonWriteOff(reason: String): ReasonWriteOff? {
+    return when (reason) {
+        "Повреждено" -> ReasonWriteOff.DAMAGED
+        "Изношено" -> ReasonWriteOff.WORN_OUT
+        else -> null
+    }
+}
+
+fun convertToStatusLinen(status: String): StatusLinen? {
+    return when (status) {
+        "На складе" -> StatusLinen.IN_STOCK
+        "В работе" -> StatusLinen.IN_USE
+        "В заказе" -> StatusLinen.IN_ORDER
+        "В пути" -> StatusLinen.IN_TRANSIT
+        "В производстве" -> StatusLinen.IN_PRODUCTION
+        "Списан" -> StatusLinen.WRITE_OFF
+        else -> null
+    }
+}
+
+fun convertToStateLinen(state: String): StateLinen? {
+    return when (state) {
+        "Новое" -> StateLinen.NEW
+        "Отличное" -> StateLinen.EXCELLENT
+        "Хорошее" -> StateLinen.GOOD
+        "Удовлетворительное" -> StateLinen.SATISFACTORY
+        "Списано" -> StateLinen.WRITTEN_OFF
+        else -> null
+    }
+}
+
+fun convertToStatusOrder(status: String): StatusOrder? {
+    return when (status) {
+        "Зарегистрирован" -> StatusOrder.REGISTERED
+        "В доставке" -> StatusOrder.IN_TRANSIT
+        "В производстве" -> StatusOrder.IN_PRODUCTION
+        "Сформирован" -> StatusOrder.FORMED
+       // "В доставке" -> StatusOrder.IN_DELIVERY
+        "Выполнен" -> StatusOrder.COMPLETED
+        else -> null
+    }
+}
+
 

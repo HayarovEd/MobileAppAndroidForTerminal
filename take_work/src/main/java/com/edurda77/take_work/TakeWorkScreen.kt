@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
+import by.liscode.domain.model.StateLinen
+import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
@@ -253,9 +255,9 @@ private fun Preview() {
             ),
             discount = "dsk",
             weight = 135,
-            state = "новый",
+            state = StateLinen.NEW,
             washCount = 3,
-            status = "на складе",
+            status = StatusLinen.IN_STOCK,
             price = "100 р.",
             counterpartyId = 3,
             counterparty = Counterparty(

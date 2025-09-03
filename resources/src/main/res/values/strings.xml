@@ -127,5 +127,22 @@
     <string name="scanned">Отсканировано</string>
     <string name="our_fund">Наш фонд</string>
     <string name="take_work_upper_case">ВЗЯТЬ В РАБОТУ</string>
+    <string name="damaged">Повреждено</string>
+    <string name="worn_out">Изношено</string>
+    <string name="in_stock">На складе</string>
+    <string name="in_use">В работе</string>
+    <string name="in_order">В заказе</string>
+    <string name="in_transit">В пути</string>
+    <string name="in_production">В производстве</string>
+    <string name="write_off">Списан</string>
+    <string name="new_state">Новое</string>
+    <string name="excellent">Отличное</string>
+    <string name="good">Хорошее</string>
+    <string name="satisfaction">Удовлетворительное</string>
+    <string name="write_off_state">Списано</string>
+    <string name="regestered">Зарегистрирован</string>
+    <string name="order_in_transit">В доставке</string>
+    <string name="order_formed">Сформирован</string>
+    <string name="order_completed">Выполнен</string>
 
 </resources>

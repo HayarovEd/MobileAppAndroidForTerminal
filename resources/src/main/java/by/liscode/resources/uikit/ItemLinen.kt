@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
+import by.liscode.domain.model.StateLinen
+import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
@@ -56,7 +58,7 @@ fun ItemLinen(
         ) {
             Text(
                 modifier = modifier.fillMaxWidth(),
-                text = linen.status,
+                text = linen.status.asStatusLinenText().asString(),
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
@@ -89,9 +91,9 @@ private fun ItemLinenView() {
                 ),
                 discount = "dsk",
                 weight = 135,
-                state = "новый",
+                state = StateLinen.NEW,
                 washCount = 3,
-                status = "на складе",
+                status = StatusLinen.IN_STOCK,
                 price = "100 р.",
                 counterpartyId = 3,
                 counterparty = Counterparty(

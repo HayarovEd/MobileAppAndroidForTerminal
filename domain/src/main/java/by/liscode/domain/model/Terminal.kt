@@ -86,11 +86,6 @@ data class Laundry(
     val invoice: String,
 )
 
-//причина списания, что-нибудь еще?
-enum class ReasonWriteOff {
-    DAMAGED,
-}
-
 
 data class WriteOff(
     val id: Int,
