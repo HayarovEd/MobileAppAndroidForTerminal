@@ -52,6 +52,7 @@ dependencies {
     implementation(project(":splash"))
     implementation(project(":take_work"))
     implementation(project(":orders"))
+    implementation(project(":take_balance"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
