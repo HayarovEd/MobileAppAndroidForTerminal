@@ -10,7 +10,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TakaBalanceScreenRoot(
-    viewModel: TakaBalanceScreenViewModel = koinViewModel ()
+    viewModel: TakeBalanceScreenViewModel = koinViewModel ()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -23,8 +23,8 @@ fun TakaBalanceScreenRoot(
 @Composable
 fun TakaBalanceScreenScreen(
     modifier: Modifier = Modifier,
-    state: TakaBalanceScreenState,
-    onAction: (TakaBalanceScreenAction) -> Unit,
+    state: TakeBalanceScreenState,
+    onAction: (TakeBalanceScreenAction) -> Unit,
 ) {
 
 }
@@ -34,7 +34,7 @@ fun TakaBalanceScreenScreen(
 private fun Preview() {
     MobileAppAndroidForTerminalTheme {
         TakaBalanceScreenScreen(
-            state = TakaBalanceScreenState(),
+            state = TakeBalanceScreenState(),
             onAction = {}
         )
     }

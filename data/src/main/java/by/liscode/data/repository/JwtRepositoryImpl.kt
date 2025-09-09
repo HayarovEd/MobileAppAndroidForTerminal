@@ -26,7 +26,8 @@ class JwtRepositoryImpl: JwtRepository {
                     convertToUserType(dataObject.getString("client_type"))
                 } else {
                     null
-                }
+                },
+                expired = jsonObject.getLong("exp")
             )
         } catch (e: Exception) {
             e.printStackTrace()

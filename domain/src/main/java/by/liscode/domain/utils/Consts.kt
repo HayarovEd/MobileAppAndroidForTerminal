@@ -2,6 +2,7 @@ package by.liscode.domain.utils
 
 const val BASE_URL = "https://api.develop.cloud-laundry.ru"
 const val AUTH_POSTFIX = "public/auth/login"
+const val TERMINAL_COUNTERPARTY = "terminal/counterparties"
 const val PREFERENCES= "preferences"
 const val LOCAL_DB = "local_db"
 
