@@ -21,25 +21,25 @@ val fundRoutes = listOf(
     FundRoute(
         nameResId = R.string.take_balance,
         route = NavigationRoute.BalanceTake,
-        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE, UserRole.MANAGER, UserRole.CLIENT),
-        accessedTypes = listOf(UserType.HOTEL, UserType.LAUNDRY),
+        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE),
+        accessedTypes = listOf(UserType.HOTEL),
     ),
     FundRoute(
         nameResId = R.string.reset_balance,
         route = NavigationRoute.BalanceDeduct,
-        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE, UserRole.MANAGER, UserRole.CLIENT),
-        accessedTypes = listOf(UserType.HOTEL, UserType.LAUNDRY),
+        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE),
+        accessedTypes = listOf(UserType.HOTEL),
     ),
     FundRoute(
         nameResId = R.string.inventory,
         route = NavigationRoute.Inventory,
-        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE, UserRole.MANAGER, UserRole.CLIENT),
-        accessedTypes = listOf(UserType.HOTEL, UserType.LAUNDRY),
+        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE),
+        accessedTypes = listOf(UserType.HOTEL),
     ),
     FundRoute(
         nameResId = R.string.search,
         route = NavigationRoute.Search,
-        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE, UserRole.MANAGER, UserRole.CLIENT),
-        accessedTypes = listOf(UserType.HOTEL, UserType.LAUNDRY),
+        accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE),
+        accessedTypes = listOf(UserType.HOTEL),
     ),
 )

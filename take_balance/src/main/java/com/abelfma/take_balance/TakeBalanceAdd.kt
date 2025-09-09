@@ -28,7 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +40,7 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asStateLinenText
 
@@ -58,6 +61,7 @@ fun TakeBalanceAddScreen(
     updateWeight: (String) -> Unit,
     updateBillLading: (String) -> Unit,
     updateStateScreen: (StateScreen) -> Unit,
+    deleteMarker: (String) -> Unit,
 ) {
     if (state.isLoading) {
         Box(
@@ -340,14 +344,26 @@ fun TakeBalanceAddScreen(
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
                 items(state.markers) { marker ->
-                    Text(
-                        modifier = modifier,
-                        text = marker,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                        ),
-                    )
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            modifier = modifier,
+                            text = marker,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                            ),
+                        )
+                        UiIconButton(
+                            icon = ImageVector.vectorResource(R.drawable.outline_delete_24),
+                            onClick = {
+                                deleteMarker(marker)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -387,7 +403,8 @@ private fun Preview() {
             updateWeight = {},
             updateBillLading = {},
             updateStateScreen = {},
-            paddingValues = PaddingValues(10.dp)
+            paddingValues = PaddingValues(10.dp),
+            deleteMarker = {},
         )
     }
 }
@@ -440,7 +457,8 @@ private fun Preview3() {
             updateWeight = {},
             updateBillLading = {},
             updateStateScreen = {},
-            paddingValues = PaddingValues(10.dp)
+            paddingValues = PaddingValues(10.dp),
+            deleteMarker = {},
         )
     }
 }
@@ -479,7 +497,8 @@ private fun Preview2() {
             updateWeight = {},
             updateBillLading = {},
             updateStateScreen = {},
-            paddingValues = PaddingValues(10.dp)
+            paddingValues = PaddingValues(10.dp),
+            deleteMarker = {},
         )
     }
 }

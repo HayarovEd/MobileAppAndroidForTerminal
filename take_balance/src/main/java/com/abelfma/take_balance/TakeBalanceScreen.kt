@@ -178,6 +178,9 @@ fun TakeBalanceScreenScreen(
                     updateStateScreen = {
                         onAction(TakeBalanceScreenAction.ChangeStateScreen(it))
                     },
+                    deleteMarker = {
+                        onAction(TakeBalanceScreenAction.RemoveMarker(it))
+                    }
                 )
             }
 

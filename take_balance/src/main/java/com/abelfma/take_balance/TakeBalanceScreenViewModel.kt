@@ -173,6 +173,13 @@ class TakeBalanceScreenViewModel(
                         .updateState()
                 }
             }
+
+            is TakeBalanceScreenAction.RemoveMarker -> {
+                _state.value.copy(
+                    markers = state.value.markers - action.marker
+                )
+                    .updateState()
+            }
         }
     }
 
