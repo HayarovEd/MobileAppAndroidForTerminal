@@ -81,65 +81,85 @@ class TakeBalanceScreenViewModel(
     fun onAction(action: TakeBalanceScreenAction) {
         when (action) {
             is TakeBalanceScreenAction.AddNewCounterParty -> {
-                TODO()
+                loadData { token, url ->
+                    addCounterparty(
+                        accessToken = token,
+                        url = url,
+                        name = action.name,
+                        address = action.address,
+                        inn = action.inn,
+                        phone = action.phone
+                    )
+                }
             }
+
             is TakeBalanceScreenAction.ChangeStateScreen -> {
                 _state.value.copy(
                     stateScreen = action.stateScreen
                 )
                     .updateState()
             }
+
             TakeBalanceScreenAction.OpenInfo -> {
                 _state.value.copy(
                     isOpenInfo = !state.value.isOpenInfo
                 )
                     .updateState()
             }
+
             is TakeBalanceScreenAction.SearchCounterParty -> {
                 _state.value.copy(
                     queryCounterparty = action.query
                 )
                     .updateState()
             }
+
             TakeBalanceScreenAction.Send -> {
                 TODO()
             }
+
             is TakeBalanceScreenAction.SetArticleNumber -> {
                 _state.value.copy(
                     articleNumber = action.number
                 )
                     .updateState()
             }
+
             is TakeBalanceScreenAction.SetBillLading -> {
                 _state.value.copy(
                     billLading = action.billLading
                 )
                     .updateState()
             }
+
             is TakeBalanceScreenAction.SetCounterParty -> {
                 _state.value.copy(
                     currentCounterparty = action.counterparty
                 )
                     .updateState()
             }
+
             is TakeBalanceScreenAction.SetStateLinen -> {
                 _state.value.copy(
                     currentStateLinen = action.stateLinen
                 )
                     .updateState()
             }
+
             is TakeBalanceScreenAction.SetTypeLinen -> {
                 _state.value.copy(
                     currentTypeLinen = action.typeLinen
                 )
                     .updateState()
             }
+
             is TakeBalanceScreenAction.SetWeight -> {
                 _state.value.copy(
                     weight = action.weight
                 )
                     .updateState()
             }
+
             is TakeBalanceScreenAction.TakeMarker -> {
                 if (state.value.filterMarkers.any {
                         action.marker.contains(
@@ -265,6 +285,46 @@ class TakeBalanceScreenViewModel(
                 isLoading = false
             )
                 .updateState()
+        }
+    }
+
+    private fun addCounterparty(
+        accessToken: String,
+        url: String,
+        name: String,
+        address: String,
+        inn: String,
+        phone: String,
+    ) {
+        _state.value.copy(
+            isLoading = true
+        )
+            .updateState()
+        viewModelScope.launch {
+            when (val result = remoteRepository.addCounterparty(
+                baseUrl = url,
+                token = accessToken,
+                name = name,
+                address = address,
+                inn = inn,
+                phone = phone
+            )) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        isLoading = false,
+                        message = result.error.asUiText()
+                    )
+                        .updateState()
+                }
+
+                is ResultWork.Success -> {
+                    _state.value.copy(
+                        isLoading = false,
+                        counterparties = state.value.counterparties + result.data
+                    )
+                        .updateState()
+                }
+            }
         }
     }
 

@@ -21,4 +21,13 @@ interface RemoteRepository {
         baseUrl: String,
         token: String
     ): ResultWork<List<StatusLinen>, DataError>
+
+    suspend fun addCounterparty(
+        baseUrl: String,
+        token: String,
+        name: String,
+        address: String,
+        inn: String,
+        phone: String
+    ): ResultWork<Counterparty, DataError>
 }

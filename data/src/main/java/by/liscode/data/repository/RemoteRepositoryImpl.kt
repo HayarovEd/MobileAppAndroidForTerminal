@@ -1,7 +1,9 @@
 package by.liscode.data.repository
 
 import by.liscode.data.handler.handleRemoteResponse
+import by.liscode.data.remote.request.CounterpartyPost
 import by.liscode.data.remote.response.CounterPartyResponse
+import by.liscode.data.remote.response.CounterPartyResponseFromPost
 import by.liscode.data.remote.response.StateLinenResponse
 import by.liscode.data.remote.response.StatusLinenResponse
 import by.liscode.domain.model.Counterparty
@@ -19,6 +21,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
@@ -91,6 +95,41 @@ class RemoteRepositoryImpl(
                     convertToStatusLinen(result.inTransit),
                     convertToStatusLinen(result.inProduction),
                     convertToStatusLinen(result.writtenOff),
+                )
+            }
+        }
+    }
+
+    override suspend fun addCounterparty(
+        baseUrl: String,
+        token: String,
+        name: String,
+        address: String,
+        inn: String,
+        phone: String,
+    ): ResultWork<Counterparty, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_COUNTERPARTY") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        CounterpartyPost(
+                            name = name,
+                            address = address,
+                            inn = inn,
+                            phone = phone
+                        )
+                    )
+                }
+                //Log.d("TEST IMPULS CAMERA", "response ${response.bodyAsText()}")
+                val result = response.body<CounterPartyResponseFromPost>()
+                Counterparty(
+                    id = result.counterparty.id,
+                    name = result.counterparty.name,
+                    address = result.counterparty.address,
+                    inn = result.counterparty.inn,
+                    phone = result.counterparty.phone
                 )
             }
         }
