@@ -20,7 +20,7 @@ data class TakeBalanceScreenState(
     val isOpenInfo: Boolean = true,
     val currentTypeLinen: TypeLinen? = null,
     val articleNumber: String = "",
-    val currentStateLinen: StateLinen? = null,
+    val currentStateLinen: StateLinen = StateLinen.NEW,
     val weight: String = "",
     //val price: String = "",
     val billLading: String = "",
@@ -32,7 +32,7 @@ data class TakeBalanceScreenState(
 
 enum class StateScreen{
     ADD,
-    COUNERPARTY
+    COUNTERPARTY
 }
 
 sealed class UiTakeBalanceEvents {

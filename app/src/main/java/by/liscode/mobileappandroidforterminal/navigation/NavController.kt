@@ -12,7 +12,7 @@ import by.liscode.resources.model.routes
 import by.liscode.resources.uikit.UiBottomNavigation
 import by.liscode.settings.SettingsScreenRoot
 import by.liscode.splash.SplashScreenRoot
-import com.abelfma.take_balance.TakaBalanceScreenRoot
+import com.abelfma.take_balance.TakeBalanceScreenRoot
 import com.edurda77.take_work.TakeWorkScreenRoot
 
 @Composable
@@ -88,7 +88,11 @@ fun NavController(
         }
 
         composable<NavigationRoute.BalanceTake> {
-            TakaBalanceScreenRoot()
+            TakeBalanceScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                }
+            )
         }
 
         composable<NavigationRoute.Inventory> {

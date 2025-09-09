@@ -164,6 +164,7 @@ class TakeBalanceScreenViewModel(
                     val expired = jwtRepository.decodeJwt(token)?.expired
                     expired?.let { exp ->
                         if (exp < Clock.System.now().epochSeconds) {
+                            dataStoreRepository.removeBearer()
                             _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
                         } else {
                             dataStoreRepository.getUrl().collect { url ->
@@ -174,11 +175,13 @@ class TakeBalanceScreenViewModel(
                         }
                     } ?: {
                         viewModelScope.launch {
+                            dataStoreRepository.removeBearer()
                             _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
                         }
                     }
                 } ?: {
                     viewModelScope.launch {
+                        dataStoreRepository.removeBearer()
                         _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
                     }
                 }

@@ -144,5 +144,17 @@
     <string name="order_in_transit">В доставке</string>
     <string name="order_formed">Сформирован</string>
     <string name="order_completed">Выполнен</string>
+    <string name="hide_info">Скрыть информацию</string>
+    <string name="show_info">Показать информацию</string>
+    <string name="type">Тип</string>
+    <string name="choose">Выбрать</string>
+    <string name="article">Номенклатура</string>
+    <string name="state_linen">Состояние</string>
+    <string name="weight_one">Вес 1 экз</string>
+    <string name="weight_unit">г</string>
+    <string name="bill_lading">Тов. накл</string>
+    <string name="bill_lading_label">№, Дата и т.д.</string>
+    <string name="counterparty">Контрагент</string>
+    <string name="all_reader_markers">Список считанных объектов. Всего</string>
 
 </resources>
