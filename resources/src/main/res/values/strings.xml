@@ -156,5 +156,16 @@
     <string name="bill_lading_label">№, Дата и т.д.</string>
     <string name="counterparty">Контрагент</string>
     <string name="all_reader_markers">Список считанных объектов. Всего</string>
+    <string name="enter_counerparty">Введите контрагента</string>
+    <string name="add_linen">Добавить бельё</string>
+    <string name="send">Отправить</string>
+    <string name="counterparties">Контрагенты</string>
+
+    <string name="enter_name_counterparty">Введите имя контрагента</string>
+    <string name="enter_address_counterparty">Введите адрес контрагента</string>
+    <string name="enter_inn_counterparty">Введите ИНН контрагента</string>
+    <string name="enter_phone_counterparty">Введите телефон контрагента</string>
+    <string name="cancel">Отмена</string>
+    <string name="ok">Ок</string>
 
 </resources>

@@ -5,16 +5,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -42,6 +45,7 @@ import by.liscode.resources.uikit.asStateLinenText
 @Composable
 fun TakeBalanceAddScreen(
     modifier: Modifier = Modifier,
+    paddingValues: PaddingValues,
     state: TakeBalanceScreenState,
     isOpenTypeLinenMenu: Boolean,
     isOpenedStateLinenMenu: Boolean,
@@ -55,79 +59,266 @@ fun TakeBalanceAddScreen(
     updateBillLading: (String) -> Unit,
     updateStateScreen: (StateScreen) -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(15.dp),
-    ) {
-        OutlinedButton(
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(5.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = if (state.isOpenInfo) Color.Transparent else MaterialTheme.colorScheme.onPrimaryContainer
-            ),
-            onClick = updateVisibleInfo
+    if (state.isLoading) {
+        Box(
+            modifier = modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(15.dp),
         ) {
-            Text(
-                modifier = modifier,
-                text = if (state.isOpenInfo) stringResource(R.string.hide_info) else stringResource(
-                    R.string.show_info
-                ),
-                color = if (state.isOpenInfo) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primaryContainer,
-                style = MaterialTheme.typography.titleMedium,
+            CircularProgressIndicator(
+                modifier = modifier
+                    .align(alignment = Alignment.Center)
+                    .size(200.dp)
             )
         }
-        if (state.isOpenInfo) {
-            Spacer(modifier = modifier.height(10.dp))
-            Row(
+    } else {
+        Column(
+            modifier = modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(15.dp),
+        ) {
+            OutlinedButton(
                 modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                shape = RoundedCornerShape(5.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = if (state.isOpenInfo) Color.Transparent else MaterialTheme.colorScheme.onPrimaryContainer
+                ),
+                onClick = updateVisibleInfo
             ) {
                 Text(
                     modifier = modifier,
-                    text = "${stringResource(R.string.type)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
+                    text = if (state.isOpenInfo) stringResource(R.string.hide_info) else stringResource(
+                        R.string.show_info
+                    ),
+                    color = if (state.isOpenInfo) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primaryContainer,
+                    style = MaterialTheme.typography.titleMedium,
                 )
-                Box {
+            }
+            if (state.isOpenInfo) {
+                Spacer(modifier = modifier.height(10.dp))
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.type)}:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Box {
+                        Text(
+                            modifier = modifier.clickable(
+                                onClick = {
+                                    updateVisibleTypeLinenMenu(true)
+                                }
+                            ),
+                            text = if (state.currentTypeLinen == null) stringResource(R.string.choose) else state.currentTypeLinen.name,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                textDecoration = TextDecoration.Underline
+                            ),
+                        )
+                        DropdownMenu(
+                            expanded = isOpenTypeLinenMenu,
+                            onDismissRequest = {
+                                updateVisibleTypeLinenMenu(false)
+                            }
+                        ) {
+                            state.typesLinen.forEach {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            modifier = modifier,
+                                            text = it.name,
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                        )
+                                    },
+                                    onClick = {
+                                        updateCurrentTypeLinen(it)
+                                        updateVisibleTypeLinenMenu(false)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = modifier.height(4.dp))
+                HorizontalDivider(
+                    modifier = modifier.fillMaxWidth(),
+                    thickness = 1.dp
+                )
+                Spacer(modifier = modifier.height(8.dp))
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.article)}:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    UiTextField(
+                        content = state.articleNumber,
+                        placeholder = "",
+                        onClickContent = {
+                            updateArticleNumber(it)
+                        }
+                    )
+                }
+                Spacer(modifier = modifier.height(4.dp))
+                HorizontalDivider(
+                    modifier = modifier.fillMaxWidth(),
+                    thickness = 1.dp
+                )
+                Spacer(modifier = modifier.height(8.dp))
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.state_linen)}:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Box {
+                        Text(
+                            modifier = modifier.clickable(
+                                onClick = {
+                                    updateVisibleStateLinenMenu(true)
+                                }
+                            ),
+                            text = state.currentStateLinen.asStateLinenText().asString(),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                textDecoration = TextDecoration.Underline
+                            ),
+                        )
+                        DropdownMenu(
+                            expanded = isOpenedStateLinenMenu,
+                            onDismissRequest = {
+                                updateVisibleStateLinenMenu(false)
+                            }
+                        ) {
+                            state.statesLinen.forEach {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            modifier = modifier,
+                                            text = it.asStateLinenText().asString(),
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                        )
+                                    },
+                                    onClick = {
+                                        updateCurrentStateLinen(it)
+                                        updateVisibleStateLinenMenu(false)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = modifier.height(4.dp))
+                HorizontalDivider(
+                    modifier = modifier.fillMaxWidth(),
+                    thickness = 1.dp
+                )
+                Spacer(modifier = modifier.height(8.dp))
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.weight_one)}:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    UiTextField(
+                        modifier = modifier.weight(1f),
+                        content = state.weight,
+                        placeholder = "",
+                        isOnlyDigit = true,
+                        onClickContent = {
+                            updateWeight(it)
+                        }
+                    )
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.weight_unit)}.",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                Spacer(modifier = modifier.height(4.dp))
+                HorizontalDivider(
+                    modifier = modifier.fillMaxWidth(),
+                    thickness = 1.dp
+                )
+                Spacer(modifier = modifier.height(8.dp))
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.bill_lading)}:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    UiTextField(
+                        modifier = modifier.weight(1f),
+                        content = state.billLading,
+                        placeholder = stringResource(R.string.bill_lading_label),
+                        onClickContent = {
+                            updateBillLading(it)
+                        }
+                    )
+                }
+                Spacer(modifier = modifier.height(4.dp))
+                HorizontalDivider(
+                    modifier = modifier.fillMaxWidth(),
+                    thickness = 1.dp
+                )
+                Spacer(modifier = modifier.height(8.dp))
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.counterparty)}:",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                     Text(
                         modifier = modifier.clickable(
                             onClick = {
-                                updateVisibleTypeLinenMenu(true)
+                                updateStateScreen(StateScreen.COUNTERPARTY)
                             }
                         ),
-                        text = if (state.currentTypeLinen == null) stringResource(R.string.choose) else state.currentTypeLinen.name,
+                        text = if (state.currentCounterparty == null) stringResource(R.string.choose) else state.currentCounterparty.name,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline
                         ),
                     )
-                    DropdownMenu(
-                        expanded = isOpenTypeLinenMenu,
-                        onDismissRequest = {
-                            updateVisibleTypeLinenMenu(false)
-                        }
-                    ) {
-                        state.typesLinen.forEach {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        modifier = modifier,
-                                        text = it.name,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                },
-                                onClick = {
-                                    updateCurrentTypeLinen(it)
-                                    updateVisibleTypeLinenMenu(false)
-                                }
-                            )
-                        }
-                    }
                 }
             }
             Spacer(modifier = modifier.height(4.dp))
@@ -136,198 +327,28 @@ fun TakeBalanceAddScreen(
                 thickness = 1.dp
             )
             Spacer(modifier = modifier.height(8.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ){
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.article)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                UiTextField(
-                    content = state.articleNumber,
-                    label = "",
-                    onClickContent = {
-                        updateArticleNumber(it)
-                    }
-                )
-            }
-            Spacer(modifier = modifier.height(4.dp))
-            HorizontalDivider(
-                modifier = modifier.fillMaxWidth(),
-                thickness = 1.dp
+            Text(
+                modifier = modifier,
+                text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
             )
             Spacer(modifier = modifier.height(8.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.state_linen)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Box {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                items(state.markers) { marker ->
                     Text(
-                        modifier = modifier.clickable(
-                            onClick = {
-                                updateVisibleStateLinenMenu(true)
-                            }
-                        ),
-                        text = state.currentStateLinen.asStateLinenText().asString(),
+                        modifier = modifier,
+                        text = marker,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            textDecoration = TextDecoration.Underline
                         ),
                     )
-                    DropdownMenu(
-                        expanded = isOpenedStateLinenMenu,
-                        onDismissRequest = {
-                            updateVisibleStateLinenMenu(false)
-                        }
-                    ) {
-                        state.statesLinen.forEach {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        modifier = modifier,
-                                        text = it.asStateLinenText().asString(),
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                },
-                                onClick = {
-                                    updateCurrentStateLinen(it)
-                                    updateVisibleStateLinenMenu(false)
-                                }
-                            )
-                        }
-                    }
                 }
-            }
-            Spacer(modifier = modifier.height(4.dp))
-            HorizontalDivider(
-                modifier = modifier.fillMaxWidth(),
-                thickness = 1.dp
-            )
-            Spacer(modifier = modifier.height(8.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.weight_one)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                UiTextField(
-                    modifier = modifier.weight(1f),
-                    content = state.weight,
-                    label = "",
-                    isOnlyDigit = true,
-                    onClickContent = {
-                        updateWeight(it)
-                    }
-                )
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.weight_unit)}.",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            Spacer(modifier = modifier.height(4.dp))
-            HorizontalDivider(
-                modifier = modifier.fillMaxWidth(),
-                thickness = 1.dp
-            )
-            Spacer(modifier = modifier.height(8.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.bill_lading)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                UiTextField(
-                    modifier = modifier.weight(1f),
-                    content = state.billLading,
-                    label = stringResource(R.string.bill_lading_label),
-                    onClickContent = {
-                        updateBillLading(it)
-                    }
-                )
-            }
-            Spacer(modifier = modifier.height(4.dp))
-            HorizontalDivider(
-                modifier = modifier.fillMaxWidth(),
-                thickness = 1.dp
-            )
-            Spacer(modifier = modifier.height(8.dp))
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.counterparty)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    modifier = modifier.clickable(
-                        onClick = {
-                            updateStateScreen(StateScreen.COUNTERPARTY)
-                        }
-                    ),
-                    text = if (state.currentCounterparty == null) stringResource(R.string.choose) else state.currentCounterparty.name,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline
-                    ),
-                )
-            }
-        }
-        Spacer(modifier = modifier.height(4.dp))
-        HorizontalDivider(
-            modifier = modifier.fillMaxWidth(),
-            thickness = 1.dp
-        )
-        Spacer(modifier = modifier.height(8.dp))
-        Text(
-            modifier = modifier,
-            text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Bold,
-            ),
-        )
-        Spacer(modifier = modifier.height(8.dp))
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-            items(state.markers) { marker->
-                Text(
-                    modifier = modifier,
-                    text = marker,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                )
             }
         }
     }
@@ -345,7 +366,7 @@ private fun Preview() {
             phone = "+7(555)55-55-222"
         )
     }
-    val markers =  (1..10).map {
+    val markers = (1..10).map {
         "marker 000$it"
     }
     MobileAppAndroidForTerminalTheme {
@@ -358,14 +379,15 @@ private fun Preview() {
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = true,
             updateVisibleInfo = {},
-            updateVisibleTypeLinenMenu = {},
             updateCurrentTypeLinen = {},
-            updateArticleNumber = {},
-            updateVisibleStateLinenMenu = {},
             updateCurrentStateLinen = {},
+            updateVisibleTypeLinenMenu = {},
+            updateVisibleStateLinenMenu = {},
+            updateArticleNumber = {},
             updateWeight = {},
             updateBillLading = {},
             updateStateScreen = {},
+            paddingValues = PaddingValues(10.dp)
         )
     }
 }
@@ -396,7 +418,7 @@ private fun Preview3() {
             clientId = 2
         )
     }
-    val markers =  (1..10).map {
+    val markers = (1..10).map {
         "marker 000$it"
     }
     MobileAppAndroidForTerminalTheme {
@@ -406,18 +428,19 @@ private fun Preview3() {
                 counterparties = counterParties,
                 typesLinen = typesLinen,
                 markers = markers,
-                ),
+            ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,
             updateVisibleInfo = {},
-            updateVisibleTypeLinenMenu = {},
             updateCurrentTypeLinen = {},
-            updateArticleNumber = {},
-            updateVisibleStateLinenMenu = {},
             updateCurrentStateLinen = {},
+            updateVisibleTypeLinenMenu = {},
+            updateVisibleStateLinenMenu = {},
+            updateArticleNumber = {},
             updateWeight = {},
             updateBillLading = {},
             updateStateScreen = {},
+            paddingValues = PaddingValues(10.dp)
         )
     }
 }
@@ -425,7 +448,7 @@ private fun Preview3() {
 @Preview
 @Composable
 private fun Preview2() {
-    val markers =  (1..10).map {
+    val markers = (1..10).map {
         "marker 000$it"
     }
     val counterParties = (1..5).map {
@@ -448,14 +471,15 @@ private fun Preview2() {
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,
             updateVisibleInfo = {},
-            updateVisibleTypeLinenMenu = {},
             updateCurrentTypeLinen = {},
-            updateArticleNumber = {},
-            updateVisibleStateLinenMenu = {},
             updateCurrentStateLinen = {},
+            updateVisibleTypeLinenMenu = {},
+            updateVisibleStateLinenMenu = {},
+            updateArticleNumber = {},
             updateWeight = {},
             updateBillLading = {},
             updateStateScreen = {},
+            paddingValues = PaddingValues(10.dp)
         )
     }
 }

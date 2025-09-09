@@ -91,6 +91,9 @@ fun NavController(
             TakeBalanceScreenRoot(
                 onNavigateToLoginScreen = {
                     navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
                 }
             )
         }

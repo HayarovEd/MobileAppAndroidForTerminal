@@ -11,8 +11,6 @@ data class TakeBalanceScreenState(
     val isLoading: Boolean = false,
     val message: UiText? = null,
     val settings: RfidSetting? = null,
-   // val url: String = "",
-   // val userToken: String? = null,
     val markers: List<String> = emptyList(),
     val statesLinen: List<StateLinen> = StateLinen.entries, // release from remote
     val typesLinen: List<TypeLinen> = emptyList(),
@@ -28,7 +26,9 @@ data class TakeBalanceScreenState(
     val stateScreen: StateScreen = StateScreen.ADD,
     val queryCounterparty: String = "",
     val filterMarkers: List<Filter> = emptyList()
-)
+) {
+    val serchedCounterParties = counterparties.filter { it.name.contains(queryCounterparty, ignoreCase = true) }
+}
 
 enum class StateScreen{
     ADD,
