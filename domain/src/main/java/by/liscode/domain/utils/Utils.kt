@@ -42,7 +42,7 @@ fun convertToReasonWriteOff(reason: String): ReasonWriteOff? {
     }
 }
 
-fun convertToStatusLinen(status: String): StatusLinen? {
+fun convertToStatusLinen(status: String): StatusLinen {
     return when (status) {
         "На складе" -> StatusLinen.IN_STOCK
         "В работе" -> StatusLinen.IN_USE
@@ -50,18 +50,18 @@ fun convertToStatusLinen(status: String): StatusLinen? {
         "В пути" -> StatusLinen.IN_TRANSIT
         "В производстве" -> StatusLinen.IN_PRODUCTION
         "Списан" -> StatusLinen.WRITE_OFF
-        else -> null
+        else ->  StatusLinen.IN_STOCK
     }
 }
 
-fun convertToStateLinen(state: String): StateLinen? {
+fun convertToStateLinen(state: String): StateLinen {
     return when (state) {
         "Новое" -> StateLinen.NEW
         "Отличное" -> StateLinen.EXCELLENT
         "Хорошее" -> StateLinen.GOOD
         "Удовлетворительное" -> StateLinen.SATISFACTORY
         "Списано" -> StateLinen.WRITTEN_OFF
-        else -> null
+        else -> StateLinen.NEW
     }
 }
 

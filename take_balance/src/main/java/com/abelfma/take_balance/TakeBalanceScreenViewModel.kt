@@ -8,6 +8,7 @@ import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.resources.uikit.asUiText
 import com.nine.statio.domain.utils.ResultWork
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,7 +33,7 @@ class TakeBalanceScreenViewModel(
         .onStart {
             getLocalData()
             loadData { token, url ->
-                getCounterparties(
+                getRemoteData(
                     accessToken = token,
                     url = url
                 )
@@ -79,18 +80,79 @@ class TakeBalanceScreenViewModel(
 
     fun onAction(action: TakeBalanceScreenAction) {
         when (action) {
-            is TakeBalanceScreenAction.AddNewCounterParty -> TODO()
-            is TakeBalanceScreenAction.ChangeStateScreen -> TODO()
-            TakeBalanceScreenAction.OpenInfo -> TODO()
-            is TakeBalanceScreenAction.SearchCounterParty -> TODO()
-            TakeBalanceScreenAction.Send -> TODO()
-            is TakeBalanceScreenAction.SetArticleNumber -> TODO()
-            is TakeBalanceScreenAction.SetBillLading -> TODO()
-            is TakeBalanceScreenAction.SetCounterParty -> TODO()
-            is TakeBalanceScreenAction.SetStateLinen -> TODO()
-            is TakeBalanceScreenAction.SetTypeLinen -> TODO()
-            is TakeBalanceScreenAction.SetWeight -> TODO()
-            is TakeBalanceScreenAction.TakeMarker -> TODO()
+            is TakeBalanceScreenAction.AddNewCounterParty -> {
+                TODO()
+            }
+            is TakeBalanceScreenAction.ChangeStateScreen -> {
+                _state.value.copy(
+                    stateScreen = action.stateScreen
+                )
+                    .updateState()
+            }
+            TakeBalanceScreenAction.OpenInfo -> {
+                _state.value.copy(
+                    isOpenInfo = !state.value.isOpenInfo
+                )
+                    .updateState()
+            }
+            is TakeBalanceScreenAction.SearchCounterParty -> {
+                _state.value.copy(
+                    queryCounterparty = action.query
+                )
+                    .updateState()
+            }
+            TakeBalanceScreenAction.Send -> {
+                TODO()
+            }
+            is TakeBalanceScreenAction.SetArticleNumber -> {
+                _state.value.copy(
+                    articleNumber = action.number
+                )
+                    .updateState()
+            }
+            is TakeBalanceScreenAction.SetBillLading -> {
+                _state.value.copy(
+                    billLading = action.billLading
+                )
+                    .updateState()
+            }
+            is TakeBalanceScreenAction.SetCounterParty -> {
+                _state.value.copy(
+                    currentCounterparty = action.counterparty
+                )
+                    .updateState()
+            }
+            is TakeBalanceScreenAction.SetStateLinen -> {
+                _state.value.copy(
+                    currentStateLinen = action.stateLinen
+                )
+                    .updateState()
+            }
+            is TakeBalanceScreenAction.SetTypeLinen -> {
+                _state.value.copy(
+                    currentTypeLinen = action.typeLinen
+                )
+                    .updateState()
+            }
+            is TakeBalanceScreenAction.SetWeight -> {
+                _state.value.copy(
+                    weight = action.weight
+                )
+                    .updateState()
+            }
+            is TakeBalanceScreenAction.TakeMarker -> {
+                if (state.value.filterMarkers.any {
+                        action.marker.contains(
+                            it.query,
+                            ignoreCase = true
+                        )
+                    } && !state.value.markers.contains(action.marker)) {
+                    _state.value.copy(
+                        markers = state.value.markers + action.marker
+                    )
+                        .updateState()
+                }
+            }
         }
     }
 
@@ -124,15 +186,34 @@ class TakeBalanceScreenViewModel(
         }
     }
 
-    private fun getCounterparties(
+    private fun getRemoteData(
         accessToken: String,
         url: String
     ) {
+        _state.value.copy(
+            isLoading = true
+        )
+            .updateState()
         viewModelScope.launch {
-            when (val result = remoteRepository.getCounterparties(
-                token = accessToken,
-                baseUrl = url
-            )) {
+            val counterpartiesResultDiff = async {
+                remoteRepository.getCounterparties(
+                    token = accessToken,
+                    baseUrl = url
+                )
+            }
+            val statesLinenResultDiff = async {
+                remoteRepository.getStatesLinen(
+                    token = accessToken,
+                    baseUrl = url
+                )
+            }
+            /* val statusesResultDiff = async {
+                 remoteRepository.getStatusLinen(
+                     token = accessToken,
+                     baseUrl = url
+                 )
+             }*/
+            when (val result = counterpartiesResultDiff.await()) {
                 is ResultWork.Error -> {
                     _state.value.copy(
                         message = result.error.asUiText()
@@ -147,6 +228,40 @@ class TakeBalanceScreenViewModel(
                         .updateState()
                 }
             }
+            when (val result = statesLinenResultDiff.await()) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        message = result.error.asUiText()
+                    )
+                        .updateState()
+                }
+
+                is ResultWork.Success -> {
+                    _state.value.copy(
+                        statesLinen = result.data
+                    )
+                        .updateState()
+                }
+            }
+            /*when (val result = statusesResultDiff.await()) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        message = result.error.asUiText()
+                    )
+                        .updateState()
+                }
+
+                is ResultWork.Success -> {
+                    _state.value.copy(
+                        sta = result.data
+                    )
+                        .updateState()
+                }
+            }*/
+            _state.value.copy(
+                isLoading = false
+            )
+                .updateState()
         }
     }
 

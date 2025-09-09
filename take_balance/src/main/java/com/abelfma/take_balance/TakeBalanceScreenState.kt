@@ -13,8 +13,8 @@ data class TakeBalanceScreenState(
     val settings: RfidSetting? = null,
    // val url: String = "",
    // val userToken: String? = null,
-    val labels: List<String> = emptyList(),
-    val statesLinen: List<StateLinen> = emptyList(),
+    val markers: List<String> = emptyList(),
+    val statesLinen: List<StateLinen> = StateLinen.entries, // release from remote
     val typesLinen: List<TypeLinen> = emptyList(),
     val counterparties: List<Counterparty> = emptyList(),
     val isOpenInfo: Boolean = true,

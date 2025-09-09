@@ -11,9 +11,9 @@ sealed interface TakeBalanceScreenAction {
     class SetArticleNumber(val number: String):TakeBalanceScreenAction
     class SetStateLinen(val stateLinen: StateLinen): TakeBalanceScreenAction
     class SetWeight(val weight: String): TakeBalanceScreenAction
-    class SetBillLading(billLading: String): TakeBalanceScreenAction
-    class SetCounterParty(counterparty: Counterparty): TakeBalanceScreenAction
-    class ChangeStateScreen(stateScreen: StateScreen): TakeBalanceScreenAction
+    class SetBillLading(val billLading: String): TakeBalanceScreenAction
+    class SetCounterParty(val counterparty: Counterparty): TakeBalanceScreenAction
+    class ChangeStateScreen(val stateScreen: StateScreen): TakeBalanceScreenAction
     class SearchCounterParty(val query: String):TakeBalanceScreenAction
     class AddNewCounterParty(
         val name: String,
