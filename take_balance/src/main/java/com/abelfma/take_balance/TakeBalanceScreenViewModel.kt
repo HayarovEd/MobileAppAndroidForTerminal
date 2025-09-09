@@ -1,5 +1,6 @@
 package com.abelfma.take_balance
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
@@ -161,16 +162,27 @@ class TakeBalanceScreenViewModel(
             }
 
             is TakeBalanceScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.any {
-                        action.marker.contains(
-                            it.query,
-                            ignoreCase = true
+                if (state.value.filterMarkers.isEmpty()) {
+                    if (!state.value.markers.contains(action.marker)) {
+                        Log.d("REST TERMINAL", "saved marker no filter ${action.marker}")
+                        _state.value.copy(
+                            markers = state.value.markers + action.marker
                         )
-                    } && !state.value.markers.contains(action.marker)) {
-                    _state.value.copy(
-                        markers = state.value.markers + action.marker
-                    )
-                        .updateState()
+                            .updateState()
+                    }
+                } else {
+                    if (state.value.filterMarkers.any {
+                            action.marker.contains(
+                                it.query,
+                                ignoreCase = true
+                            )
+                        } && !state.value.markers.contains(action.marker)) {
+                        Log.d("REST TERMINAL", "saved marker with filter ${action.marker}")
+                        _state.value.copy(
+                            markers = state.value.markers + action.marker
+                        )
+                            .updateState()
+                    }
                 }
             }
 
