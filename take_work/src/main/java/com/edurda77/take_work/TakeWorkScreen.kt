@@ -41,6 +41,7 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
+import by.liscode.resources.model.ScannerWork
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.ItemLinen
@@ -49,7 +50,7 @@ import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
-import by.liscode.resources.utils.processScan
+import by.liscode.resources.utils.processWorkScan
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -58,24 +59,12 @@ fun TakeWorkScreenRoot(
     onBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    TakeWorkScreenScreen(
-        state = state,
-        onAction = viewModel::onAction,
-        onBack = onBack
-    )
-}
-
-@Composable
-private fun TakeWorkScreenScreen(
-    modifier: Modifier = Modifier,
-    state: TakeWorkScreenState,
-    onAction: (TakeWorkScreenAction) -> Unit,
-    onBack: () -> Unit,
-) {
+    val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner =  rememberRfid().apply { init(context) }
-    var isActive by remember { mutableStateOf(false) }
+    //var isActive by remember { mutableStateOf(false) }
+    var scannerWork by remember { mutableStateOf(ScannerWork.CLEAR)}
+
     LaunchedEffect(state.settings) {
         state.settings?.let {
             scanner.applySettings(it)
@@ -90,18 +79,35 @@ private fun TakeWorkScreenScreen(
 
     OnScan(
         block = {
-            processScan(
+            processWorkScan(
                 rfid = scanner,
-                isActive = isActive,
-                block = {
+                scannerWork = scannerWork,
+                updateScannerWork = {
+                    scannerWork = it
+                },
+                blockScan = {
                     onAction(TakeWorkScreenAction.TakeMarker(it))
                 },
-                updateIsActive = {
-                    isActive = it
+                blockClear = {
+                    onAction(TakeWorkScreenAction.ClearMarkers)
                 }
             )
         }
     )
+    TakeWorkScreenScreen(
+        state = state,
+        onAction = onAction,
+        onBack = onBack
+    )
+}
+
+@Composable
+private fun TakeWorkScreenScreen(
+    modifier: Modifier = Modifier,
+    state: TakeWorkScreenState,
+    onAction: (TakeWorkScreenAction) -> Unit,
+    onBack: () -> Unit,
+) {
 
     UiBaseScaffold(
         message = state.message,
@@ -178,7 +184,7 @@ private fun TakeWorkScreenScreen(
                 ) {
                     Text(
                         modifier = modifier,
-                        text = "${stringResource(R.string.downloaded)}: ${state.remoteLinens.size}",
+                        text = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -207,7 +213,7 @@ private fun TakeWorkScreenScreen(
                     )
                     Text(
                         modifier = modifier,
-                        text = "(${state.remoteLinens.size - state.markers.size})",
+                        text = "(${state.remoteLinens.size})",
                         color = MaterialTheme.colorScheme.onSecondary,
                         style = MaterialTheme.typography.titleMedium,
                     )
@@ -272,9 +278,7 @@ private fun Preview() {
     MobileAppAndroidForTerminalTheme {
         TakeWorkScreenScreen(
             state = TakeWorkScreenState(
-                markers = listOf(
-                    "1", "2", "3"
-                ),
+                markers = (1..25).map { "$it"},
                 remoteLinens = liners
             ),
             onAction = {},

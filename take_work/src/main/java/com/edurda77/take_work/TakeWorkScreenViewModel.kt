@@ -44,6 +44,14 @@ class TakeWorkScreenViewModel(
             TakeWorkScreenAction.UpdateStatusToWork -> {
 
             }
+
+            TakeWorkScreenAction.ClearMarkers -> {
+                _state.value.copy(
+                    markers = emptyList(),
+                    remoteLinens = emptyList()
+                )
+                    .updateState()
+            }
         }
     }
 
