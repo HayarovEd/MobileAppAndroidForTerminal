@@ -10,6 +10,7 @@ import com.abelfma.take_balance.TakeBalanceScreenViewModel
 import com.edurda77.take_work.TakeWorkScreenViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
+import ru.modulmoney.write_off.WriteOffScreenViewModel
 
 val viewModelModule = module {
     viewModelOf(::SettingsScreenViewModel)
@@ -19,6 +20,6 @@ val viewModelModule = module {
     viewModelOf(::TakeWorkScreenViewModel)
     viewModelOf(::FundScreenViewModel)
     viewModelOf(::TakeBalanceScreenViewModel)
-
+    viewModelOf(::WriteOffScreenViewModel)
 }
 

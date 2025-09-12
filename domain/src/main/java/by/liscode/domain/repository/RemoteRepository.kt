@@ -1,6 +1,7 @@
 package by.liscode.domain.repository
 
 import by.liscode.domain.model.Counterparty
+import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.utils.DataError
@@ -30,4 +31,10 @@ interface RemoteRepository {
         inn: String,
         phone: String
     ): ResultWork<Counterparty, DataError>
+
+    suspend fun getLinenByRfid(
+        baseUrl: String,
+        token: String,
+        rfid: String
+    ): ResultWork<Linen, DataError>
 }

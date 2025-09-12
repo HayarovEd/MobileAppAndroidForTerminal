@@ -7,6 +7,7 @@ const val TERMINAL_LINEN_STATE = "terminal/enums/item-states"
 const val TERMINAL_LINEN_STATUS = "terminal/enums/item-statuses"
 const val TERMINAL_LINEN_TIPES = "terminal/types"
 const val TERMINAL_ITEMS_IN_STOCK = "terminal/items/accept-into-stock"
+const val TERMINAL_ITEMS = "terminal/items"
 const val PREFERENCES = "preferences"
 const val LOCAL_DB = "local_db"
 

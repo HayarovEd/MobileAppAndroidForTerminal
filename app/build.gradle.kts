@@ -53,6 +53,7 @@ dependencies {
     implementation(project(":take_work"))
     implementation(project(":orders"))
     implementation(project(":take_balance"))
+    implementation(project(":write_off"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
