@@ -14,6 +14,7 @@ import by.liscode.settings.SettingsScreenRoot
 import by.liscode.splash.SplashScreenRoot
 import com.abelfma.take_balance.TakeBalanceScreenRoot
 import com.edurda77.take_work.TakeWorkScreenRoot
+import ru.modulmoney.write_off.WriteOffScreenRoot
 
 @Composable
 fun NavController(
@@ -41,16 +42,16 @@ fun NavController(
             )
         }
         composable<NavigationRoute.Fund> {
-            FundScreenRoot (
+            FundScreenRoot(
                 bottomRoutes = {
                     UiBottomNavigation(
                         routes = routes(),
                         navController = navController
                     )
                 },
-               onNavigateTo = {
-                   navController.navigate(it)
-               }
+                onNavigateTo = {
+                    navController.navigate(it)
+                }
             )
         }
 
@@ -59,7 +60,7 @@ fun NavController(
         }
 
         composable<NavigationRoute.Settings> {
-            SettingsScreenRoot (
+            SettingsScreenRoot(
                 bottomRoutes = {
                     UiBottomNavigation(
                         routes = routes(),
@@ -84,7 +85,14 @@ fun NavController(
         }
 
         composable<NavigationRoute.BalanceDeduct> {
-
+            WriteOffScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable<NavigationRoute.BalanceTake> {

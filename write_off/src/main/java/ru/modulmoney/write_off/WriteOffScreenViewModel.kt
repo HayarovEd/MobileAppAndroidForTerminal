@@ -106,6 +106,12 @@ class WriteOffScreenViewModel(
             WriteOffScreenAction.RemoveAndCloseVisibilityDialog -> {
                 removeAndSend()
             }
+
+            is WriteOffScreenAction.UpdateActivityScanner -> {
+                _state.value.copy(
+                    isActiveScanner = action.isActive
+                ).updateState()
+            }
         }
     }
 

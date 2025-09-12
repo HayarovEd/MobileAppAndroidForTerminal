@@ -11,4 +11,5 @@ sealed interface WriteOffScreenAction {
     class UpdateActWriteOff(val act: String): WriteOffScreenAction
     class TakeMarker(val marker:String):WriteOffScreenAction
     class RemoveMarker(val marker:String):WriteOffScreenAction
+    class UpdateActivityScanner(val isActive: Boolean): WriteOffScreenAction
 }
