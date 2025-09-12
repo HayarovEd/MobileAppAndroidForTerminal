@@ -3,10 +3,8 @@ package ru.modulmoney.inventory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,24 +30,17 @@ import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 @Composable
 fun TypeLinenScreen(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues,
     size: Int,
     markers: List<String>,
     sortedGroups: Map<Boolean, Map<TypeLinen, List<Linen>>>,
 
 ) {
     Column(
-        modifier = modifier
-            .padding(paddingValues)
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(15.dp),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = modifier.fillMaxWidth(),
@@ -208,14 +199,8 @@ private fun Preview1() {
         linens
             .groupBy { it.typeLinen }
     }
-    val finishFilterGroups = when  (filterByType) {
-        FilterByType.All -> sg
-
-        else -> {}
-    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            paddingValues = PaddingValues(10.dp),
             markers = markers,
             size = linens.size,
             sortedGroups = linens.groupBy {
@@ -299,7 +284,6 @@ private fun Preview3() {
     }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            paddingValues = PaddingValues(10.dp),
             markers = markers,
             size = linens.size,
             sortedGroups =finishFilterGroups

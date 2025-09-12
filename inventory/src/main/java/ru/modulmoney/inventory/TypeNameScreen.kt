@@ -3,10 +3,8 @@ package ru.modulmoney.inventory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,19 +33,40 @@ import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 @Composable
 fun TypeNameScreen(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues,
     size: Int,
     markers: List<String>,
     sortedLinen:  Map<Boolean, List<Linen>>,
 
 ) {
     Column(
-        modifier = modifier
-            .padding(paddingValues)
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(15.dp),
+        modifier = modifier.fillMaxWidth(),
     ) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = modifier,
+                text = stringResource(R.string.type_object),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Spacer(modifier = modifier.weight(1f))
+            Text(
+                modifier = modifier,
+                text = stringResource(R.string.need),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Spacer(modifier = modifier.width(10.dp))
+            Text(
+                modifier = modifier,
+                text = stringResource(R.string.read),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        Spacer(modifier = modifier.height(10.dp))
         Row(
             modifier = modifier
                 .clip(shape = RoundedCornerShape(10.dp))
@@ -160,7 +179,6 @@ private fun Preview1() {
             )
         )
     }
-    val filterByType = FilterByType.All
     val sortedLinens = linens.groupBy {
         it.rfid in markers
     }
@@ -171,7 +189,6 @@ private fun Preview1() {
 
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
-            paddingValues = PaddingValues(10.dp),
             markers = markers,
             size = linens.size,
             sortedLinen = sortedLinens
@@ -249,7 +266,6 @@ private fun Preview3() {
     }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
-            paddingValues = PaddingValues(10.dp),
             markers = markers,
             size = linens.size,
             sortedLinen = finishSordetLines

@@ -178,5 +178,10 @@
     <string name="type_object">Тип объекта</string>
     <string name="need">Необходимо</string>
     <string name="read">Считано</string>
+    <string name="save_result">Сохранить результат сканирования</string>
+    <string name="filter">Фильтр</string>
+    <string name="choose_flter_type">Выберите тип фильтрации белья</string>
+    <string name="show_all">Показывать все</string>
+    <string name="on_type">По типу</string>
 
 </resources>

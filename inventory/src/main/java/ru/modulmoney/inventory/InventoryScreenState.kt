@@ -30,7 +30,7 @@ data class InventoryScreenState(
             linens.sortedBy { it.typeLinen.outFormat() }
         }
 
-    val finishSordetLines = when  (filterByType) {
+    val finishSortedLines = when  (filterByType) {
         FilterByType.All -> sortedLinens
         is FilterByType.FilterByTypeLinen -> {
             sortedLinens.mapValues { (_, innerMap) ->

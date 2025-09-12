@@ -14,6 +14,7 @@ import by.liscode.settings.SettingsScreenRoot
 import by.liscode.splash.SplashScreenRoot
 import com.abelfma.take_balance.TakeBalanceScreenRoot
 import com.edurda77.take_work.TakeWorkScreenRoot
+import ru.modulmoney.inventory.InventoryScreenRoot
 import ru.modulmoney.write_off.WriteOffScreenRoot
 
 @Composable
@@ -107,7 +108,14 @@ fun NavController(
         }
 
         composable<NavigationRoute.Inventory> {
-
+            InventoryScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable<NavigationRoute.WorkTake> {
