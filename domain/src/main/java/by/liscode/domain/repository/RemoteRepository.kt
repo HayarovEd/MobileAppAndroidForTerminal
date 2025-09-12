@@ -37,4 +37,6 @@ interface RemoteRepository {
         token: String,
         rfid: String
     ): ResultWork<Linen, DataError>
+
+    suspend fun getLinens(baseUrl: String, token: String): ResultWork<List<Linen>, DataError>
 }

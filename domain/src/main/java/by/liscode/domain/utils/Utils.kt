@@ -4,6 +4,7 @@ import by.liscode.domain.model.ReasonWriteOff
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.StatusOrder
+import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.model.UserRole
 import by.liscode.domain.model.UserType
 
@@ -26,6 +27,7 @@ fun convertToUserRole(role: String): UserRole {
         else -> UserRole.UNKNOWN_ROLE
     }
 }
+
 fun convertToUserType(type: String): UserType {
     return when (type) {
         "hotel" -> UserType.HOTEL
@@ -50,7 +52,7 @@ fun convertToStatusLinen(status: String): StatusLinen {
         "В пути" -> StatusLinen.IN_TRANSIT
         "В производстве" -> StatusLinen.IN_PRODUCTION
         "Списан" -> StatusLinen.WRITE_OFF
-        else ->  StatusLinen.IN_STOCK
+        else -> StatusLinen.IN_STOCK
     }
 }
 
@@ -71,10 +73,14 @@ fun convertToStatusOrder(status: String): StatusOrder? {
         "В доставке" -> StatusOrder.IN_TRANSIT
         "В производстве" -> StatusOrder.IN_PRODUCTION
         "Сформирован" -> StatusOrder.FORMED
-       // "В доставке" -> StatusOrder.IN_DELIVERY
+        // "В доставке" -> StatusOrder.IN_DELIVERY
         "Выполнен" -> StatusOrder.COMPLETED
         else -> null
     }
+}
+
+fun TypeLinen.outFormat(): String {
+    return "$name, $size, $fabric, $sku, $color"
 }
 
 

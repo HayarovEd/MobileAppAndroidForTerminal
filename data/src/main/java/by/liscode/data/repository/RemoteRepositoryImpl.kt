@@ -12,7 +12,6 @@ import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
-import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.domain.utils.DataError
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
@@ -153,6 +152,24 @@ class RemoteRepositoryImpl(
                 }
                 val result = response.body<LinenDto>()
                 result.convertToLinen()
+            }
+        }
+    }
+
+    override suspend fun getLinens(
+        baseUrl: String,
+        token: String,
+    ): ResultWork<List<Linen>, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                /*val response = httpClient.get("$baseUrl/$TERMINAL_ITEMS/$rfid") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                }
+                val result = response.body<LinenDto>()
+                result.convertToLinen()*/
+                //TODO
+                emptyList()
             }
         }
     }

@@ -175,5 +175,8 @@
     <string name="reason_write_off">Причина списания</string>
     <string name="ark_write_off">Акт списания</string>
     <string name="number_act">Номер, дата акта</string>
+    <string name="type_object">Тип объекта</string>
+    <string name="need">Необходимо</string>
+    <string name="read">Считано</string>
 
 </resources>
