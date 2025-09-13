@@ -52,16 +52,4 @@ class SplashScreenViewModel(
             }
         }
     }
-
-
-    /*private fun gerBearer() {
-        viewModelScope.launch {
-
-            dataStoreRepository.getBearer().collect { bearer->
-                bearer?.let {
-
-                }?: _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
-            }
-        }
-    }*/
 }

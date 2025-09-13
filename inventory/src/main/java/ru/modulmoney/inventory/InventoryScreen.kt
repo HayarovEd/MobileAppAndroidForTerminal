@@ -53,7 +53,6 @@ import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.FundAppBar
-import by.liscode.resources.uikit.NoModuleScreen
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
@@ -72,7 +71,7 @@ fun InventoryScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
-    val scanner = rememberRfid()?.apply { init(context) }
+    val scanner = rememberRfid().apply { init(context) }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -83,31 +82,28 @@ fun InventoryScreenRoot(
     }
     LaunchedEffect(state.settings) {
         state.settings?.let {
-            scanner?.applySettings(it)
+            scanner.applySettings(it)
         }
     }
-
-    scanner?.let {
-        OnScan(
-            block = {
-                processScan(
-                    rfid = scanner,
-                    isActive = state.isActiveScanner,
-                    block = {
-                        onAction(InventoryScreenAction.TakeMarker(marker = it))
-                    },
-                    updateIsActive = {
-                        onAction(InventoryScreenAction.UpdateActivityScanner(it))
-                    }
-                )
-            }
-        )
-        InventoryScreenScreen(
-            state = state,
-            onAction = onAction,
-            onBackNavigate = onBackNavigate
-        )
-    }?: NoModuleScreen()
+    OnScan(
+        block = {
+            processScan(
+                rfid = scanner,
+                isActive = state.isActiveScanner,
+                block = {
+                    onAction(InventoryScreenAction.TakeMarker(marker = it))
+                },
+                updateIsActive = {
+                    onAction(InventoryScreenAction.UpdateActivityScanner(it))
+                }
+            )
+        }
+    )
+    InventoryScreenScreen(
+        state = state,
+        onAction = onAction,
+        onBackNavigate = onBackNavigate
+    )
 }
 
 @Composable

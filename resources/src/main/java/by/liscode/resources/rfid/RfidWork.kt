@@ -19,14 +19,13 @@ fun RfidWork(
     onTakeMarker: (String) -> Unit,
 ) {
     val context = LocalContext.current
-    val scanner =  rememberRfid()?.apply { init(context) }
+    val scanner =  rememberRfid().apply { init(context) }
     var isActive by remember { mutableStateOf(false) }
     LaunchedEffect(settings) {
         settings?.let {
-            scanner?.applySettings(it)
+            scanner.applySettings(it)
         }
     }
-    scanner?.let {
     OnScan(
         block = {
             processScan(
@@ -40,5 +39,5 @@ fun RfidWork(
                 }
             )
         }
-    )}
+    )
 }
