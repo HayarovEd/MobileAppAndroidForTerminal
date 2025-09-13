@@ -18,7 +18,8 @@ data class SearchScreenState(
     val isActiveScanner: Boolean = false,
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val searchState: SearchState = SearchState.SEARCH,
-    val filterByType: FilterByType = FilterByType.All
+    val filterByType: FilterByType = FilterByType.All,
+    val filterRfid: String = "",
 ) {
     val filteredLinen = when (filterByType) {
         FilterByType.All -> remoteLinens
@@ -26,7 +27,7 @@ data class SearchScreenState(
             remoteLinens.filter { it.typeLinen.clientId == clt.id}
         }?: remoteLinens
         is FilterByType.FilterByMask -> {
-            remoteLinens.filter { it.rfid == filterByType.mask }
+            remoteLinens.filter { it.rfid.contains(filterByType.mask, ignoreCase = true) }
         }
     }
     val grouppedLinenByClientId  = filteredLinen

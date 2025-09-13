@@ -184,5 +184,8 @@
     <string name="show_all">Показывать все</string>
     <string name="on_type">По типу</string>
     <string name="no_module">Модуль сканирования отсутствует</string>
+    <string name="individual_found_client">Индивидуальный фонд клиента</string>
+    <string name="on_rfid_marker">По RFID коду метки</string>
+    <string name="enter_filter">Введите метку</string>
 
 </resources>

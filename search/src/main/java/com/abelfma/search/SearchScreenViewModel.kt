@@ -131,6 +131,13 @@ class SearchScreenViewModel(
                 )
                     .updateState()
             }
+
+            is SearchScreenAction.UpdateFilterRfid -> {
+                _state.value.copy(
+                    filterRfid = action.rfid
+                )
+                    .updateState()
+            }
         }
     }
 

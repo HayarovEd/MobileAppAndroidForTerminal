@@ -6,4 +6,5 @@ sealed interface SearchScreenAction {
     class UpdateFilter(val filterByType: FilterByType):SearchScreenAction
     data object UpdateGroupping:SearchScreenAction
     class UpdateSearchState(val searchState: SearchState):SearchScreenAction
+    class UpdateFilterRfid(val rfid: String):SearchScreenAction
 }

@@ -1,5 +1,6 @@
 package com.abelfma.search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import by.liscode.domain.model.GroupLinen
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.FundAppBar
@@ -50,7 +52,7 @@ fun SearchScreenRoot(
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner = rememberRfid().apply { init(context) }
-
+    BackHandler { onBackNavigate() }
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -158,26 +160,54 @@ fun SearchScreenScreen(
                     .background(colorScheme.background)
                     .padding(15.dp),
             ) {
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        modifier = modifier,
-                        text = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
-                        color = colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    Text(
-                        modifier = modifier,
-                        text = "${stringResource(R.string.scanned)}: ${state.markers.size}",
-                        color = colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                when (state.searchState) {
+                    SearchState.SEARCH -> {
+                        Row(
+                            modifier = modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = modifier,
+                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
+                                color = colorScheme.onBackground,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Text(
+                                modifier = modifier,
+                                text = "${stringResource(R.string.scanned)}: ${state.markers.size}",
+                                color = colorScheme.onBackground,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                        Spacer(modifier = modifier.height(10.dp))
+                        when(state.groupLinen) {
+                            GroupLinen.NAME -> {
+                                TypeNameScreen(
+                                    groupedLinen = state.grouppedLinenByClientId
+                                )
+                            }
+                            GroupLinen.TYPE_LINEN -> {
+                                TypeLinenScreen(
+                                    groupedLinen = state.grouppedLinenByClientIdAndTypeLinen
+                                )
+                            }
+                        }
+                    }
+                    SearchState.FILTERING -> {
+                        FilteringScreen(
+                            filterRfid = state.filterRfid,
+                            filterByType = state.filterByType,
+                            updateFilter = {
+                                onAction(SearchScreenAction.UpdateFilter(it))
+                            },
+                            updateFilterRfid = {
+                                onAction(SearchScreenAction.UpdateFilterRfid(it))
+                            }
+                        )
+                    }
                 }
-                Spacer(modifier = modifier.height(10.dp))
             }
         }
     }
