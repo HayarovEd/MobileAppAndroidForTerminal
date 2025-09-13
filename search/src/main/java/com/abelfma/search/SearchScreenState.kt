@@ -31,7 +31,7 @@ data class SearchScreenState(
     }
     val grouppedLinenByClientId  = filteredLinen
         .groupBy { it.typeLinen.clientId }
-    val grouppedLinenByClientIdAndTypeLinen  = remoteLinens
+    val grouppedLinenByClientIdAndTypeLinen  = filteredLinen
         .groupBy { it.typeLinen.clientId }
         .mapValues { (_, linens) ->
             linens.groupBy { it.typeLinen }
