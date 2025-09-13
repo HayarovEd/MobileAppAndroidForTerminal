@@ -2,7 +2,9 @@ package by.liscode.data.mapper
 
 import by.liscode.data.remote.response.CounterpartyDto
 import by.liscode.data.remote.response.LinenDto
+import by.liscode.data.remote.response.ProfileDto
 import by.liscode.data.remote.response.TypeLinenDto
+import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.TypeLinen
@@ -49,5 +51,16 @@ fun LinenDto.convertToLinen() : Linen {
         price = price,
         counterpartyId = counterpartyId,
         counterparty = counterparty.convertToCounterparty()
+    )
+}
+
+fun ProfileDto.convertToClient() : Client {
+    return Client(
+        id = id,
+        email = email,
+        name = name,
+        location = location,
+        phone = phone,
+        clientType = clientType
     )
 }

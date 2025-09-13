@@ -1,6 +1,7 @@
 package by.liscode.domain.repository
 
 import by.liscode.domain.model.Auth
+import by.liscode.domain.model.Client
 import by.liscode.domain.utils.DataError
 import com.nine.statio.domain.utils.ResultWork
 
@@ -10,4 +11,6 @@ interface AuthorizeRepository {
         password: String,
         baseUrl: String
     ): ResultWork<Auth, DataError>
+
+    suspend fun getProfile(baseUrl: String, token: String): ResultWork<Client, DataError>
 }

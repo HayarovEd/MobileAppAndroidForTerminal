@@ -2,6 +2,7 @@ package ru.modulmoney.inventory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -49,7 +50,7 @@ class InventoryScreenViewModel(
 
     fun onAction(action: InventoryScreenAction) {
         when (action) {
-            InventoryScreenAction.SaveRusult -> {
+            InventoryScreenAction.SaveResult -> {
                 //TODO
             }
             is InventoryScreenAction.TakeMarker -> {
@@ -85,7 +86,7 @@ class InventoryScreenViewModel(
                 )
                     .updateState()
             }
-            InventoryScreenAction.UpdateGroupping -> {
+            InventoryScreenAction.UpdateGrouping -> {
                 _state.value.copy(
                    groupLinen = when (state.value.groupLinen) {
                        GroupLinen.NAME -> GroupLinen.TYPE_LINEN

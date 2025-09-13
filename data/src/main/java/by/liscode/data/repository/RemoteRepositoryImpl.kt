@@ -3,6 +3,7 @@ package by.liscode.data.repository
 import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToLinen
 import by.liscode.data.remote.request.CounterpartyPost
+import by.liscode.data.remote.response.ClientItemsResponse
 import by.liscode.data.remote.response.CounterPartyResponse
 import by.liscode.data.remote.response.CounterPartyResponseFromPost
 import by.liscode.data.remote.response.LinenDto
@@ -162,14 +163,12 @@ class RemoteRepositoryImpl(
     ): ResultWork<List<Linen>, DataError> {
         return withContext(Dispatchers.IO) {
             handleRemoteResponse {
-                /*val response = httpClient.get("$baseUrl/$TERMINAL_ITEMS/$rfid") {
+                val response = httpClient.get("$baseUrl/$TERMINAL_ITEMS") {
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<LinenDto>()
-                result.convertToLinen()*/
-                //TODO
-                emptyList()
+                val result = response.body<ClientItemsResponse>()
+                result.linenDto.map { it.convertToLinen() }
             }
         }
     }

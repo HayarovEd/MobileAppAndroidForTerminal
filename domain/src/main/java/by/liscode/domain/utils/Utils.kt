@@ -1,5 +1,6 @@
 package by.liscode.domain.utils
 
+import by.liscode.domain.model.Linen
 import by.liscode.domain.model.ReasonWriteOff
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
@@ -81,6 +82,10 @@ fun convertToStatusOrder(status: String): StatusOrder? {
 
 fun TypeLinen.outFormat(): String {
     return "$name, $size, $fabric, $sku, $color"
+}
+
+fun Linen.printFormat(): String {
+    return "${typeLinen.name}, ${typeLinen.size}, ${typeLinen.fabric}, ${typeLinen.sku}, ${typeLinen.color}, $weight"
 }
 
 

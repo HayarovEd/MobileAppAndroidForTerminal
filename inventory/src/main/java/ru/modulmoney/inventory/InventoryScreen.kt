@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.domain.model.Counterparty
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
@@ -128,7 +129,7 @@ fun InventoryScreenScreen(
                                     modifier = modifier.clickable(
                                         enabled = state.markers.isNotEmpty(),
                                         onClick = {
-                                            onAction(InventoryScreenAction.UpdateGroupping)
+                                            onAction(InventoryScreenAction.UpdateGrouping)
                                         }
                                     ),
                                     text = stringResource(R.string.kind_upper_case),
@@ -180,7 +181,7 @@ fun InventoryScreenScreen(
                         width = 2.dp, color = colorScheme.onPrimary
                     ),
                     onClick = {
-                        onAction(InventoryScreenAction.SaveRusult)
+                        onAction(InventoryScreenAction.SaveResult)
                     }
                 ) {
                     Text(

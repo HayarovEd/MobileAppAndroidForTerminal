@@ -1,6 +1,7 @@
 package ru.modulmoney.inventory
 
 import by.liscode.domain.model.Filter
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.RfidSetting
 import by.liscode.domain.model.TypeLinen
@@ -65,10 +66,6 @@ sealed interface FilterByType {
     class FilterByTypeLinen(val typeLinen: TypeLinen) : FilterByType
 }
 
-enum class GroupLinen {
-    NAME,
-    TYPE_LINEN
-}
 
 enum class InventoryState {
     CHECKING,

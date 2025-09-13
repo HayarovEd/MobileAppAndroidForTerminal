@@ -1,15 +1,21 @@
 package by.liscode.data.repository
 
 import by.liscode.data.handler.handleRemoteResponse
+import by.liscode.data.mapper.convertToClient
 import by.liscode.data.remote.request.BasicAuthRequest
 import by.liscode.data.remote.response.AuthDto
+import by.liscode.data.remote.response.ClientProfileResponse
 import by.liscode.domain.model.Auth
+import by.liscode.domain.model.Client
 import by.liscode.domain.repository.AuthorizeRepository
 import by.liscode.domain.utils.AUTH_POSTFIX
+import by.liscode.domain.utils.CLIENT_PROFILE
 import by.liscode.domain.utils.DataError
 import com.nine.statio.domain.utils.ResultWork
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -43,6 +49,22 @@ class AuthorizeRepositoryImpl(
                 Auth(
                     token = response.token
                 )
+            }
+        }
+    }
+
+    override suspend fun getProfile(
+        baseUrl: String,
+        token: String,
+    ): ResultWork<Client, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.get("$baseUrl/$CLIENT_PROFILE") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                }
+                val result = response.body<ClientProfileResponse>()
+                result.profile.convertToClient()
             }
         }
     }

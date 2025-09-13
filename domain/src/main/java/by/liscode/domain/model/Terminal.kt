@@ -1,15 +1,7 @@
 package by.liscode.domain.model
 
 
-//Клиент
-data class Client(
-    val id: Int,
-    val createdAt: String,
-    val email: String,
-    val name: String,
-    val location: String,
-    val phone: String
-)
+
 
 //Исполнитель
 data class Worker(
