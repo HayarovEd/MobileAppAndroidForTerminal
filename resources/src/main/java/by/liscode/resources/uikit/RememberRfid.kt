@@ -13,13 +13,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.rscja.deviceapi.RFIDWithUHFUART
+import com.rscja.deviceapi.exception.ConfigurationException
 
 
 @Composable
-fun rememberRfid(): RFIDWithUHFUART {
+fun rememberRfid(): RFIDWithUHFUART? {
     val context = LocalContext.current
     val mReader = remember {
-        RFIDWithUHFUART.getInstance()
+        try {
+            RFIDWithUHFUART.getInstance()
+        } catch (e: ConfigurationException) {
+            e.printStackTrace()
+            null
+        }
     }
     val lifecycleObserver = rememberMapLifecycleObserver(
         mReader = mReader,
@@ -37,14 +43,14 @@ fun rememberRfid(): RFIDWithUHFUART {
 
 @Composable
 fun rememberMapLifecycleObserver(
-    mReader: RFIDWithUHFUART,
+    mReader: RFIDWithUHFUART?,
     context: Context
 ): LifecycleEventObserver =
     remember(mReader) {
         LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_PAUSE -> {
-                    mReader.stopInventory()
+                    mReader?.stopInventory()
                     Log.d("REST TERMINAL", "on stop")
                 }
 
@@ -53,13 +59,13 @@ fun rememberMapLifecycleObserver(
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    mReader.init(context)
+                    mReader?.init(context)
                     Log.d("REST TERMINAL", "on resume")
                 }
 
 
                 Lifecycle.Event.ON_DESTROY -> {
-                    mReader.free()
+                    mReader?.free()
                     Log.d("REST TERMINAL", "on pause")
                 }
 

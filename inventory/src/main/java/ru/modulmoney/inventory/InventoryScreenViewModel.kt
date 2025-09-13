@@ -1,6 +1,5 @@
 package ru.modulmoney.inventory
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.repository.DataStoreRepository
@@ -8,6 +7,7 @@ import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.resources.uikit.asUiText
+import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,27 +17,35 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 class InventoryScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
-    private val jwtRepository: JwtRepository,
+    jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
-) : ViewModel() {
+) : BaseViewModel(
+    dataStoreRepository = dataStoreRepository,
+    jwtRepository = jwtRepository
+) {
 
 
     private val _state = MutableStateFlow(InventoryScreenState())
     val state = _state
         .onStart {
             getLocalData()
-            loadData { token, url ->
+            loadData (
+                action = { token, url ->
                 getLinens(
                     url = url,
                     token = token
                 )
-            }
+            },
+                navigate = {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiInventoryEvents.LoginNavigationEvent)
+                    }
+                }
+            )
         }
         .stateIn(
             scope = viewModelScope,
@@ -101,39 +109,6 @@ class InventoryScreenViewModel(
                     inventoryState = action.inventoryState
                 )
                     .updateState()
-            }
-        }
-    }
-
-    @OptIn(ExperimentalTime::class)
-    private fun loadData(action: (String, String) -> Unit) {
-        viewModelScope.launch {
-            dataStoreRepository.getBearer().collect { userToken ->
-                userToken?.let { token ->
-                    val expired = jwtRepository.decodeJwt(token)?.expired
-                    expired?.let { exp ->
-                        if (exp < Clock.System.now().epochSeconds) {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiInventoryEvents.LoginNavigationEvent)
-                        } else {
-                            dataStoreRepository.getUrl().collect { url ->
-                                if (url.isNotBlank()) {
-                                    action(token, url)
-                                }
-                            }
-                        }
-                    } ?: {
-                        viewModelScope.launch {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiInventoryEvents.LoginNavigationEvent)
-                        }
-                    }
-                } ?: {
-                    viewModelScope.launch {
-                        dataStoreRepository.removeBearer()
-                        _eventFlow.emit(UiInventoryEvents.LoginNavigationEvent)
-                    }
-                }
             }
         }
     }

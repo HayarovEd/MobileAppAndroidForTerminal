@@ -45,6 +45,7 @@ import by.liscode.resources.model.ScannerWork
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.ItemLinen
+import by.liscode.resources.uikit.NoModuleScreen
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
@@ -61,13 +62,13 @@ fun TakeWorkScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
-    val scanner =  rememberRfid().apply { init(context) }
+    val scanner =  rememberRfid()?.apply { init(context) }
     //var isActive by remember { mutableStateOf(false) }
     var scannerWork by remember { mutableStateOf(ScannerWork.CLEAR)}
 
     LaunchedEffect(state.settings) {
         state.settings?.let {
-            scanner.applySettings(it)
+            scanner?.applySettings(it)
         }
     }
 
@@ -76,7 +77,7 @@ fun TakeWorkScreenRoot(
             Log.d("REST TERMINAL", "marker $markerIndex $marker")
         }
     }*/
-
+    scanner?.let {
     OnScan(
         block = {
             processWorkScan(
@@ -98,7 +99,7 @@ fun TakeWorkScreenRoot(
         state = state,
         onAction = onAction,
         onBack = onBack
-    )
+    )}?: NoModuleScreen()
 }
 
 @Composable

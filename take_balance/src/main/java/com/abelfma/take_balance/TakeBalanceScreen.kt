@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.FundAppBar
+import by.liscode.resources.uikit.NoModuleScreen
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
@@ -50,11 +51,11 @@ fun TakeBalanceScreenRoot(
     }
 
     val context = LocalContext.current
-    val scanner =  rememberRfid().apply { init(context) }
+    val scanner =  rememberRfid()?.apply { init(context) }
     var isActive by remember { mutableStateOf(false) }
     LaunchedEffect(state.settings) {
         state.settings?.let {
-            scanner.applySettings(it)
+            scanner?.applySettings(it)
         }
     }
 
@@ -63,7 +64,7 @@ fun TakeBalanceScreenRoot(
             Log.d("REST TERMINAL", "marker $markerIndex $marker")
         }
     }*/
-
+    scanner?.let {
     OnScan(
         block = {
             processScan(
@@ -95,7 +96,7 @@ fun TakeBalanceScreenRoot(
         updateVisibleStateLinenMenu = {
             isOpenedStateLinenMenu = it
         }
-    )
+    )}?: NoModuleScreen()
 }
 
 @Composable

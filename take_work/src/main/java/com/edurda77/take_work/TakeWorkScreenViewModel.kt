@@ -1,10 +1,12 @@
 package com.edurda77.take_work
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
+import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
+import by.liscode.domain.repository.RemoteRepository
+import by.liscode.resources.utils.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -15,7 +17,12 @@ import kotlinx.coroutines.launch
 class TakeWorkScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
-) : ViewModel() {
+    jwtRepository: JwtRepository,
+    private val remoteRepository: RemoteRepository,
+) : BaseViewModel(
+    dataStoreRepository = dataStoreRepository,
+    jwtRepository = jwtRepository
+) {
 
 
     private val _state = MutableStateFlow(TakeWorkScreenState())

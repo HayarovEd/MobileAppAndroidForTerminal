@@ -1,6 +1,5 @@
 package com.abelfma.search
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.repository.AuthorizeRepository
@@ -9,6 +8,7 @@ import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.resources.uikit.asUiText
+import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,28 +18,36 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 class SearchScreenViewModel(
     private val authorizeRepository: AuthorizeRepository,
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
-    private val jwtRepository: JwtRepository,
+    jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
-) : ViewModel() {
+) : BaseViewModel(
+    dataStoreRepository = dataStoreRepository,
+    jwtRepository = jwtRepository
+) {
     
 
     private val _state = MutableStateFlow(SearchScreenState())
     val state = _state
         .onStart {
             getLocalData()
-            loadData { token, url ->
-                getClientData(
-                    url = url,
-                    token = token
-                )
-            }
+            loadData (
+                action = { token, url ->
+                    getClientData(
+                        url = url,
+                        token = token
+                    )
+                },
+                navigate = {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                    }
+                }
+            )
         }
         .stateIn(
             scope = viewModelScope,
@@ -58,11 +66,18 @@ class SearchScreenViewModel(
                             markers = state.value.markers + action.marker
                         )
                             .updateState()
-                        loadData { token, url ->
-                            getLinenById(
-                                rfid = action.marker, accessToken = token, url = url
-                            )
-                        }
+                        loadData (
+                            action = { token, url ->
+                                getLinenById(
+                                    rfid = action.marker, accessToken = token, url = url
+                                )
+                            },
+                            navigate = {
+                                viewModelScope.launch {
+                                    _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                                }
+                            }
+                        )
                     }
                 } else {
                     if (state.value.filterMarkers.any {
@@ -75,11 +90,18 @@ class SearchScreenViewModel(
                             markers = state.value.markers + action.marker
                         )
                             .updateState()
-                        loadData { token, url ->
-                            getLinenById(
-                                rfid = action.marker, accessToken = token, url = url
-                            )
-                        }
+                        loadData (
+                            action = { token, url ->
+                                getLinenById(
+                                    rfid = action.marker, accessToken = token, url = url
+                                )
+                            },
+                            navigate = {
+                                viewModelScope.launch {
+                                    _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -112,11 +134,11 @@ class SearchScreenViewModel(
         }
     }
 
-    @OptIn(ExperimentalTime::class)
+    /*@OptIn(ExperimentalTime::class)
     private fun loadData(action: (String, String) -> Unit) {
         viewModelScope.launch {
-            dataStoreRepository.getBearer().collect { userToken ->
-                userToken?.let { token ->
+            dataStoreRepository.getBearer().collect { token ->
+                if (token!=null) {
                     val expired = jwtRepository.decodeJwt(token)?.expired
                     expired?.let { exp ->
                         if (exp < Clock.System.now().epochSeconds) {
@@ -129,21 +151,15 @@ class SearchScreenViewModel(
                                 }
                             }
                         }
-                    } ?: {
-                        viewModelScope.launch {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                        }
                     }
-                } ?: {
+                } else {
                     viewModelScope.launch {
-                        dataStoreRepository.removeBearer()
                         _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
                     }
                 }
             }
         }
-    }
+    }*/
 
     private fun getLocalData() {
         viewModelScope.launch {

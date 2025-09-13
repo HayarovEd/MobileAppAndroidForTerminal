@@ -1,12 +1,12 @@
 package ru.modulmoney.write_off
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.resources.uikit.asUiText
+import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,15 +16,16 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 class WriteOffScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
     private val jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
-) : ViewModel() {
+) : BaseViewModel(
+    dataStoreRepository = dataStoreRepository,
+    jwtRepository = jwtRepository
+){
 
 
     private val _state = MutableStateFlow(WriteOffScreenState())
@@ -61,11 +62,17 @@ class WriteOffScreenViewModel(
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         ).updateState()
-                        loadData { token, url ->
+                        loadData ( action = { token, url ->
                             getLinenById(
                                 rfid = action.marker, accessToken = token, url = url
                             )
-                        }
+                        },
+                            navigate = {
+                                viewModelScope.launch {
+                                    _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
+                                }
+                            }
+                        )
                     }
                 } else {
                     if (state.value.filterMarkers.any {
@@ -76,11 +83,17 @@ class WriteOffScreenViewModel(
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         ).updateState()
-                        loadData { token, url ->
+                        loadData ( action = { token, url ->
                             getLinenById(
                                 rfid = action.marker, accessToken = token, url = url
                             )
-                        }
+                        },
+                            navigate = {
+                                viewModelScope.launch {
+                                    _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -115,38 +128,6 @@ class WriteOffScreenViewModel(
         }
     }
 
-    @OptIn(ExperimentalTime::class)
-    private fun loadData(action: (String, String) -> Unit) {
-        viewModelScope.launch {
-            dataStoreRepository.getBearer().collect { userToken ->
-                userToken?.let { token ->
-                    val expired = jwtRepository.decodeJwt(token)?.expired
-                    expired?.let { exp ->
-                        if (exp < Clock.System.now().epochSeconds) {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
-                        } else {
-                            dataStoreRepository.getUrl().collect { url ->
-                                if (url.isNotBlank()) {
-                                    action(token, url)
-                                }
-                            }
-                        }
-                    } ?: {
-                        viewModelScope.launch {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
-                        }
-                    }
-                } ?: {
-                    viewModelScope.launch {
-                        dataStoreRepository.removeBearer()
-                        _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
-                    }
-                }
-            }
-        }
-    }
 
 
     private fun getLocalData() {
@@ -228,9 +209,14 @@ class WriteOffScreenViewModel(
         _state.value.copy(
             isLoading = true
         ).updateState()
-        loadData { token, url ->
+        loadData (action = { token, url ->
             //TODO
-        }
+        },
+            navigate = {
+                viewModelScope.launch {
+                    _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
+                }
+            })
     }
 
     private fun WriteOffScreenState.updateState() {

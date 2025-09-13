@@ -183,5 +183,6 @@
     <string name="choose_flter_type">Выберите тип фильтрации белья</string>
     <string name="show_all">Показывать все</string>
     <string name="on_type">По типу</string>
+    <string name="no_module">Модуль сканирования отсутствует</string>
 
 </resources>

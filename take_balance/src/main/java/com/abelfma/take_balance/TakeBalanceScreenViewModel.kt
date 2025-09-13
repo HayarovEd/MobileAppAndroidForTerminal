@@ -1,13 +1,13 @@
 package com.abelfma.take_balance
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.resources.uikit.asUiText
+import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,27 +18,35 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 class TakeBalanceScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
     private val jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
-) : ViewModel() {
+) : BaseViewModel(
+    dataStoreRepository = dataStoreRepository,
+    jwtRepository = jwtRepository
+){
 
 
     private val _state = MutableStateFlow(TakeBalanceScreenState())
     val state = _state
         .onStart {
             getLocalData()
-            loadData { token, url ->
-                getRemoteData(
-                    accessToken = token,
-                    url = url
-                )
-            }
+            loadData (
+                action = { token, url ->
+                    getRemoteData(
+                        url = url,
+                        accessToken = token
+                    )
+                },
+                navigate = {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
+                    }
+                }
+            )
         }
         .stateIn(
             scope = viewModelScope,
@@ -82,16 +90,23 @@ class TakeBalanceScreenViewModel(
     fun onAction(action: TakeBalanceScreenAction) {
         when (action) {
             is TakeBalanceScreenAction.AddNewCounterParty -> {
-                loadData { token, url ->
-                    addCounterparty(
-                        accessToken = token,
-                        url = url,
-                        name = action.name,
-                        address = action.address,
-                        inn = action.inn,
-                        phone = action.phone
-                    )
-                }
+                loadData (
+                    action = { token, url ->
+                        addCounterparty(
+                            accessToken = token,
+                            url = url,
+                            name = action.name,
+                            address = action.address,
+                            inn = action.inn,
+                            phone = action.phone
+                        )
+                    },
+                    navigate = {
+                        viewModelScope.launch {
+                            _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
+                        }
+                    }
+                )
             }
 
             is TakeBalanceScreenAction.ChangeStateScreen -> {
@@ -191,39 +206,6 @@ class TakeBalanceScreenViewModel(
                     markers = state.value.markers - action.marker
                 )
                     .updateState()
-            }
-        }
-    }
-
-    @OptIn(ExperimentalTime::class)
-    private fun loadData(action: (String, String) -> Unit) {
-        viewModelScope.launch {
-            dataStoreRepository.getBearer().collect { userToken ->
-                userToken?.let { token ->
-                    val expired = jwtRepository.decodeJwt(token)?.expired
-                    expired?.let { exp ->
-                        if (exp < Clock.System.now().epochSeconds) {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
-                        } else {
-                            dataStoreRepository.getUrl().collect { url ->
-                                if (url.isNotBlank()) {
-                                    action(token, url)
-                                }
-                            }
-                        }
-                    } ?: {
-                        viewModelScope.launch {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
-                        }
-                    }
-                } ?: {
-                    viewModelScope.launch {
-                        dataStoreRepository.removeBearer()
-                        _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
-                    }
-                }
             }
         }
     }

@@ -29,8 +29,8 @@ class SplashScreenViewModel(
         viewModelScope.launch {
             delay(2000)
             dataStoreRepository.getBearer().collect { userToken ->
-                userToken?.let { token ->
-                    val expired = jwtRepository.decodeJwt(token)?.expired
+                if (userToken!=null) {
+                    val expired = jwtRepository.decodeJwt(userToken)?.expired
                     expired?.let { exp ->
                         if (exp < Clock.System.now().epochSeconds) {
                             dataStoreRepository.removeBearer()
@@ -44,11 +44,10 @@ class SplashScreenViewModel(
                             _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
                         }
                     }
-                } ?: {
-                    viewModelScope.launch {
-                        dataStoreRepository.removeBearer()
-                        _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
-                    }
+                } else  {
+                viewModelScope.launch {
+                    _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
+                     }
                 }
             }
         }

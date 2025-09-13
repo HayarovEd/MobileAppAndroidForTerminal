@@ -1,6 +1,5 @@
 package com.abelfma.search
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,17 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.FundAppBar
+import by.liscode.resources.uikit.NoModuleScreen
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
@@ -54,7 +50,7 @@ fun SearchScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
-    val scanner = rememberRfid().apply { init(context) }
+    val scanner = rememberRfid()?.apply { init(context) }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -65,10 +61,10 @@ fun SearchScreenRoot(
     }
     LaunchedEffect(state.settings) {
         state.settings?.let {
-            scanner.applySettings(it)
+            scanner?.applySettings(it)
         }
     }
-
+    scanner?.let {
     OnScan(
         block = {
             processScan(
@@ -87,7 +83,7 @@ fun SearchScreenRoot(
         state = state,
         onAction = viewModel::onAction,
         onBackNavigate = onBackNavigate
-    )
+    )}?: NoModuleScreen()
 }
 
 @Composable

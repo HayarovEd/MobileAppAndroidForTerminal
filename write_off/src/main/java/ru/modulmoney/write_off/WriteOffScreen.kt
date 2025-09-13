@@ -52,6 +52,7 @@ import by.liscode.domain.utils.printFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.FundAppBar
+import by.liscode.resources.uikit.NoModuleScreen
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
@@ -73,7 +74,7 @@ fun WriteOffScreenRoot(
     val onAction = viewModel::onAction
     var isOpenTypeReasonMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val scanner = rememberRfid().apply { init(context) }
+    val scanner = rememberRfid()?.apply { init(context) }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -84,10 +85,10 @@ fun WriteOffScreenRoot(
     }
     LaunchedEffect(state.settings) {
         state.settings?.let {
-            scanner.applySettings(it)
+            scanner?.applySettings(it)
         }
     }
-
+    scanner?.let {
     OnScan(
         block = {
             processScan(
@@ -111,7 +112,7 @@ fun WriteOffScreenRoot(
         updateVisibilityTypeReasonMenu = {
             isOpenTypeReasonMenu = it
         }
-    )
+    )}?: NoModuleScreen()
 }
 
 @Composable
