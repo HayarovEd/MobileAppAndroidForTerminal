@@ -9,7 +9,7 @@ import by.liscode.domain.model.Auth
 import by.liscode.domain.model.Client
 import by.liscode.domain.repository.AuthorizeRepository
 import by.liscode.domain.utils.AUTH_POSTFIX
-import by.liscode.domain.utils.CLIENT_PROFILE
+import by.liscode.domain.utils.TERMINAL_CLIENTS
 import by.liscode.domain.utils.DataError
 import com.nine.statio.domain.utils.ResultWork
 import io.ktor.client.HttpClient
@@ -56,15 +56,15 @@ class AuthorizeRepositoryImpl(
     override suspend fun getProfile(
         baseUrl: String,
         token: String,
-    ): ResultWork<Client, DataError> {
+    ): ResultWork<List<Client>, DataError> {
         return withContext(Dispatchers.IO) {
             handleRemoteResponse {
-                val response = httpClient.get("$baseUrl/$CLIENT_PROFILE") {
+                val response = httpClient.get("$baseUrl/$TERMINAL_CLIENTS") {
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
                 val result = response.body<ClientProfileResponse>()
-                result.profile.convertToClient()
+                result.clients.map {  it.convertToClient()}
             }
         }
     }

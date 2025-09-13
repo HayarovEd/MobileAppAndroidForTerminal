@@ -2,7 +2,7 @@ package by.liscode.domain.utils
 
 const val BASE_URL = "https://api.develop.cloud-laundry.ru"
 const val AUTH_POSTFIX = "public/auth/login"
-const val CLIENT_PROFILE = "client/profile"
+const val TERMINAL_CLIENTS = "terminal/clients"
 const val TERMINAL_COUNTERPARTY = "terminal/counterparties"
 const val TERMINAL_LINEN_STATE = "terminal/enums/item-states"
 const val TERMINAL_LINEN_STATUS = "terminal/enums/item-statuses"

@@ -51,11 +51,13 @@ import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processWorkScan
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TakeWorkScreenRoot(
     viewModel: TakeWorkScreenViewModel = koinViewModel(),
+    onNavigateToLoginScreen: () -> Unit,
     onBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -64,6 +66,14 @@ fun TakeWorkScreenRoot(
     val scanner =  rememberRfid().apply { init(context) }
     //var isActive by remember { mutableStateOf(false) }
     var scannerWork by remember { mutableStateOf(ScannerWork.CLEAR)}
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                UiTakeWorkEvents.LoginNavigationEvent -> onNavigateToLoginScreen()
+            }
+        }
+    }
 
     LaunchedEffect(state.settings) {
         state.settings?.let {

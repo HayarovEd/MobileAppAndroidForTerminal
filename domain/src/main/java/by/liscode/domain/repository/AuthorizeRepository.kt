@@ -12,5 +12,5 @@ interface AuthorizeRepository {
         baseUrl: String
     ): ResultWork<Auth, DataError>
 
-    suspend fun getProfile(baseUrl: String, token: String): ResultWork<Client, DataError>
+    suspend fun getProfile(baseUrl: String, token: String): ResultWork<List<Client>, DataError>
 }

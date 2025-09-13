@@ -215,7 +215,7 @@ class SearchScreenViewModel(
                 is ResultWork.Success -> {
                     _state.value.copy(
                         isLoading = false,
-                        client = result.data
+                       // client = result.data.f
                     )
                         .updateState()
                 }

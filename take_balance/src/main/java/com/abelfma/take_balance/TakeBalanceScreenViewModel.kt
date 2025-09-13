@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 class TakeBalanceScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
-    private val jwtRepository: JwtRepository,
+    jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,

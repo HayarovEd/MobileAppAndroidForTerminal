@@ -121,6 +121,9 @@ fun NavController(
 
         composable<NavigationRoute.WorkTake> {
             TakeWorkScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
                 onBack = {
                     navController.navigateUp()
                 }
