@@ -21,6 +21,7 @@ import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
+import by.liscode.domain.utils.printFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 
@@ -40,7 +41,7 @@ fun ItemLinen(
         ) {
             Text(
                 modifier = modifier,
-                text = "${linen.typeLinen.name}, ${linen.typeLinen.size}, ${linen.typeLinen.fabric} ${linen.typeLinen.composition}, ${linen.typeLinen.density}, ${linen.typeLinen.sku}, ${linen.typeLinen.color}, ${linen.weight}",
+                text = linen.printFormat(),
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium,
             )

@@ -29,7 +29,9 @@ data class SearchScreenState(
             remoteLinens.filter { it.rfid == filterByType.mask }
         }
     }
-    val grouppedLinen  = remoteLinens
+    val grouppedLinenByClientId  = filteredLinen
+        .groupBy { it.typeLinen.clientId }
+    val grouppedLinenByClientIdAndTypeLinen  = remoteLinens
         .groupBy { it.typeLinen.clientId }
         .mapValues { (_, linens) ->
             linens.groupBy { it.typeLinen }
