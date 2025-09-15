@@ -46,7 +46,6 @@ class TakeWorkScreenViewModel(
             is TakeWorkScreenAction.TakeMarker -> {
                 if (state.value.filterMarkers.isEmpty()) {
                     if (!state.value.markers.contains(action.marker)) {
-                        Log.d("REST TERMINAL", "saved marker no filter ${action.marker}")
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         )
