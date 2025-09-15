@@ -14,14 +14,17 @@
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/fund" />
+            <option value="$PROJECT_DIR$/inventory" />
             <option value="$PROJECT_DIR$/login" />
             <option value="$PROJECT_DIR$/orders" />
             <option value="$PROJECT_DIR$/regisration" />
             <option value="$PROJECT_DIR$/resources" />
+            <option value="$PROJECT_DIR$/search" />
             <option value="$PROJECT_DIR$/settings" />
             <option value="$PROJECT_DIR$/splash" />
             <option value="$PROJECT_DIR$/take_balance" />
             <option value="$PROJECT_DIR$/take_work" />
+            <option value="$PROJECT_DIR$/write_off" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -2,6 +2,7 @@ package by.liscode.data.repository
 
 import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToLinen
+import by.liscode.data.mapper.convertToTypeLinen
 import by.liscode.data.remote.request.CounterpartyPost
 import by.liscode.data.remote.response.ClientItemsResponse
 import by.liscode.data.remote.response.CounterPartyResponse
@@ -9,16 +10,19 @@ import by.liscode.data.remote.response.CounterPartyResponseFromPost
 import by.liscode.data.remote.response.LinenDto
 import by.liscode.data.remote.response.StateLinenResponse
 import by.liscode.data.remote.response.StatusLinenResponse
+import by.liscode.data.remote.response.TypesLinenResponse
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
+import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.domain.utils.DataError
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
 import by.liscode.domain.utils.TERMINAL_ITEMS
 import by.liscode.domain.utils.TERMINAL_LINEN_STATE
 import by.liscode.domain.utils.TERMINAL_LINEN_STATUS
+import by.liscode.domain.utils.TERMINAL_LINEN_TIPES
 import by.liscode.domain.utils.convertToStateLinen
 import by.liscode.domain.utils.convertToStatusLinen
 import com.nine.statio.domain.utils.ResultWork
@@ -35,7 +39,7 @@ import kotlinx.coroutines.withContext
 
 class RemoteRepositoryImpl(
     private val httpClient: HttpClient
-): RemoteRepository {
+) : RemoteRepository {
 
     override suspend fun getCounterparties(
         baseUrl: String,
@@ -101,6 +105,22 @@ class RemoteRepositoryImpl(
                     convertToStatusLinen(result.inProduction),
                     convertToStatusLinen(result.writtenOff),
                 )
+            }
+        }
+    }
+
+    override suspend fun getTypesLinen(
+        baseUrl: String,
+        token: String,
+    ): ResultWork<List<TypeLinen>, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.get("$baseUrl/$TERMINAL_LINEN_TIPES") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                }
+                val result = response.body<TypesLinenResponse>()
+                result.types.map { it.convertToTypeLinen() }
             }
         }
     }

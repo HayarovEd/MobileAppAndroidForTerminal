@@ -27,14 +27,14 @@ class TakeBalanceScreenViewModel(
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
     jwtRepository = jwtRepository
-){
+) {
 
 
     private val _state = MutableStateFlow(TakeBalanceScreenState())
     val state = _state
         .onStart {
             getLocalData()
-            loadData (
+            loadData(
                 action = { token, url ->
                     getRemoteData(
                         url = url,
@@ -90,7 +90,7 @@ class TakeBalanceScreenViewModel(
     fun onAction(action: TakeBalanceScreenAction) {
         when (action) {
             is TakeBalanceScreenAction.AddNewCounterParty -> {
-                loadData (
+                loadData(
                     action = { token, url ->
                         addCounterparty(
                             accessToken = token,
@@ -231,12 +231,12 @@ class TakeBalanceScreenViewModel(
                     baseUrl = url
                 )
             }
-            /* val statusesResultDiff = async {
-                 remoteRepository.getStatusLinen(
-                     token = accessToken,
-                     baseUrl = url
-                 )
-             }*/
+            val typesLinenDiff = async {
+                remoteRepository.getTypesLinen(
+                    token = accessToken,
+                    baseUrl = url
+                )
+            }
             when (val result = counterpartiesResultDiff.await()) {
                 is ResultWork.Error -> {
                     _state.value.copy(
@@ -267,7 +267,7 @@ class TakeBalanceScreenViewModel(
                         .updateState()
                 }
             }
-            /*when (val result = statusesResultDiff.await()) {
+            when (val result = typesLinenDiff.await()) {
                 is ResultWork.Error -> {
                     _state.value.copy(
                         message = result.error.asUiText()
@@ -277,11 +277,11 @@ class TakeBalanceScreenViewModel(
 
                 is ResultWork.Success -> {
                     _state.value.copy(
-                        sta = result.data
+                        typesLinen = result.data
                     )
                         .updateState()
                 }
-            }*/
+            }
             _state.value.copy(
                 isLoading = false
             )

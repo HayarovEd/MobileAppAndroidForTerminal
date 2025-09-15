@@ -9,6 +9,10 @@ data class TypeLinenDto(
     val id: Int,
     @SerialName("name")
     val name: String,
+    @SerialName("created_at")
+    val createdAt: String,
+    @SerialName("update_at")
+    val updatedAt: String,
     @SerialName("size")
     val size: String,
     @SerialName("fabric")

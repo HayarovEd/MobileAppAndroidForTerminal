@@ -4,6 +4,7 @@ import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
+import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.DataError
 import com.nine.statio.domain.utils.ResultWork
 
@@ -39,4 +40,8 @@ interface RemoteRepository {
     ): ResultWork<Linen, DataError>
 
     suspend fun getLinens(baseUrl: String, token: String): ResultWork<List<Linen>, DataError>
+    suspend fun getTypesLinen(
+        baseUrl: String,
+        token: String
+    ): ResultWork<List<TypeLinen>, DataError>
 }
