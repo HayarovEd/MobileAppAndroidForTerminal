@@ -2,16 +2,18 @@ package by.liscode.data.mapper
 
 import by.liscode.data.remote.response.CounterpartyDto
 import by.liscode.data.remote.response.LinenDto
-import by.liscode.data.remote.response.ProfileDto
+import by.liscode.data.remote.response.ClientDto
+import by.liscode.data.remote.response.EmployeeDto
 import by.liscode.data.remote.response.TypeLinenDto
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
+import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.convertToStateLinen
 import by.liscode.domain.utils.convertToStatusLinen
 
-fun TypeLinenDto.convertToTypeLinen() : TypeLinen {
+fun TypeLinenDto.convertToTypeLinen(): TypeLinen {
     return TypeLinen(
         id = this.id,
         name = this.name,
@@ -27,7 +29,7 @@ fun TypeLinenDto.convertToTypeLinen() : TypeLinen {
 }
 
 
-fun CounterpartyDto.convertToCounterparty() : Counterparty {
+fun CounterpartyDto.convertToCounterparty(): Counterparty {
     return Counterparty(
         id = id,
         name = name,
@@ -37,7 +39,7 @@ fun CounterpartyDto.convertToCounterparty() : Counterparty {
     )
 }
 
-fun LinenDto.convertToLinen() : Linen {
+fun LinenDto.convertToLinen(): Linen {
     return Linen(
         id = id,
         rfid = rfid,
@@ -54,7 +56,7 @@ fun LinenDto.convertToLinen() : Linen {
     )
 }
 
-fun ProfileDto.convertToClient() : Client {
+fun ClientDto.convertToClient(): Client {
     return Client(
         id = id,
         email = email,
@@ -62,5 +64,15 @@ fun ProfileDto.convertToClient() : Client {
         location = location,
         phone = phone,
         clientType = clientType
+    )
+}
+
+fun EmployeeDto.convertToEmployee(): Employee {
+    return Employee(
+        id = id,
+        name = name,
+        position = position,
+        phone = phone,
+        login = login
     )
 }

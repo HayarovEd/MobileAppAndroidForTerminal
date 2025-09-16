@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ProfileDto(
+data class ClientDto(
     @SerialName("id")
     val id: Int,
     @SerialName("created_at")

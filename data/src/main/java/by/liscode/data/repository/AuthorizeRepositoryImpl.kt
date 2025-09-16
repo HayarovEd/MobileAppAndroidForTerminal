@@ -4,7 +4,7 @@ import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToClient
 import by.liscode.data.remote.request.BasicAuthRequest
 import by.liscode.data.remote.response.AuthDto
-import by.liscode.data.remote.response.ClientProfileResponse
+import by.liscode.data.remote.response.ClientsProfileResponse
 import by.liscode.domain.model.Auth
 import by.liscode.domain.model.Client
 import by.liscode.domain.repository.AuthorizeRepository
@@ -63,7 +63,7 @@ class AuthorizeRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<ClientProfileResponse>()
+                val result = response.body<ClientsProfileResponse>()
                 result.clients.map {  it.convertToClient()}
             }
         }

@@ -37,11 +37,11 @@ fun convertToUserType(type: String): UserType {
     }
 }
 
-fun convertToReasonWriteOff(reason: String): ReasonWriteOff? {
+fun convertToReasonWriteOff(reason: String): ReasonWriteOff {
     return when (reason) {
         "Повреждено" -> ReasonWriteOff.DAMAGED
         "Изношено" -> ReasonWriteOff.WORN_OUT
-        else -> null
+        else -> ReasonWriteOff.WORN_OUT
     }
 }
 
@@ -68,7 +68,7 @@ fun convertToStateLinen(state: String): StateLinen {
     }
 }
 
-fun convertToStatusOrder(status: String): StatusOrder? {
+fun convertToStatusOrder(status: String): StatusOrder {
     return when (status) {
         "Зарегистрирован" -> StatusOrder.REGISTERED
         "В доставке" -> StatusOrder.IN_TRANSIT
@@ -76,7 +76,7 @@ fun convertToStatusOrder(status: String): StatusOrder? {
         "Сформирован" -> StatusOrder.FORMED
         // "В доставке" -> StatusOrder.IN_DELIVERY
         "Выполнен" -> StatusOrder.COMPLETED
-        else -> null
+        else -> StatusOrder.REGISTERED
     }
 }
 

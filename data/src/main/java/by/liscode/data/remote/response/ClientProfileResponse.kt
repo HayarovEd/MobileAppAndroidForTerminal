@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ClientProfileResponse(
-    @SerialName("clients")
-    val clients: List<ProfileDto>
+    @SerialName("client")
+    val client: ClientDto
 )
