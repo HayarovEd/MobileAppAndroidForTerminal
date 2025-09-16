@@ -1,5 +1,6 @@
 package by.liscode.login
 
+
 import by.liscode.resources.uikit.UiText
 
 data class LoginScreenState(
@@ -8,4 +9,5 @@ data class LoginScreenState(
     val message: UiText? = null,
     val counter: Int = 0,
     val isLoading: Boolean = false,
+    val baseUrl: String = ""
 )

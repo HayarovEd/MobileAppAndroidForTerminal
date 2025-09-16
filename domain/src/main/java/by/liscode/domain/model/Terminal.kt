@@ -1,15 +1,7 @@
 package by.liscode.domain.model
 
 
-//Клиент
-data class Client(
-    val id: Int,
-    val createdAt: String,
-    val email: String,
-    val name: String,
-    val location: String,
-    val phone: String
-)
+
 
 //Исполнитель
 data class Worker(
@@ -63,14 +55,14 @@ enum class LaundryStatus {
 }
 
 //контрагент
-data class Counterparty(
+/*data class Counterparty(
     val id: Int,
     val createdAt: String,
     val name: String,
     val address: String,
     val inn: String,
     val phone: String,
-)
+)*/
 
 //Белье
 data class Laundry(
@@ -86,11 +78,6 @@ data class Laundry(
     val invoice: String,
 )
 
-//причина списания, что-нибудь еще?
-enum class ReasonWriteOff {
-    DAMAGED,
-}
-
 
 data class WriteOff(
     val id: Int,
@@ -105,13 +92,13 @@ enum class OrderStatus {
     ADOPTED,
 }
 
-//Заказ
+/*//Заказ
 data class Order(
     val id: Int,
     val createdAt: String,
     val orderStatus: OrderStatus,
     val clientId: Int,
     val worker: Worker
-)
+)*/
 
 

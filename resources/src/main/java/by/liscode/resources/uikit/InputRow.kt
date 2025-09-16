@@ -36,7 +36,7 @@ fun InputRow(
             trailingIcon = trailingIcon,
             onClickContent = onChangeContent,
             onClickTrailingIcon = onClickTrailingIcon,
-            label = ""
+            placeholder = ""
         )
     }
 }

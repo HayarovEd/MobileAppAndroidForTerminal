@@ -7,3 +7,12 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.ksp) apply false
 }
+
+/*
+
+https://api.develop.cloud-laundry.ru/docs/public#/
+
+Логинимся сюда, а дальше идём в зависимости от роли
+manager - / manager /
+client - / client /
+client_employee - / terminal /*/

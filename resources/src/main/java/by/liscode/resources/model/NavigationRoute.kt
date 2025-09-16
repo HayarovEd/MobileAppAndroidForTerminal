@@ -33,5 +33,11 @@ sealed class NavigationRoute {
     data object Orders : NavigationRoute()
 
     @Serializable
+    data object OrderCreate : NavigationRoute()
+
+    @Serializable
+    data class CurrentOrder(val id: Int) : NavigationRoute()
+
+    @Serializable
     data object Settings : NavigationRoute()
 }

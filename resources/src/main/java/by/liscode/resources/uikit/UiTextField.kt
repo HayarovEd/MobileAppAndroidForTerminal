@@ -22,7 +22,8 @@ import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 fun UiTextField(
     modifier: Modifier = Modifier,
     content: String,
-    label: String,
+    placeholder: String? = null,
+    label: String? = null,
     trailingIcon: ImageVector? = null,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -66,10 +67,20 @@ fun UiTextField(
         keyboardActions = keyboardActions,
         maxLines = maxLines,
         placeholder = {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall
-            )
+            placeholder?.let {
+                Text(
+                    text = placeholder,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        },
+        label = {
+            label?.let {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
         },
         trailingIcon = {
             if (trailingIcon != null) {
@@ -101,7 +112,7 @@ private fun UiTextFieldView() {
     MobileAppAndroidForTerminalTheme {
         UiTextField(
             content = "",
-            label = "hallo",
+            placeholder = "hallo",
             onClickContent = {}
         )
     }
@@ -115,7 +126,7 @@ private fun UiTextFieldView2() {
     MobileAppAndroidForTerminalTheme {
         UiTextField(
             content = "world!",
-            label = "hallo",
+            placeholder = "hallo",
             onClickContent = {}
         )
     }
@@ -130,7 +141,7 @@ private fun UiTextFieldView3() {
     MobileAppAndroidForTerminalTheme {
         UiTextField(
             content = "",
-            label = "hallo",
+            placeholder = "hallo",
             onClickContent = {}
         )
     }
@@ -145,7 +156,7 @@ private fun UiTextFieldView4() {
     MobileAppAndroidForTerminalTheme {
         UiTextField(
             content = "world!",
-            label = "hallo",
+            placeholder = "hallo",
             onClickContent = {}
         )
     }

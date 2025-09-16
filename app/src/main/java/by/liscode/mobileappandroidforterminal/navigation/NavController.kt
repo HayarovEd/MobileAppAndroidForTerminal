@@ -12,6 +12,11 @@ import by.liscode.resources.model.routes
 import by.liscode.resources.uikit.UiBottomNavigation
 import by.liscode.settings.SettingsScreenRoot
 import by.liscode.splash.SplashScreenRoot
+import com.abelfma.search.SearchScreenRoot
+import com.abelfma.take_balance.TakeBalanceScreenRoot
+import com.edurda77.take_work.TakeWorkScreenRoot
+import ru.modulmoney.inventory.InventoryScreenRoot
+import ru.modulmoney.write_off.WriteOffScreenRoot
 
 @Composable
 fun NavController(
@@ -39,16 +44,16 @@ fun NavController(
             )
         }
         composable<NavigationRoute.Fund> {
-            FundScreenRoot (
+            FundScreenRoot(
                 bottomRoutes = {
                     UiBottomNavigation(
                         routes = routes(),
                         navController = navController
                     )
                 },
-               onNavigateTo = {
-                   navController.navigate(it)
-               }
+                onNavigateTo = {
+                    navController.navigate(it)
+                }
             )
         }
 
@@ -56,8 +61,16 @@ fun NavController(
 
         }
 
+        composable<NavigationRoute.OrderCreate> {
+
+        }
+
+        composable<NavigationRoute.CurrentOrder> {
+
+        }
+
         composable<NavigationRoute.Settings> {
-            SettingsScreenRoot (
+            SettingsScreenRoot(
                 bottomRoutes = {
                     UiBottomNavigation(
                         routes = routes(),
@@ -82,23 +95,58 @@ fun NavController(
         }
 
         composable<NavigationRoute.BalanceDeduct> {
-
+            WriteOffScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable<NavigationRoute.BalanceTake> {
-
+            TakeBalanceScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable<NavigationRoute.Inventory> {
-
+            InventoryScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable<NavigationRoute.WorkTake> {
-
+            TakeWorkScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBack = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable<NavigationRoute.Search> {
-
+            SearchScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
+                }
+            )
         }
 
     }

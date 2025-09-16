@@ -91,7 +91,7 @@ private fun LoginScreenScreen(
                 content = state.login,
                 enabled = !state.isLoading,
                 onClickContent = { onAction(LoginScreenAction.UpdateLogin(it)) },
-                label = stringResource(id = R.string.enter_login)
+                placeholder = stringResource(id = R.string.enter_login)
             )
             Spacer(modifier = Modifier.height(15.dp))
             Text(
@@ -105,7 +105,7 @@ private fun LoginScreenScreen(
                 content = state.password,
                 enabled = !state.isLoading,
                 onClickContent = { onAction(LoginScreenAction.UpdatePassword(it)) },
-                label = stringResource(id = R.string.enter_password)
+                placeholder = stringResource(id = R.string.enter_password)
             )
             Spacer(modifier = Modifier.height(25.dp))
             if (state.isLoading) {
@@ -118,7 +118,7 @@ private fun LoginScreenScreen(
                     onClick = {
                         if (!state.isLoading) {
                             onAction(
-                                LoginScreenAction.Login
+                                LoginScreenAction.OnLogin
                             )
                         }
                     },

@@ -1,7 +1,20 @@
 package by.liscode.domain.utils
 
-const val BASE_URL = "https://api.develop.cloud-laundry.ru/"
-const val PREFERENCES= "preferences"
+const val BASE_URL = "https://api.develop.cloud-laundry.ru"
+const val AUTH_POSTFIX = "public/auth/login"
+const val TERMINAL_CLIENTS = "terminal/clients"
+const val TERMINAL_COUNTERPARTY = "terminal/counterparties"
+const val TERMINAL_LINEN_STATE = "terminal/enums/item-states"
+const val TERMINAL_LINEN_STATUS = "terminal/enums/item-statuses"
+const val TERMINAL_LINEN_TIPES = "terminal/types"
+const val TERMINAL_ITEMS_IN_STOCK = "terminal/items/accept-into-stock"
+const val TERMINAL_ITEMS = "terminal/items"
+const val TERMINAL_EMPLOYEES = "terminal/employees"
+const val TERMINAL_ORDER_STATUSES = "terminal/enums/order-statuses"
+const val TERMINAL_WRITE_OFF_REASONS = "terminal/enums/write-off-reasons"
+
+
+const val PREFERENCES = "preferences"
 const val LOCAL_DB = "local_db"
 
 

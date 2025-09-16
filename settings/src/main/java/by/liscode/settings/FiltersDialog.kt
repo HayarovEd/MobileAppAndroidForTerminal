@@ -58,7 +58,7 @@ fun FiltersDialog(
         UiTextField(
             content = value,
             onClickContent = onChangeValue,
-            label = label
+            placeholder = label
         )
         Spacer(modifier = modifier.height(10.dp))
         Row(
