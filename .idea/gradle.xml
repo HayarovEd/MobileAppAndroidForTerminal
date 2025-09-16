@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/fund" />
             <option value="$PROJECT_DIR$/inventory" />
             <option value="$PROJECT_DIR$/login" />
+            <option value="$PROJECT_DIR$/order_create" />
             <option value="$PROJECT_DIR$/orders" />
             <option value="$PROJECT_DIR$/regisration" />
             <option value="$PROJECT_DIR$/resources" />
