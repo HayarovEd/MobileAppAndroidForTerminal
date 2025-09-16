@@ -8,6 +8,8 @@ import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.model.UserRole
 import by.liscode.domain.model.UserType
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.number
 
 
 fun fliterByListString(
@@ -86,6 +88,10 @@ fun TypeLinen.outFormat(): String {
 
 fun Linen.printFormat(): String {
     return "${typeLinen.name}, ${typeLinen.size}, ${typeLinen.fabric}, ${typeLinen.sku}, ${typeLinen.color}, $weight"
+}
+
+fun formateUiDateTime(dateTime: LocalDateTime): String {
+    return "${dateTime.time.hour}.${dateTime.time.minute}\n${dateTime.date.day}.${dateTime.date.month.number}.${dateTime.date.year}"
 }
 
 

@@ -52,6 +52,7 @@ dependencies {
     implementation(project(":splash"))
     implementation(project(":take_work"))
     implementation(project(":orders"))
+    implementation(project(":order_create"))
     implementation(project(":take_balance"))
     implementation(project(":write_off"))
     implementation(project(":inventory"))

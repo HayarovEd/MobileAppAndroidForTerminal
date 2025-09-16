@@ -61,6 +61,14 @@ fun NavController(
 
         }
 
+        composable<NavigationRoute.OrderCreate> {
+
+        }
+
+        composable<NavigationRoute.CurrentOrder> {
+
+        }
+
         composable<NavigationRoute.Settings> {
             SettingsScreenRoot(
                 bottomRoutes = {
