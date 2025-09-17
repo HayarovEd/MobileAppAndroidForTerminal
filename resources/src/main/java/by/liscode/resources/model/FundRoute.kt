@@ -40,6 +40,6 @@ val fundRoutes = listOf(
         nameResId = R.string.search,
         route = NavigationRoute.Search,
         accessedRoles = listOf(UserRole.CLIENT_EMPLOYEE),
-        accessedTypes = listOf(UserType.HOTEL),
+        accessedTypes = listOf(UserType.HOTEL, UserType.LAUNDRY),
     ),
 )

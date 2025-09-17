@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 class InventoryScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
-    jwtRepository: JwtRepository,
+    private val jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
@@ -139,6 +139,16 @@ class InventoryScreenViewModel(
                     settings = it
                 )
                     .updateState()
+            }
+        }
+        viewModelScope.launch {
+            dataStoreRepository.getBearer().collect { bearer->
+                bearer?.let {
+                    _state.value.copy(
+                        userData = jwtRepository.decodeJwt(bearer)
+                    )
+                        .updateState()
+                }
             }
         }
     }

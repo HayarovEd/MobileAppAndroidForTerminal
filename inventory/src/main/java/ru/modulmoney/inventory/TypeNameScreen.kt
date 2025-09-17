@@ -77,7 +77,7 @@ fun TypeNameScreen(
         ) {
             Text(
                 modifier = modifier.weight(6f),
-                text = stringResource(R.string.our_fund),
+                text = "",
                 color = MaterialTheme.colorScheme.onSecondary,
                 style = MaterialTheme.typography.titleMedium,
             )
