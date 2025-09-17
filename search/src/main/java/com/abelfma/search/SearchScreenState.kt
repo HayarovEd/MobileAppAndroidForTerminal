@@ -1,6 +1,5 @@
 package com.abelfma.search
 
-import by.liscode.domain.model.Client
 import by.liscode.domain.model.Filter
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
@@ -8,7 +7,6 @@ import by.liscode.domain.model.RfidSetting
 import by.liscode.resources.uikit.UiText
 
 data class SearchScreenState(
-    val client: Client? = null,
     val isLoading: Boolean = false,
     val settings: RfidSetting? = null,
     val message: UiText? = null,
@@ -23,16 +21,16 @@ data class SearchScreenState(
 ) {
     val filteredLinen = when (filterByType) {
         FilterByType.All -> remoteLinens
-        FilterByType.ClientId -> client?.let { clt->
+      /*  FilterByType.ClientId -> client?.let { clt->
             remoteLinens.filter { it.typeLinen.clientId == clt.id}
-        }?: remoteLinens
+        }?: remoteLinens*/
         is FilterByType.FilterByMask -> {
             remoteLinens.filter { it.rfid.contains(filterByType.mask, ignoreCase = true) }
         }
     }
-    val grouppedLinenByClientId  = filteredLinen
+    val groupedLinenByClientId  = filteredLinen
         .groupBy { it.typeLinen.clientId }
-    val grouppedLinenByClientIdAndTypeLinen  = filteredLinen
+    val groupedLinenByClientIdAndTypeLinen  = filteredLinen
         .groupBy { it.typeLinen.clientId }
         .mapValues { (_, linens) ->
             linens.groupBy { it.typeLinen }
@@ -51,6 +49,6 @@ enum class SearchState {
 
 sealed interface FilterByType {
     data object All : FilterByType
-    data object ClientId: FilterByType
+   // data object ClientId: FilterByType
     class FilterByMask(val mask: String) : FilterByType
 }

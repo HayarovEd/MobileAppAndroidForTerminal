@@ -185,12 +185,12 @@ fun SearchScreenScreen(
                         when(state.groupLinen) {
                             GroupLinen.NAME -> {
                                 TypeNameScreen(
-                                    groupedLinen = state.grouppedLinenByClientId
+                                    groupedLinen = state.groupedLinenByClientId
                                 )
                             }
                             GroupLinen.TYPE_LINEN -> {
                                 TypeLinenScreen(
-                                    groupedLinen = state.grouppedLinenByClientIdAndTypeLinen
+                                    groupedLinen = state.groupedLinenByClientIdAndTypeLinen
                                 )
                             }
                         }

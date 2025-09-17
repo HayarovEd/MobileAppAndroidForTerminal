@@ -5,7 +5,6 @@ import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.RfidSetting
 import by.liscode.domain.model.TypeLinen
-import by.liscode.domain.model.UserData
 import by.liscode.domain.utils.outFormat
 import by.liscode.resources.uikit.UiText
 import kotlin.collections.component1
@@ -13,7 +12,6 @@ import kotlin.collections.component2
 import kotlin.collections.sortedBy
 
 data class InventoryScreenState(
-    val userData: UserData? = null,
     val settings: RfidSetting? = null,
     val message: UiText? = null,
     val isLoading: Boolean = false,
@@ -26,7 +24,6 @@ data class InventoryScreenState(
     val inventoryState: InventoryState = InventoryState.CHECKING
 ) {
     val linenTypes = remoteLinens.map { it.typeLinen }.distinct()
-    val founds = linenTypes.map { it.clientId }.distinct()
     private val sortedLinens = remoteLinens.groupBy {
         it.rfid in markers
     }

@@ -76,7 +76,7 @@ fun FilteringScreen(
             modifier = modifier.fillMaxWidth(),
             thickness = 1.dp
         )
-        Spacer(modifier = modifier.height(4.dp))
+        /*Spacer(modifier = modifier.height(4.dp))
         Row(
             modifier = modifier.clickable(onClick = { updateFilter(FilterByType.ClientId) }),
             verticalAlignment = Alignment.CenterVertically,
@@ -93,7 +93,7 @@ fun FilteringScreen(
                 color = colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium
             )
-        }
+        }*/
         Spacer(modifier = modifier.height(4.dp))
         HorizontalDivider(
             modifier = modifier.fillMaxWidth(),
@@ -141,18 +141,6 @@ private fun Preview1() {
     }
 }
 
-@Preview
-@Composable
-private fun Preview2() {
-    MobileAppAndroidForTerminalTheme{
-        FilteringScreen(
-            filterRfid = "",
-            filterByType = FilterByType.ClientId,
-            updateFilter = {},
-            updateFilterRfid = {}
-        )
-    }
-}
 
 @Preview
 @Composable
