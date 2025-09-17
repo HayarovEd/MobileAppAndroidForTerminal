@@ -1,5 +1,8 @@
 package by.liscode.data.mapper
 
+import by.liscode.data.remote.request.CounterpartyRequest
+import by.liscode.data.remote.request.LinenDtoRequest
+import by.liscode.data.remote.request.TypeLinenRequest
 import by.liscode.data.remote.response.CounterpartyDto
 import by.liscode.data.remote.response.LinenDto
 import by.liscode.data.remote.response.ClientDto
@@ -11,10 +14,27 @@ import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.convertToStateLinen
+import by.liscode.domain.utils.convertToStateLinenString
 import by.liscode.domain.utils.convertToStatusLinen
+import by.liscode.domain.utils.convertToStatusLinenString
 
 fun TypeLinenDto.convertToTypeLinen(): TypeLinen {
     return TypeLinen(
+        id = this.id,
+        name = this.name,
+        size = this.size,
+        fabric = this.fabric,
+        composition = this.composition,
+        color = this.color,
+        density = this.density,
+        sku = this.sku,
+        maxWash = this.maxWash,
+        clientId = clientId
+    )
+}
+
+fun TypeLinen.convertToTypeLinenRequest(): TypeLinenRequest {
+    return TypeLinenRequest(
         id = this.id,
         name = this.name,
         size = this.size,
@@ -39,6 +59,17 @@ fun CounterpartyDto.convertToCounterparty(): Counterparty {
     )
 }
 
+fun Counterparty.convertToCounterpartyRequest(): CounterpartyRequest {
+    return CounterpartyRequest(
+        id = id,
+        name = name,
+        address = address,
+        inn = inn,
+        phone = phone
+    )
+}
+
+
 fun LinenDto.convertToLinen(): Linen {
     return Linen(
         id = id,
@@ -53,6 +84,24 @@ fun LinenDto.convertToLinen(): Linen {
         price = price,
         counterpartyId = counterpartyId,
         counterparty = counterparty.convertToCounterparty()
+    )
+}
+
+
+fun Linen.convertToLinenDtoRequest(): LinenDtoRequest {
+    return LinenDtoRequest(
+        id = id,
+        rfid = rfid,
+        typeId = typeId,
+        typeLinen = typeLinen.convertToTypeLinenRequest(),
+        discount = discount,
+        weight = weight,
+        state = convertToStateLinenString(state),
+        washCount = washCount,
+        status = convertToStatusLinenString(status),
+        price = price,
+        counterpartyId = counterpartyId,
+        counterparty = counterparty.convertToCounterpartyRequest()
     )
 }
 

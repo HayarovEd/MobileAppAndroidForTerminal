@@ -1,7 +1,8 @@
 package com.edurda77.take_work
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.GroupLinen
+import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -50,7 +51,7 @@ class TakeWorkScreenViewModel(
                             markers = state.value.markers + action.marker
                         )
                             .updateState()
-                        loadData (
+                        loadData(
                             action = { token, url ->
                                 getLinenById(
                                     rfid = action.marker, accessToken = token, url = url
@@ -74,7 +75,7 @@ class TakeWorkScreenViewModel(
                             markers = state.value.markers + action.marker
                         )
                             .updateState()
-                        loadData (
+                        loadData(
                             action = { token, url ->
                                 getLinenById(
                                     rfid = action.marker, accessToken = token, url = url
@@ -91,6 +92,19 @@ class TakeWorkScreenViewModel(
             }
 
             TakeWorkScreenAction.UpdateStatusToWork -> {
+                loadData(
+                    action = { token, url ->
+                        sendLinenInUse(
+                            accessToken = token,
+                            url = url
+                        )
+                    },
+                    navigate = {
+                        viewModelScope.launch {
+                            _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
+                        }
+                    }
+                )
 
             }
 
@@ -98,6 +112,31 @@ class TakeWorkScreenViewModel(
                 _state.value.copy(
                     markers = emptyList(),
                     remoteLinens = emptyList()
+                )
+                    .updateState()
+            }
+
+            TakeWorkScreenAction.UpdateGrouping -> {
+                when (state.value.groupLinen) {
+                    GroupLinen.NAME -> {
+                        _state.value.copy(
+                            groupLinen = GroupLinen.TYPE_LINEN
+                        )
+                            .updateState()
+                    }
+
+                    GroupLinen.TYPE_LINEN -> {
+                        _state.value.copy(
+                            groupLinen = GroupLinen.NAME
+                        )
+                            .updateState()
+                    }
+                }
+            }
+
+            TakeWorkScreenAction.CloseResultDialog -> {
+                _state.value.copy(
+                    isShowResultDialog = false
                 )
                     .updateState()
             }
@@ -133,6 +172,7 @@ class TakeWorkScreenViewModel(
             }
         }
     }
+
     private fun getLinenById(
         rfid: String, accessToken: String, url: String
     ) {
@@ -149,6 +189,40 @@ class TakeWorkScreenViewModel(
                 is ResultWork.Success -> {
                     _state.value.copy(
                         remoteLinens = state.value.remoteLinens + result.data
+                    ).updateState()
+                }
+            }
+        }
+    }
+
+    private fun sendLinenInUse(
+        accessToken: String,
+        url: String
+    ) {
+        _state.value.copy(
+            isLoading = true
+        ).updateState()
+        viewModelScope.launch {
+            when (val result = remoteRepository.sendlinenInToUse(
+                baseUrl = url,
+                token = accessToken,
+                linens = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }
+            )) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        message = result.error.asUiText(),
+                        isLoading = false
+                    ).updateState()
+                }
+
+                is ResultWork.Success -> {
+                    val updatedLinens = state.value.remoteLinens.map { linen ->
+                        result.data.find { it.id == linen.id } ?: linen
+                    }
+                    _state.value.copy(
+                        isLoading = false,
+                        isShowResultDialog = true,
+                        remoteLinens = updatedLinens
                     ).updateState()
                 }
             }

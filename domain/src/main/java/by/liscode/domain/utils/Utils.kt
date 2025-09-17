@@ -59,6 +59,17 @@ fun convertToStatusLinen(status: String): StatusLinen {
     }
 }
 
+fun convertToStatusLinenString(statusLinen: StatusLinen): String {
+    return when (statusLinen) {
+        StatusLinen.IN_STOCK -> "На складе"
+        StatusLinen.IN_USE -> "В работе"
+        StatusLinen.IN_ORDER -> "В заказе"
+        StatusLinen.IN_TRANSIT -> "В пути"
+        StatusLinen.IN_PRODUCTION -> "В производстве"
+        StatusLinen.WRITE_OFF -> "Списан"
+    }
+}
+
 fun convertToStateLinen(state: String): StateLinen {
     return when (state) {
         "Новое" -> StateLinen.NEW
@@ -67,6 +78,16 @@ fun convertToStateLinen(state: String): StateLinen {
         "Удовлетворительное" -> StateLinen.SATISFACTORY
         "Списано" -> StateLinen.WRITTEN_OFF
         else -> StateLinen.NEW
+    }
+}
+
+fun convertToStateLinenString(stateLinen: StateLinen): String {
+    return when (stateLinen) {
+        StateLinen.NEW -> "Новое"
+        StateLinen.EXCELLENT -> "Отличное"
+        StateLinen.GOOD -> "Хорошее"
+        StateLinen.SATISFACTORY -> "Удовлетворительное"
+        StateLinen.WRITTEN_OFF -> "Списано"
     }
 }
 

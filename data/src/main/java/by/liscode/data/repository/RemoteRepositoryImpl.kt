@@ -4,6 +4,7 @@ import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToClient
 import by.liscode.data.mapper.convertToEmployee
 import by.liscode.data.mapper.convertToLinen
+import by.liscode.data.mapper.convertToLinenDtoRequest
 import by.liscode.data.mapper.convertToTypeLinen
 import by.liscode.data.remote.request.CounterpartyPost
 import by.liscode.data.remote.response.ClientItemsResponse
@@ -34,6 +35,7 @@ import by.liscode.domain.utils.TERMINAL_CLIENTS
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
 import by.liscode.domain.utils.TERMINAL_EMPLOYEES
 import by.liscode.domain.utils.TERMINAL_ITEMS
+import by.liscode.domain.utils.TERMINAL_ITEMS_INTO_USE
 import by.liscode.domain.utils.TERMINAL_LINEN_STATE
 import by.liscode.domain.utils.TERMINAL_LINEN_STATUS
 import by.liscode.domain.utils.TERMINAL_LINEN_TIPES
@@ -318,4 +320,27 @@ class RemoteRepositoryImpl(
             }
         }
     }
+
+    override suspend fun sendlinenInToUse(
+        baseUrl: String,
+        token: String,
+        linens: List<Linen>
+    ): ResultWork<List<Linen>, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ITEMS_INTO_USE") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        linens.map { it.convertToLinenDtoRequest() }
+                    )
+                }
+                val result = response.body<List<LinenDto>>()
+                result.map { it.convertToLinen() }
+            }
+        }
+    }
+
+
+
 }

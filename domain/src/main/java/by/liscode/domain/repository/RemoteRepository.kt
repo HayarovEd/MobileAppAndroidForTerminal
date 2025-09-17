@@ -72,4 +72,10 @@ interface RemoteRepository {
         token: String,
         id: Int
     ): ResultWork<Client, DataError>
+
+    suspend fun sendlinenInToUse(
+        baseUrl: String,
+        token: String,
+        linens: List<Linen>
+    ): ResultWork<List<Linen>, DataError>
 }

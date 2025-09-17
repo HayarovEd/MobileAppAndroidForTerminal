@@ -187,5 +187,6 @@
     <string name="individual_found_client">Индивидуальный фонд клиента</string>
     <string name="on_rfid_marker">По RFID коду метки</string>
     <string name="enter_filter">Введите метку</string>
+    <string name="objects_success_in_use">Объекты взяты в работу</string>
 
 </resources>
