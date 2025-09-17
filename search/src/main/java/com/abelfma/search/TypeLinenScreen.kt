@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
@@ -32,14 +33,15 @@ import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 @Composable
 fun TypeLinenScreen(
     modifier: Modifier = Modifier,
-    groupedLinen:  Map<Int, Map<TypeLinen, List<Linen>>>,
+    groupedLinen: Map<Int, Map<TypeLinen, List<Linen>>>,
     outMarkers: List<String>,
-    ) {
+    clients: List<Client>
+) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        groupedLinen.keys.sortedBy { it }.forEach { clientId->
+        groupedLinen.keys.sortedBy { it }.forEach { clientId ->
             stickyHeader {
                 Row(
                     modifier = modifier
@@ -51,25 +53,26 @@ fun TypeLinenScreen(
                 ) {
                     Text(
                         modifier = modifier.weight(6f),
-                        text = clientId.toString(),
+                        text = clients.firstOrNull { it.id == clientId }?.name
+                            ?: clientId.toString(),
                         color = MaterialTheme.colorScheme.onSecondary,
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(modifier = modifier.width(5.dp))
                     Text(
                         modifier = modifier.weight(1f),
-                        text = groupedLinen[clientId]?.values?.sumOf { it .size}.toString(),
+                        text = groupedLinen[clientId]?.values?.sumOf { it.size }.toString(),
                         color = MaterialTheme.colorScheme.onSecondary,
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
             }
-            val groupByLinenType = groupedLinen[clientId]?:emptyMap()
-            items(groupByLinenType.keys.toList()) { type->
+            val groupByLinenType = groupedLinen[clientId] ?: emptyMap()
+            items(groupByLinenType.keys.toList()) { type ->
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Text(
                         modifier = modifier.weight(5f),
                         text = type.outFormat(),
@@ -165,18 +168,30 @@ private fun Preview1() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
+    val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
+    val clients = (1..10).map {
+        Client(
+            id = it,
+            email = "email",
+            name = "Client N$it",
+            location = "location",
+            phone = "12345678",
+            clientType = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.groupBy { it.typeLinen.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers
+            outMarkers = outMarkers,
+            clients = clients
         )
     }
 }
+
 @Preview(
     showBackground = true,
 )
@@ -229,18 +244,31 @@ private fun Preview2() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
+    val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
+    val clients = (1..10).map {
+        Client(
+            id = it,
+            email = "email",
+            name = "Client N$it",
+            location = "location",
+            phone = "12345678",
+            clientType = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            groupedLinen = linens.filter { it.typeLinen.clientId == clientId }.groupBy { it.typeLinen.clientId }
+            groupedLinen = linens.filter { it.typeLinen.clientId == clientId }
+                .groupBy { it.typeLinen.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers
+            outMarkers = outMarkers,
+            clients = clients
         )
     }
 }
+
 @Preview(
     showBackground = true,
 )
@@ -292,15 +320,27 @@ private fun Preview3() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
+    val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
+    val clients = (1..10).map {
+        Client(
+            id = it,
+            email = "email",
+            name = "Client N$it",
+            location = "location",
+            phone = "12345678",
+            clientType = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            groupedLinen = linens.filter { it.rfid == "Marker N5" }.groupBy { it.typeLinen.clientId }
+            groupedLinen = linens.filter { it.rfid == "Marker N5" }
+                .groupBy { it.typeLinen.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers
+            outMarkers = outMarkers,
+            clients = clients
         )
     }
 }

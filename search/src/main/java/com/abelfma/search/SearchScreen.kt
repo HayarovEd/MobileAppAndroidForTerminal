@@ -186,13 +186,15 @@ fun SearchScreenScreen(
                             GroupLinen.NAME -> {
                                 TypeNameScreen(
                                     groupedLinen = state.groupedLinenByClientId,
-                                    outMarkers = state.markers
+                                    outMarkers = state.outMarkers,
+                                    clients = state.clients
                                 )
                             }
                             GroupLinen.TYPE_LINEN -> {
                                 TypeLinenScreen(
                                     groupedLinen = state.groupedLinenByClientIdAndTypeLinen,
-                                    outMarkers = state.markers
+                                    outMarkers = state.outMarkers,
+                                    clients = state.clients
                                 )
                             }
                         }

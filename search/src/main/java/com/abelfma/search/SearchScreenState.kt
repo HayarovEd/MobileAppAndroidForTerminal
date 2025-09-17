@@ -1,5 +1,6 @@
 package com.abelfma.search
 
+import by.liscode.domain.model.Client
 import by.liscode.domain.model.Filter
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
@@ -18,6 +19,7 @@ data class SearchScreenState(
     val searchState: SearchState = SearchState.SEARCH,
     val filterByType: FilterByType = FilterByType.All,
     val filterRfid: String = "",
+    val clients: List<Client> = emptyList()
 ) {
     val filteredLinen = when (filterByType) {
         FilterByType.All -> remoteLinens

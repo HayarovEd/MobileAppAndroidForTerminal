@@ -2,7 +2,6 @@ package com.abelfma.search
 
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.model.GroupLinen
-import by.liscode.domain.repository.AuthorizeRepository
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchScreenViewModel(
-    private val authorizeRepository: AuthorizeRepository,
     private val dataStoreRepository: DataStoreRepository,
     private val localRepository: LocalRepository,
     jwtRepository: JwtRepository,
@@ -29,15 +27,15 @@ class SearchScreenViewModel(
     dataStoreRepository = dataStoreRepository,
     jwtRepository = jwtRepository
 ) {
-    
+
 
     private val _state = MutableStateFlow(SearchScreenState())
     val state = _state
         .onStart {
             getLocalData()
-            loadData (
+            loadData(
                 action = { token, url ->
-                    getClientData(
+                    getClients(
                         url = url,
                         token = token
                     )
@@ -66,7 +64,7 @@ class SearchScreenViewModel(
                             markers = state.value.markers + action.marker
                         )
                             .updateState()
-                        loadData (
+                        loadData(
                             action = { token, url ->
                                 getLinenById(
                                     rfid = action.marker, accessToken = token, url = url
@@ -90,7 +88,7 @@ class SearchScreenViewModel(
                             markers = state.value.markers + action.marker
                         )
                             .updateState()
-                        loadData (
+                        loadData(
                             action = { token, url ->
                                 getLinenById(
                                     rfid = action.marker, accessToken = token, url = url
@@ -105,17 +103,20 @@ class SearchScreenViewModel(
                     }
                 }
             }
+
             is SearchScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
                     isActiveScanner = action.isActive
                 ).updateState()
             }
+
             is SearchScreenAction.UpdateFilter -> {
                 _state.value.copy(
                     filterByType = action.filterByType
                 )
                     .updateState()
             }
+
             SearchScreenAction.UpdateGroupping -> {
                 _state.value.copy(
                     groupLinen = when (state.value.groupLinen) {
@@ -125,6 +126,7 @@ class SearchScreenViewModel(
                 )
                     .updateState()
             }
+
             is SearchScreenAction.UpdateSearchState -> {
                 _state.value.copy(
                     searchState = action.searchState
@@ -198,7 +200,7 @@ class SearchScreenViewModel(
         }
     }
 
-    private fun getClientData(
+    private fun getClients(
         url: String,
         token: String,
     ) {
@@ -207,7 +209,7 @@ class SearchScreenViewModel(
         )
             .updateState()
         viewModelScope.launch {
-            when (val result = authorizeRepository.getProfile(
+            when (val result = remoteRepository.getClients(
                 baseUrl = url,
                 token = token
             )) {
@@ -222,7 +224,7 @@ class SearchScreenViewModel(
                 is ResultWork.Success -> {
                     _state.value.copy(
                         isLoading = false,
-                       // client = result.data.f
+                        clients = result.data
                     )
                         .updateState()
                 }
