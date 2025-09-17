@@ -35,6 +35,7 @@ data class SearchScreenState(
         .mapValues { (_, linens) ->
             linens.groupBy { it.typeLinen }
         }
+    val outMarkers = markers - remoteLinens.map { it.rfid }
 }
 
 sealed class UiSearchEvents {

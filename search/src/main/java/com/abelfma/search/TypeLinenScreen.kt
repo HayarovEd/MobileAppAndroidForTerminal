@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,12 +26,14 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.outFormat
+import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 
 @Composable
 fun TypeLinenScreen(
     modifier: Modifier = Modifier,
     groupedLinen:  Map<Int, Map<TypeLinen, List<Linen>>>,
+    outMarkers: List<String>,
     ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -83,7 +86,30 @@ fun TypeLinenScreen(
                     )
                 }
             }
-
+            stickyHeader {
+                Row(
+                    modifier = modifier
+                        .clip(shape = RoundedCornerShape(10.dp))
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.secondary)
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        modifier = modifier.weight(6f),
+                        text = stringResource(R.string.unknown_markers),
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(modifier = modifier.width(5.dp))
+                    Text(
+                        modifier = modifier.weight(1f),
+                        text = outMarkers.size.toString(),
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+            }
         }
     }
 }
@@ -139,13 +165,15 @@ private fun Preview1() {
             )
         )
     }
-
+    val markers = (1..70).map {"Marker N$it"}
+    val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.groupBy { it.typeLinen.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
-                }
+                },
+            outMarkers = outMarkers
         )
     }
 }
@@ -201,13 +229,15 @@ private fun Preview2() {
             )
         )
     }
-
+    val markers = (1..70).map {"Marker N$it"}
+    val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.filter { it.typeLinen.clientId == clientId }.groupBy { it.typeLinen.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
-                }
+                },
+            outMarkers = outMarkers
         )
     }
 }
@@ -262,13 +292,15 @@ private fun Preview3() {
             )
         )
     }
-
+    val markers = (1..70).map {"Marker N$it"}
+    val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.filter { it.rfid == "Marker N5" }.groupBy { it.typeLinen.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
-                }
+                },
+            outMarkers = outMarkers
         )
     }
 }
