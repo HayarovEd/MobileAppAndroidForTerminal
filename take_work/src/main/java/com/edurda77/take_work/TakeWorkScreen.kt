@@ -16,12 +16,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -125,12 +125,19 @@ private fun TakeWorkScreenScreen(
                         }
                     ),
                     text = stringResource(R.string.objects_success_in_use),
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = colorScheme.onPrimary,
                     style = MaterialTheme.typography.bodyLarge,
                 )
             },
             confirmButton = {
-                onAction(TakeWorkScreenAction.CloseResultDialog)
+                Button(onClick = {
+                    onAction(TakeWorkScreenAction.CloseResultDialog)                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
         )
     }
@@ -150,33 +157,35 @@ private fun TakeWorkScreenScreen(
                             }
                         ),
                         text = stringResource(R.string.kind_upper_case),
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
             )
         },
         bottomBarContent = {
-            OutlinedButton(
+            Row(
                 modifier = modifier
                     .navigationBarsPadding()
-                    .padding(horizontal = 15.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(5.dp),
-                enabled = state.markers.isNotEmpty(),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                ),
-                onClick = {
-                   onAction(TakeWorkScreenAction.UpdateStatusToWork)
-                }
+                    .fillMaxWidth()
+                    .background(colorScheme.background)
+                    .padding(horizontal = 15.dp),
             ) {
-                Text(
-                    modifier = modifier,
-                    text = stringResource(id = R.string.take_work_upper_case),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Button(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(5.dp),
+                    enabled = state.remoteLinens.isNotEmpty(),
+                    onClick = {
+                        onAction(TakeWorkScreenAction.UpdateStatusToWork)                    }
+                ) {
+                    Text(
+                        modifier = modifier,
+                        text = stringResource(R.string.take_work_upper_case),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
             }
         }
     ) { paddingValues ->
@@ -184,7 +193,7 @@ private fun TakeWorkScreenScreen(
             modifier = modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colorScheme.background)
                 .padding(15.dp),
             verticalArrangement = if (state.isLoading) Arrangement.Center else Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -204,13 +213,13 @@ private fun TakeWorkScreenScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.scanned)}: ${state.markers.size}",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
