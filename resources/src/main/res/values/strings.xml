@@ -192,4 +192,18 @@
     <string name="date_time">ДАТА/ВРЕМЯ</string>
     <string name="status">СТАТУС</string>
     <string name="order_query_ps">№ заявки, название или адрес</string>
+    <string name="add_not_approved">Добавить неподходящие метки в заказ?</string>
+    <string name="new_order">Новый заказ</string>
+    <string name="back">Назад</string>
+    <string name="laundry">Прачечная</string>
+    <string name="address">Адрес</string>
+    <string name="contact">Контакт</string>
+    <string name="phone">Телефон</string>
+    <string name="type_linen">Тип белья</string>
+    <string name="reading">Считано</string>
+    <string name="empty_objects">Объекты отсутствуют</string>
+    <string name="not_for_order">Несоответствующие заказу</string>
+    <string name="unknown_marker">Неизвестная метка</string>
+    <string name="close">Закрыть</string>
+    <string name="create_order">Создать заказ</string>
 </resources>

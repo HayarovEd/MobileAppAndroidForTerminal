@@ -94,7 +94,7 @@ fun OrdersScreenScreen(
                     .statusBarsPadding()
                     .fillMaxWidth()
                     .background(colorScheme.primary)
-                    .padding(horizontal = 15.dp),
+                    .padding(horizontal = 15.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -213,7 +213,7 @@ private fun Preview() {
             creatorId = "User",
             address = "Moscow",
             comment = "",
-            status = StatusOrder.REGISTERED,
+            status = StatusOrder.entries.random(),
             commentStatus = "",
             actFilePath = "",
             client = Client(
