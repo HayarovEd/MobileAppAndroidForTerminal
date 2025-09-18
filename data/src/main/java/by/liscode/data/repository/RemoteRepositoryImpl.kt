@@ -24,6 +24,7 @@ import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
+import by.liscode.domain.model.Order
 import by.liscode.domain.model.ReasonWriteOff
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
@@ -321,7 +322,7 @@ class RemoteRepositoryImpl(
         }
     }
 
-    override suspend fun sendlinenInToUse(
+    override suspend fun sendLinenInToUse(
         baseUrl: String,
         token: String,
         linens: List<Linen>
@@ -341,6 +342,53 @@ class RemoteRepositoryImpl(
         }
     }
 
+    override suspend fun getOrders(
+        baseUrl: String,
+        token: String
+    ): ResultWork<List<Order>, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                //TODO
+                emptyList()
+            }
+        }
+    }
+
+    override suspend fun getOrderById(
+        baseUrl: String,
+        token: String,
+        id: Int
+    ): ResultWork<Order, DataError> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun createOrder(baseUrl: String, token: String): ResultWork<Order, DataError> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun acceptOrderInUse(
+        baseUrl: String,
+        token: String,
+        order: Order
+    ): ResultWork<Order, DataError> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun formOrderAfterProduction(
+        baseUrl: String,
+        token: String,
+        order: Order
+    ): ResultWork<Order, DataError> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun acceptOrderInToStock(
+        baseUrl: String,
+        token: String,
+        order: Order
+    ): ResultWork<Order, DataError> {
+        TODO("Not yet implemented")
+    }
 
 
 }

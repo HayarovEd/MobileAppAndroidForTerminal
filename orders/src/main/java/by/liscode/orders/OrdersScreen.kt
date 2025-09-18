@@ -1,0 +1,242 @@
+package by.liscode.orders
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import by.liscode.domain.model.Client
+import by.liscode.domain.model.Employee
+import by.liscode.domain.model.Order
+import by.liscode.domain.model.StatusOrder
+import by.liscode.resources.R
+import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.UiIconButton
+import by.liscode.resources.uikit.UiTextField
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
+@Composable
+fun OrdersScreenRoot(
+    viewModel: OrdersScreenViewModel = koinViewModel (),
+    bottomRoutes: @Composable () -> Unit,
+    onNavigateToLoginScreen: () -> Unit,
+    onNavigateToCreateOrderScreen: () -> Unit,
+    onNavigateToOrderScreen: (String) -> Unit,
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                UiOrdersEvents.LoginNavigationEvent -> onNavigateToLoginScreen()
+            }
+        }
+    }
+    OrdersScreenScreen(
+        state = state,
+        onAction = viewModel::onAction,
+        onNavigateToOrderScreen = onNavigateToOrderScreen,
+        onNavigateToCreateOrderScreen = onNavigateToCreateOrderScreen,
+        bottomRoutes = bottomRoutes
+    )
+}
+
+@Composable
+fun OrdersScreenScreen(
+    modifier: Modifier = Modifier,
+    state: OrdersScreenState,
+    bottomRoutes: @Composable () -> Unit,
+    onNavigateToCreateOrderScreen: () -> Unit,
+    onNavigateToOrderScreen: (String) -> Unit,
+    onAction: (OrdersScreenAction) -> Unit,
+) {
+    UiBaseScaffold(
+        message = state.message,
+        topBarContent = {
+            Row(
+                modifier = modifier
+                    .statusBarsPadding()
+                    .fillMaxWidth()
+                    .background(colorScheme.primary)
+                    .padding(horizontal = 15.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    modifier = modifier,
+                    text = stringResource(R.string.orders),
+                    color = colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Spacer(modifier = modifier.weight(1f))
+                Text(
+                    modifier = modifier.clickable(
+                        onClick = {
+                            onAction(OrdersScreenAction.UpdateSorting(SortedOrders.DATE_TIME))
+                        }
+                    ),
+                    text = stringResource(R.string.date_time),
+                    color = colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Spacer(modifier = modifier.width(15.dp))
+                Text(
+                    modifier = modifier.clickable(
+                        onClick = {
+                            onAction(OrdersScreenAction.UpdateSorting(SortedOrders.STATUS))
+                        }
+                    ),
+                    text = stringResource(R.string.status),
+                    color = colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                UiIconButton(
+                    modifier = modifier,
+                    icon = Icons.Default.Add,
+                    color = colorScheme.onPrimary,
+                    onClick = onNavigateToCreateOrderScreen
+                )
+            }
+        },
+        bottomBarContent = bottomRoutes
+    ) { paddingValues ->
+        if (state.isLoading) {
+            Box(
+                modifier = modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .background(colorScheme.background)
+                    .padding(15.dp),
+            ) {
+                CircularProgressIndicator(
+                    modifier = modifier
+                        .align(alignment = Alignment.Center)
+                        .size(200.dp)
+                )
+            }
+        } else {
+            Column(
+                modifier = modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .background(colorScheme.background)
+                    .padding(15.dp),
+            ) {
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "",
+                        tint = colorScheme.onBackground
+                    )
+                    UiTextField(
+                        content = state.query,
+                        label = stringResource(R.string.order_query_ps),
+                        onClickContent = {
+                            onAction(OrdersScreenAction.UpdateQuery(it))
+                        }
+                    )
+                }
+                Spacer(modifier = modifier.height(10.dp))
+                LazyColumn(
+                    modifier = modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(15.dp)
+                ) {
+                    items(state.resultOrders) { order->
+                        ItemOrder(
+                            order = order,
+                            onClickOrder = {
+                                onNavigateToOrderScreen(order.id)
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+private fun Preview() {
+    val orders = (1..10).map {
+        Order(
+            id = "$it",
+            createdAt = Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
+            updatedAt = Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
+            hotelId = "1",
+            linenId = "2",
+            creatorId = "User",
+            address = "Moscow",
+            comment = "",
+            status = StatusOrder.REGISTERED,
+            commentStatus = "",
+            actFilePath = "",
+            client = Client(
+                id = 1,
+                email = "",
+                name = "Тринадцатый Климент Романович",
+                location = "Москва",
+                phone = "7894561236",
+                clientType = ""
+            ),
+            employee = Employee(
+                id = 1,
+                name = "ООО Ромашка",
+                position = "Москва",
+                phone = "7894561237",
+                login = ""
+            ),
+            linens = emptyList()
+        )
+    }
+    MobileAppAndroidForTerminalTheme {
+        OrdersScreenScreen(
+            state = OrdersScreenState(
+                orders = orders
+            ),
+            onAction = {},
+            bottomRoutes = {},
+            onNavigateToOrderScreen = {},
+            onNavigateToCreateOrderScreen = {}
+        )
+    }
+}

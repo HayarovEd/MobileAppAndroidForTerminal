@@ -189,4 +189,7 @@
     <string name="enter_filter">Введите метку</string>
     <string name="objects_success_in_use">Объекты взяты в работу</string>
     <string name="unknown_markers">Неизвестные метки</string>
+    <string name="date_time">ДАТА/ВРЕМЯ</string>
+    <string name="status">СТАТУС</string>
+    <string name="order_query_ps">№ заявки, название или адрес</string>
 </resources>

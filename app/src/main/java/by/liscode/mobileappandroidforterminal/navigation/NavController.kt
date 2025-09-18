@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import by.liscode.fund.FundScreenRoot
 import by.liscode.login.LoginScreenRoot
+import by.liscode.orders.OrdersScreenRoot
 import by.liscode.regisration.RegistrationScreenRoot
 import by.liscode.resources.model.NavigationRoute
 import by.liscode.resources.model.routes
@@ -58,7 +59,23 @@ fun NavController(
         }
 
         composable<NavigationRoute.Orders> {
-
+            OrdersScreenRoot(
+                bottomRoutes = {
+                    UiBottomNavigation(
+                        routes = routes(),
+                        navController = navController
+                    )
+                },
+                onNavigateToOrderScreen = {
+                    navController.navigate(NavigationRoute.CurrentOrder(it))
+                },
+                onNavigateToCreateOrderScreen = {
+                    navController.navigate(NavigationRoute.OrderCreate)
+                },
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                }
+            )
         }
 
         composable<NavigationRoute.OrderCreate> {

@@ -70,7 +70,7 @@ fun UiTextField(
             placeholder?.let {
                 Text(
                     text = placeholder,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onBackground)
                 )
             }
         },

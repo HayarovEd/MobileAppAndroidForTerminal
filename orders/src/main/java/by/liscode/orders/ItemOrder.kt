@@ -2,6 +2,7 @@ package by.liscode.orders
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,12 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import by.liscode.domain.model.Client
+import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.utils.formateUiDateTime
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.asStatusOrderText
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
@@ -32,7 +37,8 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun ItemOrder(
     modifier: Modifier = Modifier,
-    order: Order
+    order: Order,
+    onClickOrder: () -> Unit,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -40,6 +46,7 @@ fun ItemOrder(
             width = 1.dp,
             color = MaterialTheme.colorScheme.outline
         ),
+        onClick = onClickOrder,
         shape = RoundedCornerShape(5.dp)
     ) {
         Row(
@@ -82,23 +89,40 @@ fun ItemOrder(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        modifier = modifier,
-                        text = "${order.address}",
+                        modifier = modifier.weight(1f),
+                        text = order.client.name,
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                    Spacer(modifier = modifier.width(5.dp))
                     Text(
                         modifier = modifier
-                            .clip(shape = RoundedCornerShape(3.dp))
-                            .background(
+                         //   .weight(1f)
+                            .border(
+                                width = 1.dp,
                                 color = MaterialTheme.colorScheme.primary,
-                            )
-                            .padding(horizontal = 20.dp),
-                        text = "N ${order.id}",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.bodyMedium,
+                                shape = RoundedCornerShape(3.dp))
+                            .padding(horizontal = 10.dp),
+                        text = order.status.asStatusOrderText().asString(),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        style = MaterialTheme.typography.labelMedium,
                     )
                 }
+                Spacer(modifier = modifier.height(5.dp))
+                Text(
+                    modifier = modifier,
+                    text = order.address,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textDecoration = TextDecoration.Underline
+                )
+                Spacer(modifier = modifier.height(5.dp))
+                Text(
+                    modifier = modifier,
+                    text = order.client.phone,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
     }
@@ -123,8 +147,25 @@ private fun ItemOrderView() {
                 comment = "",
                 status = StatusOrder.REGISTERED,
                 commentStatus = "",
-                actFilePath = ""
-            )
+                actFilePath = "",
+                client = Client(
+                    id = 1,
+                    email = "",
+                    name = "Тринадцатый Климент Романович",
+                    location = "Москва",
+                    phone = "7894561236",
+                    clientType = ""
+                ),
+                employee = Employee(
+                    id = 1,
+                    name = "ООО Ромашка",
+                    position = "Москва",
+                    phone = "7894561237",
+                    login = ""
+                ),
+                linens = emptyList()
+            ),
+            onClickOrder = {}
         )
     }
 }

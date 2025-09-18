@@ -8,10 +8,13 @@ data class Order(
     val updatedAt: LocalDateTime,
     val hotelId: String,
     val linenId: String,
+    val client: Client,
+    val employee: Employee,
     val creatorId: String,
     val address: String,
     val comment: String,
     val status: StatusOrder,
     val commentStatus: String,
-    val actFilePath: String
+    val actFilePath: String,
+    val linens: List<Linen>,
 )

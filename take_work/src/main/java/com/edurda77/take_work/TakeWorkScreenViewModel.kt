@@ -203,7 +203,7 @@ class TakeWorkScreenViewModel(
             isLoading = true
         ).updateState()
         viewModelScope.launch {
-            when (val result = remoteRepository.sendlinenInToUse(
+            when (val result = remoteRepository.sendLinenInToUse(
                 baseUrl = url,
                 token = accessToken,
                 linens = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }
