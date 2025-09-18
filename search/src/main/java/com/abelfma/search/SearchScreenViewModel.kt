@@ -33,19 +33,6 @@ class SearchScreenViewModel(
     val state = _state
         .onStart {
             getLocalData()
-            loadData(
-                action = { token, url ->
-                    getClients(
-                        url = url,
-                        token = token
-                    )
-                },
-                navigate = {
-                    viewModelScope.launch {
-                        _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                    }
-                }
-            )
         }
         .stateIn(
             scope = viewModelScope,
@@ -200,37 +187,6 @@ class SearchScreenViewModel(
         }
     }
 
-    private fun getClients(
-        url: String,
-        token: String,
-    ) {
-        _state.value.copy(
-            isLoading = true
-        )
-            .updateState()
-        viewModelScope.launch {
-            when (val result = remoteRepository.getClients(
-                baseUrl = url,
-                token = token
-            )) {
-                is ResultWork.Error -> {
-                    _state.value.copy(
-                        isLoading = false,
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
-                }
-
-                is ResultWork.Success -> {
-                    _state.value.copy(
-                        isLoading = false,
-                        clients = result.data
-                    )
-                        .updateState()
-                }
-            }
-        }
-    }
 
     private fun getLinenById(
         rfid: String, accessToken: String, url: String
