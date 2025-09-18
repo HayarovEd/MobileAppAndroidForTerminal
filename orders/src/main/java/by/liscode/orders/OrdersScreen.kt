@@ -37,6 +37,9 @@ import by.liscode.domain.model.Client
 import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.StatusOrder
+import by.liscode.domain.model.UserData
+import by.liscode.domain.model.UserRole
+import by.liscode.domain.model.UserType
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.UiBaseScaffold
@@ -51,7 +54,7 @@ import kotlin.time.ExperimentalTime
 
 @Composable
 fun OrdersScreenRoot(
-    viewModel: OrdersScreenViewModel = koinViewModel (),
+    viewModel: OrdersScreenViewModel = koinViewModel(),
     bottomRoutes: @Composable () -> Unit,
     onNavigateToLoginScreen: () -> Unit,
     onNavigateToCreateOrderScreen: () -> Unit,
@@ -93,7 +96,7 @@ fun OrdersScreenScreen(
                     .background(colorScheme.primary)
                     .padding(horizontal = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Text(
                     modifier = modifier,
                     text = stringResource(R.string.orders),
@@ -122,12 +125,15 @@ fun OrdersScreenScreen(
                     color = colorScheme.onPrimary,
                     style = MaterialTheme.typography.bodySmall,
                 )
-                UiIconButton(
-                    modifier = modifier,
-                    icon = Icons.Default.Add,
-                    color = colorScheme.onPrimary,
-                    onClick = onNavigateToCreateOrderScreen
-                )
+                state.userData?.let { userData ->
+                    if (userData.userType == UserType.HOTEL && userData.userRole == UserRole.CLIENT)
+                        UiIconButton(
+                            modifier = modifier,
+                            icon = Icons.Default.Add,
+                            color = colorScheme.onPrimary,
+                            onClick = onNavigateToCreateOrderScreen
+                        )
+                }
             }
         },
         bottomBarContent = bottomRoutes
@@ -158,7 +164,7 @@ fun OrdersScreenScreen(
                     modifier = modifier
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "",
@@ -177,7 +183,7 @@ fun OrdersScreenScreen(
                     modifier = modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
-                    items(state.resultOrders) { order->
+                    items(state.resultOrders) { order ->
                         ItemOrder(
                             order = order,
                             onClickOrder = {
@@ -231,7 +237,14 @@ private fun Preview() {
     MobileAppAndroidForTerminalTheme {
         OrdersScreenScreen(
             state = OrdersScreenState(
-                orders = orders
+                orders = orders,
+                userData = UserData(
+                    userId = 1,
+                    login = "",
+                    userRole = UserRole.CLIENT,
+                    userType = UserType.HOTEL,
+                    expired = 0L
+                )
             ),
             onAction = {},
             bottomRoutes = {},

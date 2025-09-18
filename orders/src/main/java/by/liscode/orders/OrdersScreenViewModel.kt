@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OrdersScreenViewModel(
-    dataStoreRepository: DataStoreRepository,
-    jwtRepository: JwtRepository,
+    private val dataStoreRepository: DataStoreRepository,
+    private val jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
@@ -29,6 +29,7 @@ class OrdersScreenViewModel(
     private val _state = MutableStateFlow(OrdersScreenState())
     val state = _state
         .onStart {
+            getUserData()
             loadData (
                 action = { token, url ->
                     getOrders(
@@ -65,6 +66,19 @@ class OrdersScreenViewModel(
                     sortedOrders = action.sortedOrders
                 )
                     .updateState()
+            }
+        }
+    }
+
+    private fun getUserData() {
+        viewModelScope.launch {
+            dataStoreRepository.getBearer().collect { token->
+                token?.let {
+                    _state.value.copy(
+                        userData = jwtRepository.decodeJwt(token)
+                    )
+                        .updateState()
+                }
             }
         }
     }

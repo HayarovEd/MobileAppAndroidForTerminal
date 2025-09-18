@@ -119,7 +119,7 @@ fun ItemOrder(
                 Spacer(modifier = modifier.height(5.dp))
                 Text(
                     modifier = modifier,
-                    text = order.client.phone,
+                    text = order.employee.phone,
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium,
                 )

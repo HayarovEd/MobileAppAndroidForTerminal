@@ -1,9 +1,11 @@
 package by.liscode.orders
 
 import by.liscode.domain.model.Order
+import by.liscode.domain.model.UserData
 import by.liscode.resources.uikit.UiText
 
 data class OrdersScreenState(
+    val userData: UserData? = null,
     val message: UiText? = null,
     val isLoading: Boolean = false,
     val orders: List<Order> = emptyList(),
