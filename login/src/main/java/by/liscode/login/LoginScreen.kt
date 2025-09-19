@@ -7,12 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.UiButton
 import by.liscode.resources.uikit.UiTextField
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
@@ -111,9 +108,8 @@ private fun LoginScreenScreen(
             if (state.isLoading) {
                 CircularProgressIndicator()
             } else {
-                Button(
-                    modifier = modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
+                UiButton(
+                    title = stringResource(id = R.string.enter),
                     enabled = state.login.isNotEmpty() && state.password.isNotEmpty(),
                     onClick = {
                         if (!state.isLoading) {
@@ -122,16 +118,7 @@ private fun LoginScreenScreen(
                             )
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.enter),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
+                )
             }
         }
     }

@@ -22,16 +22,11 @@ data class CurrentOrderScreenState(
     } ?: markers)
 
     val sortedLinens = order?.let {
-        order.linens.groupBy {
-            it.rfid in markers
-        }
+        it.linens.groupBy { it.typeLinen }
             .mapValues { (_, linens) ->
-                linens.groupBy { it.typeLinen }
-                    .mapValues { (_, linens) ->
-                        linens.sortedBy { it.typeLinen.outFormat() }
-                    }
+                linens.sortedBy { it.typeLinen.outFormat() }
             }
-    }?: emptyMap()
+    } ?: emptyMap()
 
 }
 

@@ -14,11 +14,8 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -32,40 +29,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import by.liscode.domain.model.Client
-import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
-import by.liscode.domain.model.Linen
-import by.liscode.domain.model.Order
-import by.liscode.domain.model.StateLinen
-import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.StatusOrder
-import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.model.UserData
 import by.liscode.domain.model.UserRole
 import by.liscode.domain.model.UserType
-import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
+import by.liscode.resources.mock.markers
+import by.liscode.resources.mock.markers5_21
+import by.liscode.resources.mock.order
+import by.liscode.resources.mock.order1
+import by.liscode.resources.mock.order2
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.NotApproveDialogContent
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.UiButton
+import by.liscode.resources.uikit.UiClickableRow
+import by.liscode.resources.uikit.UiRowThreeElements
+import by.liscode.resources.uikit.UiRowTitleThreeElements
+import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -182,26 +176,26 @@ fun CurrentOrderScreenScreen(
             ) {
                 state.order?.let { order ->
                     state.userData?.let { userData ->
-                        val enabled =
-                            (state.sortedLinens[false] == null || state.sortedLinens[false]?.values?.isEmpty() == true)
-                                    && (state.sortedLinens[true] != null && state.sortedLinens[true]?.values?.isNotEmpty() == true)
-                        if (userData.userType == UserType.HOTEL
-                            && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                            && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
-                        ) {
-                            ActionButton(
-                                title = stringResource(R.string.complete_order),
-                                enabled = enabled,
-                                onClick = {
-                                    onAction(CurrentOrderScreenAction.UpdateOrder(StatusOrder.COMPLETED))
-                                }
-                            )
-                        }
+                        val enabled = true
+                        /*     (state.sortedLinens[false] == null || state.sortedLinens[false]?.values?.isEmpty() == true)
+                                     && (state.sortedLinens[true] != null && state.sortedLinens[true]?.values?.isNotEmpty() == true)
+                         */if (userData.userType == UserType.HOTEL
+                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                        && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
+                    ) {
+                        UiButton (
+                            title = stringResource(R.string.complete_order),
+                            enabled = enabled,
+                            onClick = {
+                                onAction(CurrentOrderScreenAction.UpdateOrder(StatusOrder.COMPLETED))
+                            }
+                        )
+                    }
                         if (userData.userType == UserType.LAUNDRY
                             && userData.userRole == UserRole.CLIENT_EMPLOYEE
                             && (order.status == StatusOrder.REGISTERED || order.status == StatusOrder.IN_TRANSIT)
                         ) {
-                            ActionButton(
+                            UiButton(
                                 title = stringResource(R.string.take_work),
                                 enabled = enabled,
                                 onClick = {
@@ -213,7 +207,7 @@ fun CurrentOrderScreenScreen(
                             && userData.userRole == UserRole.CLIENT_EMPLOYEE
                             && (order.status == StatusOrder.IN_PRODUCTION)
                         ) {
-                            ActionButton(
+                            UiButton(
                                 title = stringResource(R.string.complete_work),
                                 enabled = enabled,
                                 onClick = {
@@ -249,359 +243,67 @@ fun CurrentOrderScreenScreen(
                     .padding(15.dp),
             ) {
                 state.order?.let { order ->
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = "${stringResource(R.string.laundry)}:",
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = order.employee.name,
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    UiRowTwoText(
+                        title = "${stringResource(R.string.laundry)}:",
+                        value = order.employee.name,
+                    )
                     Spacer(modifier = modifier.height(10.dp))
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = "${stringResource(R.string.address)}:",
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = order.employee.position,
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    UiRowTwoText(
+                        title = "${stringResource(R.string.address)}:",
+                        value = order.employee.position,
+                    )
                     Spacer(modifier = modifier.height(10.dp))
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = "${stringResource(R.string.contact)}:",
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = order.employee.login,
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    UiRowTwoText(
+                        title = "${stringResource(R.string.contact)}:",
+                        value = order.employee.login,
+                    )
                     Spacer(modifier = modifier.height(10.dp))
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = "${stringResource(R.string.phone)}:",
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = order.employee.phone,
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    UiRowTwoText(
+                        title = "${stringResource(R.string.phone)}:",
+                        value = order.employee.phone,
+                    )
+                    DividerSpacer()
+                    UiClickableRow(
+                        title = stringResource(R.string.not_for_order),
+                        value = state.unknownMarkers.size.toString(),
+                        onClick = {
+                            updateVisibilityNotApproveDialog(true)
+                        }
+                    )
                     Spacer(modifier = modifier.height(4.dp))
                     HorizontalDivider(
                         modifier = modifier.fillMaxWidth(),
                         thickness = 1.dp
                     )
                     Spacer(modifier = modifier.height(8.dp))
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                    updateVisibilityNotApproveDialog(true)
-                                }
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = stringResource(R.string.not_for_order),
-                            color = colorScheme.error,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = state.unknownMarkers.size.toString(),
-                            color = colorScheme.error,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-                    Spacer(modifier = modifier.height(4.dp))
-                    HorizontalDivider(
-                        modifier = modifier.fillMaxWidth(),
-                        thickness = 1.dp
+                    UiRowTitleThreeElements(
+                        title = stringResource(R.string.fund),
+                        firstNumber = order.linens.size,
+                        secondNumber = order.linens.map { it.rfid }
+                            .filter { it in state.markers }.size
                     )
-                    Spacer(modifier = modifier.height(8.dp))
-                    Row(
-                        modifier = modifier
-                            .clip(shape = RoundedCornerShape(10.dp))
-                            .fillMaxWidth()
-                            .background(colorScheme.secondary)
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            modifier = modifier.weight(6f),
-                            text = stringResource(R.string.fund),
-                            color = colorScheme.onSecondary,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = modifier.width(5.dp))
-                        Text(
-                            modifier = modifier.weight(1f),
-                            text = order.linens.size.toString(),
-                            color = colorScheme.onSecondary,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = modifier.width(5.dp))
-                        Text(
-                            modifier = modifier.weight(1f),
-                            text = order.linens.size.toString(),
-                            color = colorScheme.onSecondary,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
+
                     Spacer(modifier = modifier.height(8.dp))
                     LazyColumn(
                         modifier = modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        state.sortedLinens.keys.forEach { status ->
-                            val linensByType = state.sortedLinens[status]?.keys?.toList()?: emptyList()
-                            items(linensByType) { type->
-                                val linens = state.sortedLinens[status]?.get(type)?.map { it.rfid }?: emptyList()
-                                Row(
-                                    modifier = modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ){
-                                    val fontColor = if (status) colorScheme.primary else colorScheme.error
-                                    Text(
-                                        modifier = modifier.weight(5f),
-                                        text = type.outFormat(),
-                                        color = fontColor,
-                                        style = MaterialTheme.typography.titleSmall,
-                                    )
-                                    Spacer(modifier = modifier.width(5.dp))
-                                    Text(
-                                        modifier = modifier.weight(1f),
-                                        text = linens.count { element->  markers.contains(element) }.toString(),
-                                        color = fontColor,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        textAlign = TextAlign.Center
-                                    )
-                                    Spacer(modifier = modifier.width(5.dp))
-                                    Text(
-                                        modifier = modifier.weight(1f),
-                                        text = linens.size.toString(),
-                                        color = fontColor,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
+                        items(state.sortedLinens.keys.toList()) { type ->
+                            val existLinen = state.sortedLinens[type] ?: emptyList()
+                            val fontColor = if (existLinen.map { it.rfid }
+                                    .all { it in state.markers }) colorScheme.primary else colorScheme.error
+                            UiRowThreeElements(
+                                title = type,
+                                fontColor = fontColor,
+                                firstNumber = state.sortedLinens[type]?.size?:0,
+                                secondNumber = existLinen.map { it.rfid }
+                                    .filter { it in state.markers }.size
+                            )
                         }
                     }
                 }
             }
         }
-    }
-}
-
-private val markers = (1..20).map { "Marker N$it" }
-private val typeLinen1 = TypeLinen(
-    id = 1,
-    name = "Пододеяльник",
-    size = "200x220",
-    fabric = "сатин страйп 3х3",
-    composition = "",
-    color = "белый",
-    density = "",
-    sku = "100% хлопок",
-    maxWash = 10,
-    clientId = 1
-)
-private val typeLinen2 = TypeLinen(
-    id = 2,
-    name = "Полотенце",
-    size = "50x80",
-    fabric = "сатин страйп 3х3",
-    composition = "",
-    color = "белый",
-    density = "",
-    sku = "100% хлопок",
-    maxWash = 10,
-    clientId = 1
-)
-private val linens = (1..10).map {
-    Linen(
-        id = it,
-        rfid = "Marker N$it",
-        typeId = it + 3,
-        typeLinen = if (it % 2 == 0) typeLinen1 else typeLinen2,
-        discount = "",
-        weight = 135,
-        state = StateLinen.entries.random(),
-        washCount = 9,
-        status = StatusLinen.IN_STOCK,
-        price = "",
-        counterpartyId = 1,
-        counterparty = Counterparty(
-            id = it,
-            name = "name $it",
-            address = "Russia, Moscow, Baumana, $it",
-            inn = "333-333-333-0$it",
-            phone = "+7(555)55-55-222"
-        )
-    )
-}
-
-@OptIn(ExperimentalTime::class)
-private val order = Order(
-    id = "1",
-    createdAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    hotelId = "1",
-    linenId = "2",
-    creatorId = "User",
-    address = "Moscow",
-    comment = "",
-    status = StatusOrder.FORMED,
-    commentStatus = "",
-    actFilePath = "",
-    client = Client(
-        id = 1,
-        email = "",
-        name = "Тринадцатый Климент Романович",
-        location = "Москва",
-        phone = "7894561236",
-        clientType = ""
-    ),
-    employee = Employee(
-        id = 1,
-        name = "ООО Ромашка",
-        position = "Москва",
-        phone = "7894561237",
-        login = "Dima"
-    ),
-    linens = linens
-)
-
-@OptIn(ExperimentalTime::class)
-private val order1 = Order(
-    id = "1",
-    createdAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    hotelId = "1",
-    linenId = "2",
-    creatorId = "User",
-    address = "Moscow",
-    comment = "",
-    status = StatusOrder.REGISTERED,
-    commentStatus = "",
-    actFilePath = "",
-    client = Client(
-        id = 1,
-        email = "",
-        name = "Тринадцатый Климент Романович",
-        location = "Москва",
-        phone = "7894561236",
-        clientType = ""
-    ),
-    employee = Employee(
-        id = 1,
-        name = "ООО Ромашка",
-        position = "Москва",
-        phone = "7894561237",
-        login = "Dima"
-    ),
-    linens = linens
-)
-
-@OptIn(ExperimentalTime::class)
-private val order2 = Order(
-    id = "1",
-    createdAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    hotelId = "1",
-    linenId = "2",
-    creatorId = "User",
-    address = "Moscow",
-    comment = "",
-    status = StatusOrder.IN_PRODUCTION,
-    commentStatus = "",
-    actFilePath = "",
-    client = Client(
-        id = 1,
-        email = "",
-        name = "Тринадцатый Климент Романович",
-        location = "Москва",
-        phone = "7894561236",
-        clientType = ""
-    ),
-    employee = Employee(
-        id = 1,
-        name = "ООО Ромашка",
-        position = "Москва",
-        phone = "7894561237",
-        login = "Dima"
-    ),
-    linens = linens
-)
-
-@Composable
-private fun ActionButton(
-    modifier: Modifier = Modifier,
-    title: String,
-    enabled: Boolean,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(5.dp),
-        enabled = enabled,
-        onClick = onClick
-    ) {
-        Text(
-            modifier = modifier,
-            text = title,
-            color = colorScheme.onPrimary,
-            style = MaterialTheme.typography.titleMedium,
-        )
     }
 }
 
@@ -762,7 +464,7 @@ private fun Preview6() {
                     expired = 0L
                 ),
                 order = order2,
-                markers = markers
+                markers = markers5_21
             ),
             visibleNotApproveDialog = true,
             onAction = {},

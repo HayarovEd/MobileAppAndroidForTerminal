@@ -14,16 +14,13 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedButton
@@ -36,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,12 +49,17 @@ import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
-import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.NotApproveDialogContent
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.UiButton
+import by.liscode.resources.uikit.UiClickableRow
+import by.liscode.resources.uikit.UiRowTitleTwoElements
+import by.liscode.resources.uikit.UiRowTwoElements
+import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processWorkScan
@@ -222,22 +223,13 @@ fun OrderCreateScreenScreen(
                     .background(colorScheme.background)
                     .padding(horizontal = 15.dp),
             ) {
-                Button(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(5.dp),
-                    enabled = state.remoteLinens.isNotEmpty()&&state.currentLaundry!= null,
+                UiButton(
+                    enabled = state.remoteLinens.isNotEmpty() && state.currentLaundry != null,
                     onClick = {
                         onAction(OrderCreateScreenAction.CreateOrder)
-                    }
-                ) {
-                    Text(
-                        modifier = modifier,
-                        text = stringResource(R.string.create_order),
-                        color = colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
+                    },
+                    title = stringResource(R.string.create_order),
+                )
             }
         }
     ) { paddingValues ->
@@ -313,96 +305,30 @@ fun OrderCreateScreenScreen(
                         }
                     }
                 }
-                state.currentLaundry?.let { laundry->
+                state.currentLaundry?.let { laundry ->
                     Spacer(modifier = modifier.height(10.dp))
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = "${stringResource(R.string.address)}:",
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = laundry.position,
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                    Spacer(modifier = modifier.height(10.dp))
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = "${stringResource(R.string.contact)}:",
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = laundry.login,
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                    Spacer(modifier = modifier.height(10.dp))
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = "${stringResource(R.string.phone)}:",
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = laundry.phone,
-                            color = colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
-                Spacer(modifier = modifier.height(4.dp))
-                HorizontalDivider(
-                    modifier = modifier.fillMaxWidth(),
-                    thickness = 1.dp
-                )
-                Spacer(modifier = modifier.height(8.dp))
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        modifier = modifier,
-                        text = stringResource(R.string.type_linen),
-                        color = colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyMedium,
+                    UiRowTwoText(
+                        title = "${stringResource(R.string.address)}:",
+                        value = laundry.position,
                     )
-                    Text(
-                        modifier = modifier,
-                        text = stringResource(R.string.reading),
-                        color = colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyMedium,
+                    Spacer(modifier = modifier.height(10.dp))
+                    UiRowTwoText(
+                        title = "${stringResource(R.string.contact)}:",
+                        value = laundry.login,
+                    )
+                    Spacer(modifier = modifier.height(10.dp))
+                    UiRowTwoText(
+                        title = "${stringResource(R.string.phone)}:",
+                        value = laundry.phone,
                     )
                 }
-                Spacer(modifier = modifier.height(4.dp))
-                HorizontalDivider(
-                    modifier = modifier.fillMaxWidth(),
-                    thickness = 1.dp
+                DividerSpacer()
+                UiRowTwoText(
+                    title = stringResource(R.string.type_linen),
+                    value = stringResource(R.string.reading),
                 )
-                Spacer(modifier = modifier.height(8.dp))
-                if (state.markers.isEmpty()&&state.remoteLinens.isEmpty()) {
+                DividerSpacer()
+                if (state.markers.isEmpty() && state.remoteLinens.isEmpty()) {
                     Text(
                         modifier = modifier.fillMaxWidth(),
                         text = stringResource(R.string.empty_objects),
@@ -411,83 +337,29 @@ fun OrderCreateScreenScreen(
                         textAlign = TextAlign.Center
                     )
                 } else {
-                    Row(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                    updateVisibilityNotApproveDialog(true)
-                                }
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = stringResource(R.string.not_for_order),
-                            color = colorScheme.error,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Text(
-                            modifier = modifier,
-                            text = (state.notApprovedLinens.size+state.unknownMarkers.size).toString(),
-                            color = colorScheme.error,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-                    Spacer(modifier = modifier.height(4.dp))
-                    HorizontalDivider(
-                        modifier = modifier.fillMaxWidth(),
-                        thickness = 1.dp
+                    UiClickableRow(
+                        title = stringResource(R.string.not_for_order),
+                        value = (state.notApprovedLinens.size + state.unknownMarkers.size).toString(),
+                        onClick = {
+                            updateVisibilityNotApproveDialog(true)
+                        }
                     )
-                    Spacer(modifier = modifier.height(8.dp))
-                    Row(
-                        modifier = modifier
-                            .clip(shape = RoundedCornerShape(10.dp))
-                            .fillMaxWidth()
-                            .background(colorScheme.secondary)
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            modifier = modifier.weight(6f),
-                            text = stringResource(R.string.fund),
-                            color = colorScheme.onSecondary,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = modifier.weight(1f))
-                        Text(
-                            modifier = modifier,
-                            text = state.approvedLinens.size.toString(),
-                            color = colorScheme.onSecondary,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
+                    DividerSpacer()
+                    UiRowTitleTwoElements(
+                        title = stringResource(R.string.fund),
+                        firstNumber = state.approvedLinens.size
+                    )
                     Spacer(modifier = modifier.height(8.dp))
                     LazyColumn(
                         modifier = modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        items(state.gropedApprovedLinensByTipe.keys.toList()) { typeLinen->
-                            Row(
-                                modifier = modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ){
-                                Text(
-                                    modifier = modifier.weight(1f),
-                                    text = typeLinen.outFormat(),
-                                    color = colorScheme.primary,
-                                    style = MaterialTheme.typography.titleSmall,
-                                )
-                                Spacer(modifier = modifier.width(5.dp))
-                                Text(
-                                    modifier = modifier,
-                                    text = state.gropedApprovedLinensByTipe[typeLinen]?.size.toString(),
-                                    color = colorScheme.primary,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                        items(state.gropedApprovedLinensByTipe.keys.toList()) { typeLinen ->
+                            UiRowTwoElements(
+                                title = typeLinen,
+                                firstNumber = state.gropedApprovedLinensByTipe[typeLinen]?.size?:0,
+                                fontColor = colorScheme.primary
+                            )
                         }
                     }
                 }

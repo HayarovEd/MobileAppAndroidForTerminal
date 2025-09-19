@@ -1,6 +1,5 @@
 package ru.modulmoney.inventory
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,12 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +53,7 @@ import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
+import by.liscode.resources.uikit.UiOutlandedButton
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
@@ -163,31 +161,24 @@ fun InventoryScreenScreen(
             }
         },
         bottomBarContent = {
-            if (state.inventoryState == InventoryState.CHECKING) {
-                OutlinedButton(
-                    modifier = modifier
-                        .navigationBarsPadding()
-                        .padding(horizontal = 15.dp)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(5.dp),
-                    enabled = !state.isActiveScanner
-                            && state.markers.isNotEmpty()
-                            && state.remoteLinens.isNotEmpty(),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = colorScheme.primary,
-                    ),
-                    border = BorderStroke(
-                        width = 2.dp, color = colorScheme.onPrimary
-                    ),
-                    onClick = {
-                        onAction(InventoryScreenAction.SaveResult)
-                    }
-                ) {
-                    Text(
-                        modifier = modifier,
-                        text = stringResource(R.string.save_result),
-                        color = colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleMedium,
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(colorScheme.background)
+            ) {
+                if (state.inventoryState == InventoryState.CHECKING) {
+                    UiOutlandedButton(
+                        modifier = modifier
+                            .navigationBarsPadding()
+                            .padding(horizontal = 15.dp)
+                            .fillMaxWidth(),
+                        title = stringResource(R.string.save_result),
+                        enabled = !state.isActiveScanner
+                                && state.markers.isNotEmpty()
+                                && state.remoteLinens.isNotEmpty(),
+                        onClick = {
+                            onAction(InventoryScreenAction.SaveResult)
+                        }
                     )
                 }
             }

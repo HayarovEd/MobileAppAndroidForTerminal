@@ -1,23 +1,15 @@
 package ru.modulmoney.inventory
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,98 +21,45 @@ import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.UiColumnTwoElements
+import by.liscode.resources.uikit.UiRowThreeText
+import by.liscode.resources.uikit.UiRowTitleThreeElements
 
 @Composable
 fun TypeNameScreen(
     modifier: Modifier = Modifier,
     size: Int,
     markers: List<String>,
-    sortedLinen:  Map<Boolean, List<Linen>>,
+    sortedLinen: Map<Boolean, List<Linen>>,
 
-) {
+    ) {
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = modifier,
-                text = stringResource(R.string.type_object),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(modifier = modifier.weight(1f))
-            Text(
-                modifier = modifier,
-                text = stringResource(R.string.need),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(modifier = modifier.width(10.dp))
-            Text(
-                modifier = modifier,
-                text = stringResource(R.string.read),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
+        UiRowThreeText(
+            title1 = stringResource(R.string.type_object),
+            title2 = stringResource(R.string.need),
+            title3 = stringResource(R.string.read),
+        )
         Spacer(modifier = modifier.height(10.dp))
-        Row(
-            modifier = modifier
-                .clip(shape = RoundedCornerShape(10.dp))
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.secondary)
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = modifier.weight(6f),
-                text = "",
-                color = MaterialTheme.colorScheme.onSecondary,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Spacer(modifier = modifier.width(5.dp))
-            Text(
-                modifier = modifier.weight(1f),
-                text = size.toString(),
-                color = MaterialTheme.colorScheme.onSecondary,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Spacer(modifier = modifier.width(5.dp))
-            Text(
-                modifier = modifier.weight(1f),
-                text = markers.size.toString(),
-                color = MaterialTheme.colorScheme.onSecondary,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
+        UiRowTitleThreeElements(
+            title = "",
+            firstNumber = size,
+            secondNumber = markers.size,
+        )
         Spacer(modifier = modifier.height(10.dp))
         LazyColumn(
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             sortedLinen.keys.forEach { status ->
-                val linensByType = sortedLinen[status]?: emptyList()
-                items(linensByType) { linen->
-                    Column (
-                        modifier = modifier.fillMaxWidth(),
-                    ){
-                        val fontColor = if (status) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                        Text(
-                            modifier = modifier.fillMaxWidth(),
-                            text = linen.typeLinen.outFormat(),
-                            color = fontColor,
-                            style = MaterialTheme.typography.titleSmall,
-                        )
-                        Text(
-                            modifier = modifier.fillMaxWidth(),
-                            text = linen.rfid,
-                            color = fontColor,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
+                val linensByType = sortedLinen[status] ?: emptyList()
+                items(linensByType) { linen ->
+                    UiColumnTwoElements(
+                        title = linen.typeLinen,
+                        value = linen.rfid,
+                        fontColor = if (status) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
@@ -256,11 +195,11 @@ private fun Preview3() {
             linens.sortedBy { it.typeLinen.outFormat() }
         }
 
-    val finishSordetLines = when  (filterByType) {
+    val finishSordetLines = when (filterByType) {
         FilterByType.All -> sortedLinens
         is FilterByType.FilterByTypeLinen -> {
             sortedLinens.mapValues { (_, innerMap) ->
-                innerMap.filter { it.typeLinen == filterByType.typeLinen}
+                innerMap.filter { it.typeLinen == filterByType.typeLinen }
             }.filterValues { it.isNotEmpty() }
         }
     }

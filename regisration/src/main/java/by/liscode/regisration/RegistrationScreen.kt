@@ -5,15 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,12 +22,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
-import by.liscode.resources.uikit.UiBaseScaffold
-import org.koin.androidx.compose.koinViewModel
 import by.liscode.resources.R
+import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.InputRow
+import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
+import by.liscode.resources.uikit.UiOutlandedButton
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RegistrationScreenRoot(
@@ -110,21 +108,13 @@ fun RegistrationScreenScreen(
                 },
             )
             Spacer(modifier = modifier.height(10.dp))
-            OutlinedButton(
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(5.dp),
-                enabled = state.login.isNotBlank()&&state.password.isNotBlank(),
+            UiOutlandedButton(
+                title = stringResource(id = R.string.regestered_terminal),
+                enabled =  state.login.isNotBlank()&&state.password.isNotBlank(),
                 onClick = {
                     onAction(RegistrationScreenAction.RegisterTerminal)
                 }
-            ) {
-                Text(
-                    modifier = modifier,
-                    text = stringResource(id = R.string.regestered_terminal),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            )
         }
     }
 }
