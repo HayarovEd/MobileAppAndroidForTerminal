@@ -141,7 +141,8 @@
     <string name="satisfaction">Удовлетворительное</string>
     <string name="write_off_state">Списано</string>
     <string name="regestered">Зарегистрирован</string>
-    <string name="order_in_transit">В доставке</string>
+    <string name="order_in_transit">В доставке в прачечную</string>
+    <string name="order_in_delivery">В доставке к клиенту</string>
     <string name="order_formed">Сформирован</string>
     <string name="order_completed">Выполнен</string>
     <string name="hide_info">Скрыть информацию</string>
@@ -206,4 +207,7 @@
     <string name="unknown_marker">Неизвестная метка</string>
     <string name="close">Закрыть</string>
     <string name="create_order">Создать заказ</string>
+    <string name="order">Заказ</string>
+    <string name="complete_order">Завершить заказ</string>
+    <string name="complete_work">Завершить работу</string>
 </resources>

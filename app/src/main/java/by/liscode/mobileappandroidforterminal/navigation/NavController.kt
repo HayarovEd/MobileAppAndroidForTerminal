@@ -16,6 +16,7 @@ import by.liscode.splash.SplashScreenRoot
 import com.abelfma.search.SearchScreenRoot
 import com.abelfma.take_balance.TakeBalanceScreenRoot
 import com.edurda77.take_work.TakeWorkScreenRoot
+import ru.modulmoney.current_order.CurrentOrderScreenRoot
 import ru.modulmoney.inventory.InventoryScreenRoot
 import ru.modulmoney.order_create.OrderCreateScreenRoot
 import ru.modulmoney.write_off.WriteOffScreenRoot
@@ -91,7 +92,14 @@ fun NavController(
         }
 
         composable<NavigationRoute.CurrentOrder> {
-
+            CurrentOrderScreenRoot(
+                onNavigateToLoginScreen = {
+                    navController.navigate(NavigationRoute.Login)
+                },
+                onBackNavigate = {
+                    navController.navigateUp()
+                }
+            )
         }
 
         composable<NavigationRoute.Settings> {

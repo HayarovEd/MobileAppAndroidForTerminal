@@ -75,9 +75,9 @@ fun StatusOrder.asStatusOrderText(): UiText {
         StatusOrder.FORMED -> StringResource(
             R.string.order_formed
         )
-       /* StatusOrder.IN_DELIVERY -> StringResource(
-            R.string.order_completed
-        )*/
+        StatusOrder.IN_DELIVERY -> StringResource(
+            R.string.order_in_delivery
+        )
         StatusOrder.COMPLETED -> StringResource(
             R.string.order_completed
         )

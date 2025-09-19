@@ -88,7 +88,7 @@ interface RemoteRepository {
     suspend fun getOrderById(
         baseUrl: String,
         token: String,
-        id: Int
+        id: String
     ): ResultWork<Order, DataError>
 
     suspend fun createOrder(

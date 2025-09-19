@@ -94,10 +94,10 @@ fun convertToStateLinenString(stateLinen: StateLinen): String {
 fun convertToStatusOrder(status: String): StatusOrder {
     return when (status) {
         "Зарегистрирован" -> StatusOrder.REGISTERED
-        "В доставке" -> StatusOrder.IN_TRANSIT
+        "Доставка в прачечную" -> StatusOrder.IN_TRANSIT
         "В производстве" -> StatusOrder.IN_PRODUCTION
         "Сформирован" -> StatusOrder.FORMED
-        // "В доставке" -> StatusOrder.IN_DELIVERY
+         "Доставка к клиенту" -> StatusOrder.IN_DELIVERY
         "Выполнен" -> StatusOrder.COMPLETED
         else -> StatusOrder.REGISTERED
     }

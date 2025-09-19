@@ -357,7 +357,7 @@ class RemoteRepositoryImpl(
     override suspend fun getOrderById(
         baseUrl: String,
         token: String,
-        id: Int
+        id: String
     ): ResultWork<Order, DataError> {
         TODO("Not yet implemented")
     }
