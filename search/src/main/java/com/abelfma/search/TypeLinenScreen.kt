@@ -1,23 +1,13 @@
 package com.abelfma.search
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Client
@@ -26,9 +16,10 @@ import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
-import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.UiRowTitleTwoElements
+import by.liscode.resources.uikit.UiRowTwoElements
 
 @Composable
 fun TypeLinenScreen(
@@ -43,75 +34,25 @@ fun TypeLinenScreen(
     ) {
         groupedLinen.keys.sortedBy { it }.forEach { clientId ->
             stickyHeader {
-                Row(
-                    modifier = modifier
-                        .clip(shape = RoundedCornerShape(10.dp))
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.secondary)
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        modifier = modifier.weight(6f),
-                        text = clients.firstOrNull { it.id == clientId }?.name
-                            ?: clientId.toString(),
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = modifier.width(5.dp))
-                    Text(
-                        modifier = modifier.weight(1f),
-                        text = groupedLinen[clientId]?.values?.sumOf { it.size }.toString(),
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
+                UiRowTitleTwoElements(
+                    title = clients.firstOrNull { it.id == clientId }?.name
+                        ?: clientId.toString(),
+                    firstNumber = groupedLinen[clientId]?.values?.sumOf { it.size }?:0
+                )
             }
             val groupByLinenType = groupedLinen[clientId] ?: emptyMap()
             items(groupByLinenType.keys.toList()) { type ->
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = modifier.weight(5f),
-                        text = type.outFormat(),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                    Spacer(modifier = modifier.width(5.dp))
-                    Text(
-                        modifier = modifier.weight(1f),
-                        text = groupByLinenType[type]?.size.toString(),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                UiRowTwoElements(
+                    title = type,
+                    firstNumber = groupByLinenType[type]?.size?:0,
+                    fontColor = MaterialTheme.colorScheme.onBackground
+                )
             }
             stickyHeader {
-                Row(
-                    modifier = modifier
-                        .clip(shape = RoundedCornerShape(10.dp))
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.secondary)
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        modifier = modifier.weight(6f),
-                        text = stringResource(R.string.unknown_markers),
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(modifier = modifier.width(5.dp))
-                    Text(
-                        modifier = modifier.weight(1f),
-                        text = outMarkers.size.toString(),
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
+                UiRowTitleTwoElements(
+                    title = stringResource(R.string.unknown_markers),
+                    firstNumber = outMarkers.size
+                )
             }
         }
     }

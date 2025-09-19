@@ -12,21 +12,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Filter
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.UiButton
+import by.liscode.resources.uikit.UiOutlandedButton
 import by.liscode.resources.uikit.UiTextField
 
 
@@ -65,35 +63,17 @@ fun FiltersDialog(
             modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
+            UiButton(
                 modifier = modifier.weight(1f),
-                shape = RoundedCornerShape(10.dp),
-                onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.add),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+                title = stringResource(id = R.string.add),
+                onClick = onConfirm
+            )
             Spacer(modifier = modifier.width(10.dp))
-            OutlinedButton (
+            UiOutlandedButton(
                 modifier = modifier.weight(1f),
-                shape = RoundedCornerShape(10.dp),
+                title = stringResource(id = R.string.clear),
                 onClick = onClear,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.clear),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            )
         }
         Spacer(modifier = modifier.height(10.dp))
         LazyColumn(
@@ -108,18 +88,10 @@ fun FiltersDialog(
             }
         }
         Spacer(modifier = modifier.height(10.dp))
-        OutlinedButton(
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(5.dp),
+        UiOutlandedButton(
+            title = stringResource(id = R.string.close),
             onClick = onClose
-        ) {
-            Text(
-                modifier = modifier,
-                text = stringResource(id = R.string.close),
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
+        )
     }
 }
 

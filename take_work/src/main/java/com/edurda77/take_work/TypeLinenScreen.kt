@@ -1,18 +1,12 @@
 package com.edurda77.take_work
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Counterparty
@@ -20,8 +14,8 @@ import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
-import by.liscode.domain.utils.outFormat
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.UiRowTwoElements
 
 @Composable
 fun TypeLinenScreen(
@@ -34,26 +28,12 @@ fun TypeLinenScreen(
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         items(sortedGroups.keys.toList()) { typeLinen ->
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val fontColor = if (sortedGroups[typeLinen]?.all { it.status == StatusLinen.IN_STOCK } == true) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.error
-                Text(
-                    modifier = modifier.weight(5f),
-                    text = typeLinen.outFormat(),
-                    color = fontColor,
-                    style = MaterialTheme.typography.titleSmall,
-                )
-                Spacer(modifier = modifier.width(5.dp))
-                Text(
-                    modifier = modifier.weight(1f),
-                    text = sortedGroups[typeLinen]?.size.toString(),
-                    color = fontColor,
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
-                )
-            }
+            val fontColor = if (sortedGroups[typeLinen]?.all { it.status == StatusLinen.IN_STOCK } == true) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.error
+            UiRowTwoElements(
+                title = typeLinen,
+                firstNumber = sortedGroups[typeLinen]?.size?:0,
+                fontColor = fontColor
+            )
         }
     }
 }

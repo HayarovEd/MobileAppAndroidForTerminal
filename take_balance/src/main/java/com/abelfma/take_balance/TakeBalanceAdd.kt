@@ -20,7 +20,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -40,6 +39,7 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
+import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asStateLinenText
@@ -154,12 +154,7 @@ fun TakeBalanceAddScreen(
                         }
                     }
                 }
-                Spacer(modifier = modifier.height(4.dp))
-                HorizontalDivider(
-                    modifier = modifier.fillMaxWidth(),
-                    thickness = 1.dp
-                )
-                Spacer(modifier = modifier.height(8.dp))
+                DividerSpacer()
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -178,12 +173,7 @@ fun TakeBalanceAddScreen(
                         }
                     )
                 }
-                Spacer(modifier = modifier.height(4.dp))
-                HorizontalDivider(
-                    modifier = modifier.fillMaxWidth(),
-                    thickness = 1.dp
-                )
-                Spacer(modifier = modifier.height(8.dp))
+                DividerSpacer()
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -234,12 +224,7 @@ fun TakeBalanceAddScreen(
                         }
                     }
                 }
-                Spacer(modifier = modifier.height(4.dp))
-                HorizontalDivider(
-                    modifier = modifier.fillMaxWidth(),
-                    thickness = 1.dp
-                )
-                Spacer(modifier = modifier.height(8.dp))
+                DividerSpacer()
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -267,12 +252,7 @@ fun TakeBalanceAddScreen(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
-                Spacer(modifier = modifier.height(4.dp))
-                HorizontalDivider(
-                    modifier = modifier.fillMaxWidth(),
-                    thickness = 1.dp
-                )
-                Spacer(modifier = modifier.height(8.dp))
+                DividerSpacer()
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -293,12 +273,7 @@ fun TakeBalanceAddScreen(
                         }
                     )
                 }
-                Spacer(modifier = modifier.height(4.dp))
-                HorizontalDivider(
-                    modifier = modifier.fillMaxWidth(),
-                    thickness = 1.dp
-                )
-                Spacer(modifier = modifier.height(8.dp))
+                DividerSpacer()
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -325,12 +300,7 @@ fun TakeBalanceAddScreen(
                     )
                 }
             }
-            Spacer(modifier = modifier.height(4.dp))
-            HorizontalDivider(
-                modifier = modifier.fillMaxWidth(),
-                thickness = 1.dp
-            )
-            Spacer(modifier = modifier.height(8.dp))
+            DividerSpacer()
             Text(
                 modifier = modifier,
                 text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",

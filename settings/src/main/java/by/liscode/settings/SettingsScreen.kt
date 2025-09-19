@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +39,7 @@ import by.liscode.domain.model.RfidProtocol
 import by.liscode.domain.model.RfidSetting
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.UiOutlandedButton
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
@@ -133,20 +132,12 @@ fun SettingsScreenScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(15.dp)
         ) {
-            OutlinedButton(
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(5.dp),
+            UiOutlandedButton(
+                title = stringResource(id = R.string.setting_filter),
                 onClick = {
                     isShowFiltersDialog = true
                 }
-            ) {
-                Text(
-                    modifier = modifier,
-                    text = stringResource(id = R.string.setting_filter),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            )
             Spacer(modifier = modifier.height(10.dp))
             state.rfidSetting?.let { settings->
                 Text(
@@ -280,35 +271,19 @@ fun SettingsScreenScreen(
                     }
                 }
                 Spacer(modifier = modifier.weight(1f))
-                OutlinedButton(
-                    modifier = modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(5.dp),
+                UiOutlandedButton(
+                    title = stringResource(id = R.string.exit_account),
                     onClick = {
                         onAction(SettingsScreenAction.Logout)
                     }
-                ) {
-                    Text(
-                        modifier = modifier,
-                        text = stringResource(id = R.string.exit_account),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
+                )
                 Spacer(modifier = modifier.height(10.dp))
-                OutlinedButton(
-                    modifier = modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(5.dp),
+                UiOutlandedButton(
+                    title = stringResource(id = R.string.exit_app),
                     onClick = {
                         activity?.finish()
                     }
-                ) {
-                    Text(
-                        modifier = modifier,
-                        text = stringResource(id = R.string.exit_app),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
+                )
             }
         }
     }
