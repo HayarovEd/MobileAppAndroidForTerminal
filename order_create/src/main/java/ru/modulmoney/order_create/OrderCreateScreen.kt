@@ -42,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
@@ -64,10 +63,11 @@ import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processWorkScan
 import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OrderCreateScreenRoot(
-    viewModel: OrderCreateScreenViewModel = viewModel(),
+    viewModel: OrderCreateScreenViewModel = koinViewModel (),
     onNavigateToLoginScreen: () -> Unit,
     onBackNavigate: () -> Unit,
 ) {

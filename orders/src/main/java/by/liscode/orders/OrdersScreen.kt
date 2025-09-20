@@ -126,7 +126,7 @@ fun OrdersScreenScreen(
                     style = MaterialTheme.typography.bodySmall,
                 )
                 state.userData?.let { userData ->
-                    if (userData.userType == UserType.HOTEL && userData.userRole == UserRole.CLIENT)
+                    if (userData.userType == UserType.HOTEL && userData.userRole == UserRole.CLIENT_EMPLOYEE)
                         UiIconButton(
                             modifier = modifier,
                             icon = Icons.Default.Add,
