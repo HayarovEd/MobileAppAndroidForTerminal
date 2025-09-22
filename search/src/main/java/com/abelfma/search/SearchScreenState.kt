@@ -23,9 +23,6 @@ data class SearchScreenState(
 ) {
     val filteredLinen = when (filterByType) {
         FilterByType.All -> remoteLinens
-      /*  FilterByType.ClientId -> client?.let { clt->
-            remoteLinens.filter { it.typeLinen.clientId == clt.id}
-        }?: remoteLinens*/
         is FilterByType.FilterByMask -> {
             remoteLinens.filter { it.rfid.contains(filterByType.mask, ignoreCase = true) }
         }
