@@ -7,6 +7,7 @@ import by.liscode.domain.model.TypeLinen
 sealed interface TakeBalanceScreenAction {
     data object Send:TakeBalanceScreenAction
     data object OpenInfo:TakeBalanceScreenAction
+    data object CloseSuccessDialog:TakeBalanceScreenAction
     class SetTypeLinen(val typeLinen: TypeLinen): TakeBalanceScreenAction
     class SetArticleNumber(val number: String):TakeBalanceScreenAction
     class SetStateLinen(val stateLinen: StateLinen): TakeBalanceScreenAction

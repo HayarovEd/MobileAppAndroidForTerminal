@@ -131,7 +131,19 @@ class TakeBalanceScreenViewModel(
             }
 
             TakeBalanceScreenAction.Send -> {
-                TODO()
+                loadData(
+                    action = { token, url ->
+                        acceptInToStock(
+                            accessToken = token,
+                            url = url
+                        )
+                    },
+                    navigate = {
+                        viewModelScope.launch {
+                            _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
+                        }
+                    }
+                )
             }
 
             is TakeBalanceScreenAction.SetArticleNumber -> {
@@ -204,6 +216,13 @@ class TakeBalanceScreenViewModel(
             is TakeBalanceScreenAction.RemoveMarker -> {
                 _state.value.copy(
                     markers = state.value.markers - action.marker
+                )
+                    .updateState()
+            }
+
+            TakeBalanceScreenAction.CloseSuccessDialog -> {
+                _state.value.copy(
+                    isShowSuccessDialog = false
                 )
                     .updateState()
             }
@@ -324,6 +343,48 @@ class TakeBalanceScreenViewModel(
                         counterparties = state.value.counterparties + result.data
                     )
                         .updateState()
+                }
+            }
+        }
+    }
+
+    private fun acceptInToStock(
+        accessToken: String,
+        url: String,
+    ) {
+        if (state.value.currentTypeLinen != null && state.value.currentCounterparty != null) {
+            state.value.weight.toIntOrNull()?.let { weight ->
+                viewModelScope.launch {
+                    _state.value.copy(
+                        isLoading = true
+                    )
+                        .updateState()
+                    when (val result = remoteRepository.acceptToLinensInToStock(
+                        baseUrl = url,
+                        token = accessToken,
+                        rfids = state.value.markers,
+                        typeId = state.value.currentTypeLinen!!.id,
+                        nomenclature = state.value.articleNumber,
+                        weight = weight,
+                        consignment = state.value.billLading,
+                        counterpartyId = state.value.currentCounterparty!!.id
+                    )) {
+                        is ResultWork.Error -> {
+                            _state.value.copy(
+                                isLoading = false,
+                                message = result.error.asUiText()
+                            )
+                                .updateState()
+                        }
+
+                        is ResultWork.Success -> {
+                            _state.value.copy(
+                                isLoading = false,
+                                isShowSuccessDialog = true
+                            )
+                                .updateState()
+                        }
+                    }
                 }
             }
         }

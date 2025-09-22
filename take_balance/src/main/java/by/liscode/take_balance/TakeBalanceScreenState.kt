@@ -25,9 +25,10 @@ data class TakeBalanceScreenState(
     val currentCounterparty: Counterparty? = null,
     val stateScreen: StateScreen = StateScreen.ADD,
     val queryCounterparty: String = "",
-    val filterMarkers: List<Filter> = emptyList()
+    val filterMarkers: List<Filter> = emptyList(),
+    val isShowSuccessDialog: Boolean = false,
 ) {
-    val serchedCounterParties = counterparties.filter { it.name.contains(queryCounterparty, ignoreCase = true) }
+    val searchedCounterParties = counterparties.filter { it.name.contains(queryCounterparty, ignoreCase = true) }
 }
 
 enum class StateScreen{

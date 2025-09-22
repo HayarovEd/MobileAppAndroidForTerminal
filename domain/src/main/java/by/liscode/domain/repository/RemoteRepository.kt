@@ -112,4 +112,15 @@ interface RemoteRepository {
         token: String,
         order: Order
     ): ResultWork<Order, DataError>
+
+    suspend fun acceptToLinensInToStock(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>,
+        typeId: Int,
+        nomenclature: String,
+        weight: Int,
+        consignment: String,
+        counterpartyId: Int
+    ): ResultWork<List<Linen>, DataError>
 }

@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -106,6 +109,34 @@ fun TakeBalanceScreenScreen(
     updateVisibleStateLinenMenu: (Boolean) -> Unit,
 ) {
 
+    if (state.isShowSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onAction(TakeBalanceScreenAction.CloseSuccessDialog)
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.linen_success_stock),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(TakeBalanceScreenAction.CloseSuccessDialog)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+        )
+    }
+
+
     if (visibleAddDialog) {
         Dialog(
             onDismissRequest = {
@@ -152,7 +183,7 @@ fun TakeBalanceScreenScreen(
                                     }
                                 ),
                                 text = stringResource(R.string.send),
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = colorScheme.onPrimary,
                                 style = MaterialTheme.typography.titleMedium,
                             )
                         },
@@ -166,7 +197,7 @@ fun TakeBalanceScreenScreen(
                         endContent = {
                             UiIconButton(
                                 icon = Icons.Default.Add,
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = colorScheme.onPrimary,
                                 onClick = {
                                     updateVisibilityAddDialog(true)
                                 }
@@ -221,7 +252,7 @@ fun TakeBalanceScreenScreen(
                     paddingValues  = paddingValues,
                     queryCounterparty = state.queryCounterparty,
                     isLoading = state.isLoading,
-                    counterparties = state.serchedCounterParties,
+                    counterparties = state.searchedCounterParties,
                     onSearchCounterparty = {
                         onAction(TakeBalanceScreenAction.SearchCounterParty(it))
                     },
@@ -269,6 +300,30 @@ private fun Preview2() {
         TakeBalanceScreenScreen(
             state = TakeBalanceScreenState(
                 stateScreen = StateScreen.ADD
+            ),
+            visibleAddDialog = false,
+            isOpenedStateLinenMenu = false,
+            isOpenTypeLinenMenu = true,
+            updateVisibleTypeLinenMenu = {},
+            updateVisibleStateLinenMenu = {},
+            onAction = {},
+            onBackNavigate = {},
+            updateVisibilityAddDialog = {},
+        )
+    }
+}
+
+@Preview(
+    showSystemUi = true,
+    showBackground = true
+)
+@Composable
+private fun Preview3() {
+    MobileAppAndroidForTerminalTheme {
+        TakeBalanceScreenScreen(
+            state = TakeBalanceScreenState(
+                stateScreen = StateScreen.ADD,
+                isShowSuccessDialog = true
             ),
             visibleAddDialog = false,
             isOpenedStateLinenMenu = false,

@@ -210,4 +210,5 @@
     <string name="order">Заказ</string>
     <string name="complete_order">Завершить заказ</string>
     <string name="complete_work">Завершить работу</string>
+    <string name="linen_success_stock">Бельё успешно добавлено на склад</string>
 </resources>
