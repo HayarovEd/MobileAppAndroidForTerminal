@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.modulmoney.inventory"
+    namespace = "by.liscode.inventory"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
 

@@ -13,13 +13,13 @@ import by.liscode.resources.model.routes
 import by.liscode.resources.uikit.UiBottomNavigation
 import by.liscode.settings.SettingsScreenRoot
 import by.liscode.splash.SplashScreenRoot
-import com.abelfma.search.SearchScreenRoot
-import com.abelfma.take_balance.TakeBalanceScreenRoot
+import by.liscode.search.SearchScreenRoot
+import by.liscode.take_balance.TakeBalanceScreenRoot
 import com.edurda77.take_work.TakeWorkScreenRoot
-import ru.modulmoney.current_order.CurrentOrderScreenRoot
-import ru.modulmoney.inventory.InventoryScreenRoot
+import by.liscode.inventory.CurrentOrderScreenRoot
+import by.liscode.inventory.InventoryScreenRoot
 import ru.modulmoney.order_create.OrderCreateScreenRoot
-import ru.modulmoney.write_off.WriteOffScreenRoot
+import by.liscode.write_off.WriteOffScreenRoot
 
 @Composable
 fun NavController(

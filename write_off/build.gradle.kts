@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.modulmoney.write_off"
+    namespace = "by.liscode.write_off"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

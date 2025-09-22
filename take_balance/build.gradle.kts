@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.abelfma.take_balance"
+    namespace = "by.liscode.take_balance"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

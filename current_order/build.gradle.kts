@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "ru.modulmoney.current_order"
+    namespace = "by.liscode.current_order"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

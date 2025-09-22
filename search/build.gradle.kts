@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.abelfma.search"
+    namespace = "by.liscode.search"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
