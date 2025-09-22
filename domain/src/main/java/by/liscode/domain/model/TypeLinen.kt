@@ -10,5 +10,5 @@ data class TypeLinen(
     val density: String,
     val sku: String,
     val maxWash: Int,
-    val clientId:Int,
+    val clientId:Int =-1, //TODO, Delete this field
 )

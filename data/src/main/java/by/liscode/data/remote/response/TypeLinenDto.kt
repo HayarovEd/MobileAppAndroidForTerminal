@@ -11,7 +11,7 @@ data class TypeLinenDto(
     val name: String,
     @SerialName("created_at")
     val createdAt: String,
-    @SerialName("update_at")
+    @SerialName("updated_at")
     val updatedAt: String,
     @SerialName("size")
     val size: String,
@@ -27,6 +27,4 @@ data class TypeLinenDto(
     val sku: String,
     @SerialName("max_wash")
     val maxWash: Int,
-    @SerialName("client_id")
-    val clientId:Int,
 )

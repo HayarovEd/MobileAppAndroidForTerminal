@@ -29,7 +29,6 @@ fun TypeLinenDto.convertToTypeLinen(): TypeLinen {
         density = this.density,
         sku = this.sku,
         maxWash = this.maxWash,
-        clientId = clientId
     )
 }
 
