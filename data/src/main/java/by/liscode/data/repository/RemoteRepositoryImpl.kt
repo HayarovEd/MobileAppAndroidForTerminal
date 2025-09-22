@@ -215,6 +215,7 @@ class RemoteRepositoryImpl(
                         )
                     )
                 }
+                //Log.d("TEST IMPULS CAMERA", "response ${response.bodyAsText()}")
                 val result = response.body<ClientItemsResponse>()
                 result.linenDto.map { it.convertToLinen() }
             }
@@ -243,7 +244,6 @@ class RemoteRepositoryImpl(
                         )
                     )
                 }
-                //Log.d("TEST IMPULS CAMERA", "response ${response.bodyAsText()}")
                 val result = response.body<CounterPartyResponseFromPost>()
                 Counterparty(
                     id = result.counterparty.id,
