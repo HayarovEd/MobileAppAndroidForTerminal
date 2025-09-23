@@ -1,5 +1,6 @@
 package by.liscode.inventory
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,9 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,6 +76,7 @@ fun InventoryScreenRoot(
             }
         }
     }
+    Log.d("TEST WORK SCANNER APP", "filterByType ${state.filterByType} ")
     LaunchedEffect(state.settings) {
         state.settings?.let {
             scanner.applySettings(it)
@@ -256,9 +255,9 @@ fun InventoryScreenScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
-                            selected = state.filterByType is FilterByType.All,
+                            selected = state.filterByType == FilterByType.ALL,
                             onClick = {
-                                onAction(InventoryScreenAction.UpdateFilter(FilterByType.All))
+                                onAction(InventoryScreenAction.UpdateFilter(FilterByType.ALL))
                             }
                         )
                         Text(
@@ -275,19 +274,22 @@ fun InventoryScreenScreen(
                     )
                     Spacer(modifier = modifier.height(4.dp))
                     if (state.linenTypes.isNotEmpty()) {
-                        var currentTypeLinen by remember { mutableStateOf(state.linenTypes[0]) }
+                       //var currentTypeLinen by remember { mutableStateOf(state.linenTypes[0]) }
                         Row(
                             modifier = modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             RadioButton(
-                                selected = state.filterByType is FilterByType.FilterByTypeLinen,
+                                selected = state.filterByType == FilterByType.FILTER_BY_TYPE_LINEN,
                                 onClick = {
                                     onAction(
                                         InventoryScreenAction.UpdateFilter(
-                                            FilterByType.FilterByTypeLinen(
-                                                currentTypeLinen
-                                            )
+                                            FilterByType.FILTER_BY_TYPE_LINEN
+                                        )
+                                    )
+                                    onAction(
+                                        InventoryScreenAction.UpdateCurrentType(
+                                            state.linenTypes.first()
                                         )
                                     )
                                 }
@@ -305,7 +307,7 @@ fun InventoryScreenScreen(
                             thickness = 1.dp
                         )
                         Spacer(modifier = modifier.height(4.dp))
-                        if (state.filterByType is FilterByType.FilterByTypeLinen) {
+                        if (state.filterByType == FilterByType.FILTER_BY_TYPE_LINEN) {
                             LazyColumn(
                                 modifier = modifier.fillMaxWidth(),
                                 verticalArrangement = Arrangement.spacedBy(15.dp)
@@ -315,17 +317,22 @@ fun InventoryScreenScreen(
                                         modifier = modifier
                                             .border(
                                                 width = 1.dp,
-                                                color = if (currentTypeLinen == linenType) colorScheme.primary else colorScheme.outline,
+                                                color = if (state.currentTypeLinen == linenType) colorScheme.primary else colorScheme.outline,
                                                 shape = RoundedCornerShape(15.dp)
                                             )
                                             .clip(RoundedCornerShape(15.dp))
                                             .fillMaxWidth()
                                             .padding(15.dp)
                                             .clickable(
-                                                onClick = { currentTypeLinen = linenType }
+                                                onClick = {
+                                                    onAction(
+                                                        InventoryScreenAction.UpdateCurrentType(
+                                                            linenType
+                                                        )
+                                                    )}
                                             ),
                                         text = linenType.outFormat(),
-                                        color = if (currentTypeLinen == linenType) colorScheme.primary else colorScheme.onBackground,
+                                        color = if (state.currentTypeLinen == linenType) colorScheme.primary else colorScheme.onBackground,
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             fontWeight = FontWeight.Bold,
                                         ),
@@ -529,7 +536,8 @@ private fun Preview2() {
             state = InventoryScreenState(
                 markers = markers,
                 remoteLinens = linens,
-                filterByType = FilterByType.FilterByTypeLinen(typeLinen1)
+                filterByType = FilterByType.FILTER_BY_TYPE_LINEN,
+                currentTypeLinen = typeLinen1
             ),
             onAction = {},
             onBackNavigate = {}
@@ -595,7 +603,8 @@ private fun Preview3() {
             state = InventoryScreenState(
                 markers = markers,
                 remoteLinens = linens,
-                filterByType = FilterByType.FilterByTypeLinen(typeLinen1),
+                filterByType = FilterByType.FILTER_BY_TYPE_LINEN,
+                currentTypeLinen = typeLinen1,
                 groupLinen = GroupLinen.TYPE_LINEN
             ),
             onAction = {},
@@ -660,7 +669,8 @@ private fun Preview4() {
         InventoryScreenScreen(
             state = InventoryScreenState(
                 remoteLinens = linens,
-                filterByType = FilterByType.FilterByTypeLinen(typeLinen1),
+                filterByType = FilterByType.FILTER_BY_TYPE_LINEN,
+                currentTypeLinen = typeLinen1,
                 inventoryState = InventoryState.FILTERING
             ),
             onAction = {},
@@ -725,7 +735,7 @@ private fun Preview5() {
         InventoryScreenScreen(
             state = InventoryScreenState(
                 remoteLinens = linens,
-                filterByType = FilterByType.All,
+                filterByType = FilterByType.ALL,
                 inventoryState = InventoryState.FILTERING
             ),
             onAction = {},

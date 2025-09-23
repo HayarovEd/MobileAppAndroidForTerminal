@@ -187,7 +187,7 @@ private fun Preview3() {
             )
         )
     }
-    val filterByType = FilterByType.FilterByTypeLinen(typeLinen2)
+    val filterByType = FilterByType.FILTER_BY_TYPE_LINEN
     val sortedLinens = linens.groupBy {
         it.rfid in markers
     }
@@ -196,10 +196,10 @@ private fun Preview3() {
         }
 
     val finishSordetLines = when (filterByType) {
-        FilterByType.All -> sortedLinens
-        is FilterByType.FilterByTypeLinen -> {
+        FilterByType.ALL -> sortedLinens
+        FilterByType.FILTER_BY_TYPE_LINEN -> {
             sortedLinens.mapValues { (_, innerMap) ->
-                innerMap.filter { it.typeLinen == filterByType.typeLinen }
+                innerMap.filter { it.typeLinen == typeLinen2 }
             }.filterValues { it.isNotEmpty() }
         }
     }

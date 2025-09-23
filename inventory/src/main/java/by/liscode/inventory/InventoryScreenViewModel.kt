@@ -110,6 +110,13 @@ class InventoryScreenViewModel(
                 )
                     .updateState()
             }
+
+            is InventoryScreenAction.UpdateCurrentType -> {
+                _state.value.copy(
+                    currentTypeLinen = action.typeLinen
+                )
+                    .updateState()
+            }
         }
     }
 

@@ -101,7 +101,7 @@ private fun Preview1() {
 )
 @Composable
 private fun Preview3() {
-    val filterByType = FilterByType.FilterByTypeLinen(typeLinen2)
+    val filterByType = FilterByType.FILTER_BY_TYPE_LINEN
     val sg = linens.groupBy {
         it.rfid in markers15_45
     }.mapValues { (_, linens)->
@@ -109,11 +109,11 @@ private fun Preview3() {
             .groupBy { it.typeLinen }
     }
     val finishFilterGroups = when  (filterByType) {
-        FilterByType.All -> sg
-        is FilterByType.FilterByTypeLinen -> {
+        FilterByType.ALL -> sg
+        FilterByType.FILTER_BY_TYPE_LINEN -> {
             sg.mapValues { (_, innerMap) ->
                 innerMap.filter { (key, _) ->
-                    key == filterByType.typeLinen
+                    key == typeLinen2
                 }
             }.filterValues { it.isNotEmpty() }
         }

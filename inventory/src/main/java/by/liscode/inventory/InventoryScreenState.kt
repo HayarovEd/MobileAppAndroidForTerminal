@@ -17,11 +17,12 @@ data class InventoryScreenState(
     val isLoading: Boolean = false,
     val markers: List<String> = emptyList(),
     val remoteLinens: List<Linen> = emptyList(),
-    val filterByType: FilterByType = FilterByType.All,
+    val filterByType: FilterByType = FilterByType.ALL,
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val isActiveScanner: Boolean = false,
     val filterMarkers: List<Filter> = emptyList(),
-    val inventoryState: InventoryState = InventoryState.CHECKING
+    val inventoryState: InventoryState = InventoryState.CHECKING,
+    val currentTypeLinen: TypeLinen? = null,
 ) {
     val linenTypes = remoteLinens.map { it.typeLinen }.distinct()
     private val sortedLinens = remoteLinens.groupBy {
@@ -32,10 +33,10 @@ data class InventoryScreenState(
         }
 
     val finishSortedLines = when  (filterByType) {
-        FilterByType.All -> sortedLinens
-        is FilterByType.FilterByTypeLinen -> {
+        FilterByType.ALL -> sortedLinens
+        FilterByType.FILTER_BY_TYPE_LINEN -> {
             sortedLinens.mapValues { (_, innerMap) ->
-                innerMap.filter { it.typeLinen == filterByType.typeLinen}
+                innerMap.filter { it.typeLinen == currentTypeLinen}
             }.filterValues { it.isNotEmpty() }
         }
     }
@@ -46,11 +47,11 @@ data class InventoryScreenState(
             .groupBy { it.typeLinen }
     }
     val finishFilterGroups = when  (filterByType) {
-        FilterByType.All -> sortedGroups
-        is FilterByType.FilterByTypeLinen -> {
+        FilterByType.ALL -> sortedGroups
+        FilterByType.FILTER_BY_TYPE_LINEN -> {
             sortedGroups.mapValues { (_, innerMap) ->
                 innerMap.filter { (key, _) ->
-                    key == filterByType.typeLinen
+                    key == currentTypeLinen
                 }
             }.filterValues { it.isNotEmpty() }
         }
@@ -61,9 +62,9 @@ sealed class UiInventoryEvents {
     data object LoginNavigationEvent : UiInventoryEvents()
 }
 
-sealed interface FilterByType {
-    data object All : FilterByType
-    class FilterByTypeLinen(val typeLinen: TypeLinen) : FilterByType
+enum class FilterByType {
+    ALL,
+    FILTER_BY_TYPE_LINEN
 }
 
 
