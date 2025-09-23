@@ -62,7 +62,7 @@ class InventoryScreenViewModel(
                 //TODO
             }
             is InventoryScreenAction.TakeMarker -> {
-                if (state.value.markers.isEmpty()) {
+                if (state.value.filterMarkers.isEmpty()) {
                     if (!state.value.markers.contains(action.marker)) {
                         _state.value.copy(
                             markers = state.value.markers + action.marker
