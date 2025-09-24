@@ -151,7 +151,7 @@ fun SettingsScreenScreen(
                     modifier = modifier.fillMaxWidth(),
                     value = settings.power,
                     valueRange = 1f..30f,
-                    steps = 29,
+                    steps = 30,
                     onValueChange = {
                         onAction(SettingsScreenAction.UpdatePower(it))
                     },

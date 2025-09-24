@@ -33,6 +33,7 @@ fun UiTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isOnlyDigit: Boolean = false,
     isOnlyLetter: Boolean = false,
+    singleLine: Boolean = false,
     disabledBorderColor: Color = Color.Unspecified,
     isError: Boolean = false,
     maxLines: Int = 1,
@@ -64,6 +65,7 @@ fun UiTextField(
             keyboardType = keyboardType,
             imeAction = imeAction
         ),
+        singleLine = singleLine,
         keyboardActions = keyboardActions,
         maxLines = maxLines,
         placeholder = {

@@ -99,6 +99,11 @@ class SettingsScreenViewModel(
 
             is SettingsScreenAction.UpdatePower -> {
                 actionUpdateSetting {
+                    viewModelScope.launch {
+                        dataStoreRepository.saveRfidSettings(
+                            rfidSetting = it.copy(power = action.value)
+                        )
+                    }
                     _state.value.copy(
                         rfidSetting = it.copy(power = action.value)
                     )

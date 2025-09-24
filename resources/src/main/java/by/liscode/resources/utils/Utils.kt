@@ -4,7 +4,6 @@ import android.util.Log
 import by.liscode.domain.model.RfidSetting
 import by.liscode.resources.model.ScannerWork
 import com.rscja.deviceapi.RFIDWithUHFUART
-import com.rscja.deviceapi.entity.InventoryModeEntity
 import com.rscja.deviceapi.entity.InventoryParameter
 import kotlin.math.roundToInt
 
@@ -12,10 +11,10 @@ fun RFIDWithUHFUART.applySettings(
     rfidSetting: RfidSetting,
 ):RFIDWithUHFUART {
     return this.apply {
-       /* Log.d("REST TERMINAL", "power ${rfidSetting.power}")
+        Log.d("REST TERMINAL", "power ${rfidSetting.power}")
         Log.d("REST TERMINAL", "frequencyMode ${rfidSetting.frequencyMode.value}")
         Log.d("REST TERMINAL", "protocol ${rfidSetting.protocol.value}")
-        Log.d("REST TERMINAL", "attribute ${rfidSetting.attribute.value}")*/
+        Log.d("REST TERMINAL", "attribute ${rfidSetting.attribute.value}")
         power = (rfidSetting.power).roundToInt()
         frequencyMode = rfidSetting.frequencyMode.value
       /*  epcAndTIDUserMode = InventoryModeEntity
@@ -24,10 +23,10 @@ fun RFIDWithUHFUART.applySettings(
             .build()*/
         protocol = 0x00//rfidSetting.protocol.value
         setFilter(rfidSetting.attribute.value, 0, 0, "")
-       /* Log.d("REST TERMINAL", "get power $power")
+        Log.d("REST TERMINAL", "get power $power")
         Log.d("REST TERMINAL", "get frequencyMode $frequencyMode")
         Log.d("REST TERMINAL", "get protocol $protocol")
-        Log.d("REST TERMINAL", "get epcAndTIDUserMode ${epcAndTIDUserMode.mode}")*/
+        Log.d("REST TERMINAL", "get epcAndTIDUserMode ${epcAndTIDUserMode.mode}")
     }
 }
 

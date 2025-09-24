@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -87,6 +88,8 @@ private fun LoginScreenScreen(
             UiTextField(
                 content = state.login,
                 enabled = !state.isLoading,
+                imeAction = ImeAction.Next,
+                singleLine = true,
                 onClickContent = { onAction(LoginScreenAction.UpdateLogin(it)) },
                 placeholder = stringResource(id = R.string.enter_login)
             )
@@ -101,6 +104,8 @@ private fun LoginScreenScreen(
             UiTextField(
                 content = state.password,
                 enabled = !state.isLoading,
+                imeAction = ImeAction.Done,
+                singleLine = true,
                 onClickContent = { onAction(LoginScreenAction.UpdatePassword(it)) },
                 placeholder = stringResource(id = R.string.enter_password)
             )
