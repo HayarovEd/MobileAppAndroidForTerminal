@@ -11,6 +11,7 @@ fun RFIDWithUHFUART.applySettings(
     rfidSetting: RfidSetting,
 ):RFIDWithUHFUART {
     return this.apply {
+        //TODO - remove logs
         Log.d("REST TERMINAL", "power ${rfidSetting.power}")
         Log.d("REST TERMINAL", "frequencyMode ${rfidSetting.frequencyMode.value}")
         Log.d("REST TERMINAL", "protocol ${rfidSetting.protocol.value}")
