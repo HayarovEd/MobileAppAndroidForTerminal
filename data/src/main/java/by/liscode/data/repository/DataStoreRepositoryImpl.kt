@@ -60,11 +60,11 @@ class DataStoreRepositoryImpl(
                    2 -> RfidAttribute.TID
                    else -> RfidAttribute.EPC
                },
-               power = preferences[FIELD_LABEL_POWER]?:0.2f,
+               power = preferences[FIELD_LABEL_POWER]?:15f,
                frequencyMode = when (preferences[FIELD_LABEL_FREQ_MODE]) {
                    0x04 -> FrequencyMode.ETSI
                    0x37 -> FrequencyMode.RUSSIA
-                   else -> FrequencyMode.RUSSIA
+                   else -> FrequencyMode.ETSI
                }
            )
        }

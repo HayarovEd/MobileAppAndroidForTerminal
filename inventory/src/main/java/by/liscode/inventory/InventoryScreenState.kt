@@ -27,26 +27,27 @@ data class InventoryScreenState(
     val linenTypes = remoteLinens.map { it.typeLinen }.distinct()
     private val sortedLinens = remoteLinens.groupBy {
         it.rfid in markers
-    }
+    }.toSortedMap(compareBy { it })
         .mapValues { (_, linens) ->
             linens.sortedBy { it.typeLinen.outFormat() }
         }
 
-    val finishSortedLines = when  (filterByType) {
+    val finishSortedLines = when (filterByType) {
         FilterByType.ALL -> sortedLinens
         FilterByType.FILTER_BY_TYPE_LINEN -> {
             sortedLinens.mapValues { (_, innerMap) ->
-                innerMap.filter { it.typeLinen == currentTypeLinen}
+                innerMap.filter { it.typeLinen == currentTypeLinen }
             }.filterValues { it.isNotEmpty() }
         }
     }
     private val sortedGroups = remoteLinens.groupBy {
         it.rfid in markers
-    }.mapValues { (_, linens)->
-        linens
-            .groupBy { it.typeLinen }
-    }
-    val finishFilterGroups = when  (filterByType) {
+    }.toSortedMap(compareBy { it })
+        .mapValues { (_, linens) ->
+            linens
+                .groupBy { it.typeLinen }
+        }
+    val finishFilterGroups = when (filterByType) {
         FilterByType.ALL -> sortedGroups
         FilterByType.FILTER_BY_TYPE_LINEN -> {
             sortedGroups.mapValues { (_, innerMap) ->
