@@ -9,10 +9,10 @@ enum class FrequencyMode(
 ) {
     RUSSIA(
         title = RUSSIA_FREQ,
-        value = 37
+        value = 0x37
     ),
     ETSI(
         title = ETSI_FREQ,
-        value = 4
+        value = 0x04
     )
 }

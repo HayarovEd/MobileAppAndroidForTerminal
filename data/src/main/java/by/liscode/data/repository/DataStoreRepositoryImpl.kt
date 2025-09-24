@@ -40,8 +40,8 @@ class DataStoreRepositoryImpl(
         }
         dataStore.edit { preferences ->
             preferences[FIELD_LABEL_FREQ_MODE] = when (rfidSetting.frequencyMode) {
-                FrequencyMode.RUSSIA -> 37
-                FrequencyMode.ETSI -> 4
+                FrequencyMode.RUSSIA -> 0x37
+                FrequencyMode.ETSI -> 0x04
             }
         }
     }
@@ -51,7 +51,7 @@ class DataStoreRepositoryImpl(
        return dataStore.data.map { preferences ->
            RfidSetting(
                protocol = when (preferences[FIELD_LABEL_PROTOCOL]) {
-                   0 -> RfidProtocol.ISO180006C
+                   0x00 -> RfidProtocol.ISO180006C
                   // 3 -> RfidProtocol.ISO180006D
                    else -> RfidProtocol.ISO180006C
                },
@@ -62,8 +62,8 @@ class DataStoreRepositoryImpl(
                },
                power = preferences[FIELD_LABEL_POWER]?:0.2f,
                frequencyMode = when (preferences[FIELD_LABEL_FREQ_MODE]) {
-                   4 -> FrequencyMode.ETSI
-                   37 -> FrequencyMode.RUSSIA
+                   0x04 -> FrequencyMode.ETSI
+                   0x37 -> FrequencyMode.RUSSIA
                    else -> FrequencyMode.RUSSIA
                }
            )
