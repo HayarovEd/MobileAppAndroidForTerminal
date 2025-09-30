@@ -124,7 +124,7 @@ private fun TakeWorkScreenScreen(
                         }
                     ),
                     text = stringResource(R.string.objects_success_in_use),
-                    color = colorScheme.onPrimary,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyLarge,
                 )
             },

@@ -1,5 +1,6 @@
 package by.liscode.data.repository
 
+import android.util.Log
 import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToClient
 import by.liscode.data.mapper.convertToEmployee
@@ -57,6 +58,7 @@ import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
@@ -269,6 +271,7 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
+                Log.d("TEST RFID TERMINAL", "by rfid - ${response.bodyAsText()}")
                 val result = response.body<LinenDtoSingleResponse>()
                 result.item.convertToLinen()
             }
