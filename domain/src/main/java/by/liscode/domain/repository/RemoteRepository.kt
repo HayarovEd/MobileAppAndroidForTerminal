@@ -77,7 +77,7 @@ interface RemoteRepository {
     suspend fun sendLinenInToUse(
         baseUrl: String,
         token: String,
-        linens: List<Linen>
+        rfids: List<String>,
     ): ResultWork<List<Linen>, DataError>
 
     suspend fun getOrders(

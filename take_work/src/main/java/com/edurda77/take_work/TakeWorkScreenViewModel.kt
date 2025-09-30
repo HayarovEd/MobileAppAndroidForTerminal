@@ -214,7 +214,7 @@ class TakeWorkScreenViewModel(
             when (val result = remoteRepository.sendLinenInToUse(
                 baseUrl = url,
                 token = accessToken,
-                linens = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }
+                rfids = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }.map { it.rfid }
             )) {
                 is ResultWork.Error -> {
                     _state.value.copy(

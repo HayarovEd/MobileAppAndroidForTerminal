@@ -78,6 +78,7 @@ private fun ItemLinenView() {
         ItemLinen(
             linen = Linen(
                 id = 1,
+                clientId = 0,
                 rfid = "300ed300ed300ed300ed",
                 typeId = 1,
                 typeLinen = TypeLinen(

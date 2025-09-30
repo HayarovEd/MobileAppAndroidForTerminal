@@ -95,6 +95,7 @@ private fun Preview1() {
     val linens = (1..49).map {
         Linen(
             id = it,
+            clientId = 0,
             rfid = "Marker N$it",
             typeId = it + 3,
             typeLinen = if (it % 2 == 0) typeLinen1 else typeLinen2,
@@ -166,6 +167,7 @@ private fun Preview2() {
     val linens = (1..49).map {
         Linen(
             id = it,
+            clientId = 0,
             rfid = "Marker N$it",
             typeId = it + 3,
             typeLinen = if (it % 2 == 0) typeLinen1 else typeLinen2,
@@ -236,6 +238,7 @@ private fun Preview3() {
     val linens = (1..49).map {
         Linen(
             id = it,
+            clientId = 0,
             rfid = "Marker N$it",
             typeId = it + 3,
             typeLinen = if (it % 2 == 0) typeLinen1 else typeLinen2,

@@ -2,6 +2,7 @@ package by.liscode.domain.model
 
 data class Linen(
     val id: Int,
+    val clientId: Int,
     val rfid: String,
     val typeId: Int,
     val typeLinen: TypeLinen,

@@ -353,6 +353,7 @@ private fun Preview1() {
     val linens = (3..7).map {
         Linen(
             id = it,
+            clientId = 0,
             rfid = "Marker N$it",
             typeId = it + 3,
             typeLinen = typeLinen,
@@ -409,6 +410,7 @@ private fun Preview2() {
     val linens = (3..7).map {
         Linen(
             id = it,
+            clientId = 0,
             rfid = "Marker N$it",
             typeId = it + 3,
             typeLinen = typeLinen,

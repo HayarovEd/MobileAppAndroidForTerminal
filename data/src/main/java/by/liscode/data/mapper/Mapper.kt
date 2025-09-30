@@ -72,6 +72,7 @@ fun Counterparty.convertToCounterpartyRequest(): CounterpartyRequest {
 fun LinenDto.convertToLinen(): Linen {
     return Linen(
         id = id,
+        clientId = clientId,
         rfid = rfid,
         typeId = typeId,
         typeLinen = typeLinen.convertToTypeLinen(),

@@ -4,10 +4,10 @@ import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToClient
 import by.liscode.data.mapper.convertToEmployee
 import by.liscode.data.mapper.convertToLinen
-import by.liscode.data.mapper.convertToLinenDtoRequest
 import by.liscode.data.mapper.convertToTypeLinen
 import by.liscode.data.remote.request.CounterpartyPost
 import by.liscode.data.remote.request.LinenInToStockRequest
+import by.liscode.data.remote.request.RfidInToUseRequest
 import by.liscode.data.remote.response.ClientItemsResponse
 import by.liscode.data.remote.response.ClientProfileResponse
 import by.liscode.data.remote.response.ClientsProfileResponse
@@ -15,7 +15,7 @@ import by.liscode.data.remote.response.CounterPartyResponse
 import by.liscode.data.remote.response.CounterPartyResponseFromPost
 import by.liscode.data.remote.response.EmployeeResponse
 import by.liscode.data.remote.response.EmployeesResponse
-import by.liscode.data.remote.response.LinenDto
+import by.liscode.data.remote.response.LinenDtoMultiResponse
 import by.liscode.data.remote.response.LinenDtoSingleResponse
 import by.liscode.data.remote.response.ReasonWriteOffResponse
 import by.liscode.data.remote.response.StateLinenResponse
@@ -361,7 +361,7 @@ class RemoteRepositoryImpl(
     override suspend fun sendLinenInToUse(
         baseUrl: String,
         token: String,
-        linens: List<Linen>
+        rfids: List<String>
     ): ResultWork<List<Linen>, DataError> {
         return withContext(Dispatchers.IO) {
             handleRemoteResponse {
@@ -369,11 +369,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                     setBody(
-                        linens.map { it.convertToLinenDtoRequest() }
+                        RfidInToUseRequest(
+                            rfids = rfids
+                        )
                     )
                 }
-                val result = response.body<List<LinenDto>>()
-                result.map { it.convertToLinen() }
+                val result = response.body<LinenDtoMultiResponse>()
+                result.items.map { it.convertToLinen() }
             }
         }
     }
