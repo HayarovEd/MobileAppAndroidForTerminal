@@ -16,6 +16,7 @@ import by.liscode.data.remote.response.CounterPartyResponseFromPost
 import by.liscode.data.remote.response.EmployeeResponse
 import by.liscode.data.remote.response.EmployeesResponse
 import by.liscode.data.remote.response.LinenDto
+import by.liscode.data.remote.response.LinenDtoSingleResponse
 import by.liscode.data.remote.response.ReasonWriteOffResponse
 import by.liscode.data.remote.response.StateLinenResponse
 import by.liscode.data.remote.response.StatusLinenResponse
@@ -37,6 +38,7 @@ import by.liscode.domain.utils.TERMINAL_CLIENTS
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
 import by.liscode.domain.utils.TERMINAL_EMPLOYEES
 import by.liscode.domain.utils.TERMINAL_ITEMS
+import by.liscode.domain.utils.TERMINAL_ITEMS_BY_RFID
 import by.liscode.domain.utils.TERMINAL_ITEMS_INTO_USE
 import by.liscode.domain.utils.TERMINAL_ITEMS_IN_STOCK
 import by.liscode.domain.utils.TERMINAL_LINEN_STATE
@@ -263,12 +265,12 @@ class RemoteRepositoryImpl(
     ): ResultWork<Linen, DataError> {
         return withContext(Dispatchers.IO) {
             handleRemoteResponse {
-                val response = httpClient.get("$baseUrl/$TERMINAL_ITEMS/$rfid") {
+                val response = httpClient.get("$baseUrl/$TERMINAL_ITEMS_BY_RFID/$rfid") {
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<LinenDto>()
-                result.convertToLinen()
+                val result = response.body<LinenDtoSingleResponse>()
+                result.item.convertToLinen()
             }
         }
     }

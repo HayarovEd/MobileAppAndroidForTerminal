@@ -54,7 +54,9 @@ class TakeWorkScreenViewModel(
                         loadData(
                             action = { token, url ->
                                 getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                                    rfid = action.marker,
+                                    accessToken = token,
+                                    url = url
                                 )
                             },
                             navigate = {
@@ -78,7 +80,9 @@ class TakeWorkScreenViewModel(
                         loadData(
                             action = { token, url ->
                                 getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                                    rfid = action.marker,
+                                    accessToken = token,
+                                    url = url
                                 )
                             },
                             navigate = {
@@ -174,11 +178,15 @@ class TakeWorkScreenViewModel(
     }
 
     private fun getLinenById(
-        rfid: String, accessToken: String, url: String
+        rfid: String,
+        accessToken: String,
+        url: String
     ) {
         viewModelScope.launch {
             when (val result = remoteRepository.getLinenByRfid(
-                baseUrl = url, token = accessToken, rfid = rfid
+                baseUrl = url,
+                token = accessToken,
+                rfid = rfid
             )) {
                 is ResultWork.Error -> {
                     _state.value.copy(
