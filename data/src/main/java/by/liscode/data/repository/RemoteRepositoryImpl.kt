@@ -390,6 +390,7 @@ class RemoteRepositoryImpl(
                         )
                     )
                 }
+                Log.d("REST TERMINAL", response.bodyAsText())
                 val result = response.body<OrderDtoResponse>()
                 result.orderDto.convertToOrder()
             }

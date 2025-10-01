@@ -7,11 +7,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class OrderDto(
     @SerialName("act_file_path")
-    val actFilePath: String,
+    val actFilePath: String?,
     @SerialName("address")
     val address: String,
     @SerialName("comment")
-    val comment: String,
+    val comment: String?,
     @SerialName("created_at")
     val createdAt: String,
     @SerialName("creator_id")
@@ -31,7 +31,7 @@ data class OrderDto(
     @SerialName("status")
     val status: String,
     @SerialName("status_comment")
-    val statusComment: String,
+    val statusComment: String?,
     @SerialName("updated_at")
     val updatedAt: String
 )

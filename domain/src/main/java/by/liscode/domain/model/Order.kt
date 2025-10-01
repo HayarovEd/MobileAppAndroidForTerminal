@@ -3,9 +3,9 @@ package by.liscode.domain.model
 import kotlinx.datetime.LocalDateTime
 
 data class Order(
-    val actFilePath: String,
+    val actFilePath: String?,
     val address: String,
-    val comment: String,
+    val comment: String?,
     val createdAt: LocalDateTime,
     val creatorId: Int,
     val hotel: Client,
@@ -15,6 +15,6 @@ data class Order(
     val laundry: Client,
     val laundryId: Int,
     val status: StatusOrder,
-    val statusComment: String,
+    val statusComment: String?,
     val updatedAt: LocalDateTime
 )
