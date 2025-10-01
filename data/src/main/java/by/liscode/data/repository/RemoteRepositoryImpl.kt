@@ -19,6 +19,7 @@ import by.liscode.data.remote.response.CounterPartyResponseFromPost
 import by.liscode.data.remote.response.LinenDtoMultiResponse
 import by.liscode.data.remote.response.LinenDtoSingleResponse
 import by.liscode.data.remote.response.OrderDtoResponse
+import by.liscode.data.remote.response.OrdersResponse
 import by.liscode.data.remote.response.TypesLinenResponse
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
@@ -381,8 +382,12 @@ class RemoteRepositoryImpl(
     ): ResultWork<List<Order>, DataError> {
         return withContext(Dispatchers.IO) {
             handleRemoteResponse {
-                //TODO
-                emptyList()
+                val response = httpClient.get("$baseUrl/$TERMINAL_ORDERS") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                }
+                val result = response.body<OrdersResponse>().orderDtos
+                result.map { it.convertToOrder() }
             }
         }
     }

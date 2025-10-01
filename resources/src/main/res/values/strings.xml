@@ -212,4 +212,5 @@
     <string name="complete_work">Завершить работу</string>
     <string name="linen_success_stock">Бельё успешно добавлено на склад</string>
     <string name="linen_success_write_off">Бельё успешно списано со склада</string>
+    <string name="order_success_created">Заказ успешно создан</string>
 </resources>

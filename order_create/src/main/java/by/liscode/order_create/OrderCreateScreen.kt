@@ -140,7 +140,7 @@ fun OrderCreateScreenScreen(
             },
             title = {
                 Text(
-                    text = stringResource(R.string.linen_success_stock),
+                    text = stringResource(R.string.order_success_created),
                     color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyLarge,
                 )
