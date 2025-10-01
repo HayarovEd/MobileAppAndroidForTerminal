@@ -181,7 +181,7 @@ fun WriteOffScreenScreen(
                             }
                         ),
                         text = stringResource(R.string.send),
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleMedium,
                     )
                 },
@@ -194,7 +194,7 @@ fun WriteOffScreenScreen(
                 modifier = modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(colorScheme.background)
                     .padding(15.dp),
             ) {
                 CircularProgressIndicator(
@@ -208,14 +208,14 @@ fun WriteOffScreenScreen(
                 modifier = modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(colorScheme.background)
                     .padding(15.dp),
             ) {
                 OutlinedButton(
                     modifier = modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(5.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (state.isShowInfo) Color.Transparent else MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = if (state.isShowInfo) Color.Transparent else colorScheme.onPrimaryContainer
                     ),
                     onClick = {
                         onAction(WriteOffScreenAction.UpdateVisibilityInfo)
@@ -226,7 +226,7 @@ fun WriteOffScreenScreen(
                         text = if (state.isShowInfo) stringResource(R.string.hide_info) else stringResource(
                             R.string.show_info
                         ),
-                        color = if (state.isShowInfo) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primaryContainer,
+                        color = if (state.isShowInfo) colorScheme.onPrimaryContainer else colorScheme.primaryContainer,
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -234,7 +234,7 @@ fun WriteOffScreenScreen(
                 Text(
                     modifier = modifier,
                     text = "${stringResource(R.string.reason_write_off)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(modifier = modifier.height(8.dp))
@@ -246,7 +246,7 @@ fun WriteOffScreenScreen(
                             }
                         ),
                         text = state.reasonWriteOff.asReasonText().asString(),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline
@@ -264,7 +264,7 @@ fun WriteOffScreenScreen(
                                     Text(
                                         modifier = modifier,
                                         text = it.asReasonText().asString(),
-                                        color = MaterialTheme.colorScheme.onBackground,
+                                        color = colorScheme.onBackground,
                                         style = MaterialTheme.typography.bodyMedium,
                                     )
                                 },
@@ -280,7 +280,7 @@ fun WriteOffScreenScreen(
                 Text(
                     modifier = modifier,
                     text = "${stringResource(R.string.ark_write_off)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 UiTextField(
@@ -294,7 +294,7 @@ fun WriteOffScreenScreen(
                 Text(
                     modifier = modifier,
                     text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -312,7 +312,7 @@ fun WriteOffScreenScreen(
                                 Text(
                                     modifier = modifier.weight(1f),
                                     text = marker,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    color = colorScheme.onPrimaryContainer,
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                     ),
@@ -322,7 +322,7 @@ fun WriteOffScreenScreen(
                                     Text(
                                         modifier = modifier.weight(2f),
                                         text = linen.printFormat(),
-                                        color = MaterialTheme.colorScheme.onBackground,
+                                        color = colorScheme.onBackground,
                                         style = MaterialTheme.typography.bodyMedium,
                                     )
                                 }
