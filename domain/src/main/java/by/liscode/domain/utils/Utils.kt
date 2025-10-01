@@ -51,6 +51,13 @@ fun convertToReasonWriteOff(reason: String): ReasonWriteOff {
     }
 }
 
+fun convertToReasonWriteOffString(reason: ReasonWriteOff): String {
+    return when (reason) {
+        ReasonWriteOff.DAMAGED -> "damaged"
+        ReasonWriteOff.WORN_OUT -> "worn_out"
+    }
+}
+
 fun convertToStatusLinen(status: String): StatusLinen {
     return when (status) {
         "in_stock" -> StatusLinen.IN_STOCK

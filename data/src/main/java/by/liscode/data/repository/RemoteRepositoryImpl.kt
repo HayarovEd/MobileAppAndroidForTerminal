@@ -9,6 +9,7 @@ import by.liscode.data.mapper.convertToTypeLinen
 import by.liscode.data.remote.request.CounterpartyPost
 import by.liscode.data.remote.request.CreateOrderRequest
 import by.liscode.data.remote.request.LinenInToStockRequest
+import by.liscode.data.remote.request.LinenWtiteOffRequest
 import by.liscode.data.remote.request.RfidInToUseRequest
 import by.liscode.data.remote.response.ClientItemsResponse
 import by.liscode.data.remote.response.ClientProfileResponse
@@ -36,6 +37,7 @@ import by.liscode.domain.utils.TERMINAL_ITEMS
 import by.liscode.domain.utils.TERMINAL_ITEMS_BY_RFID
 import by.liscode.domain.utils.TERMINAL_ITEMS_INTO_USE
 import by.liscode.domain.utils.TERMINAL_ITEMS_IN_STOCK
+import by.liscode.domain.utils.TERMINAL_ITEMS_WRITE_OFF
 import by.liscode.domain.utils.TERMINAL_LINEN_STATE
 import by.liscode.domain.utils.TERMINAL_LINEN_STATUS
 import by.liscode.domain.utils.TERMINAL_LINEN_TIPES
@@ -43,6 +45,7 @@ import by.liscode.domain.utils.TERMINAL_ORDERS
 import by.liscode.domain.utils.TERMINAL_ORDER_STATUSES
 import by.liscode.domain.utils.TERMINAL_WRITE_OFF_REASONS
 import by.liscode.domain.utils.convertToReasonWriteOff
+import by.liscode.domain.utils.convertToReasonWriteOffString
 import by.liscode.domain.utils.convertToStateLinen
 import by.liscode.domain.utils.convertToStatusLinen
 import by.liscode.domain.utils.convertToStatusOrder
@@ -290,7 +293,31 @@ class RemoteRepositoryImpl(
         }
     }
 
-
+    override suspend fun writeOffLinens(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>,
+        reason: ReasonWriteOff,
+        comment: String,
+    ): ResultWork<List<Linen>, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ITEMS_WRITE_OFF") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        LinenWtiteOffRequest(
+                            comment = comment,
+                            reason = convertToReasonWriteOffString(reason),
+                            rfids = rfids
+                        )
+                    )
+                }
+                val result = response.body<LinenDtoMultiResponse>()
+                result.items.map { it.convertToLinen() }
+            }
+        }
+    }
 
 
     override suspend fun getClients(

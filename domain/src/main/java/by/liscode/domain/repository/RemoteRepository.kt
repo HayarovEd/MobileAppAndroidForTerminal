@@ -120,4 +120,12 @@ interface RemoteRepository {
         consignment: String,
         counterpartyId: Int
     ): ResultWork<List<Linen>, DataError>
+
+    suspend fun writeOffLinens(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>,
+        reason: ReasonWriteOff,
+        comment: String
+    ): ResultWork<List<Linen>, DataError>
 }

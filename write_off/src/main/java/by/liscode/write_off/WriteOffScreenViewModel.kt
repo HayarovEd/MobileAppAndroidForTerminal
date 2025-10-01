@@ -25,17 +25,17 @@ class WriteOffScreenViewModel(
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
     jwtRepository = jwtRepository
-){
+) {
 
 
     private val _state = MutableStateFlow(WriteOffScreenState())
     val state = _state.onStart {
-            getLocalData()
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = WriteOffScreenState()
-        )
+        getLocalData()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = WriteOffScreenState()
+    )
 
     private val _eventFlow = MutableSharedFlow<UiWriteOffEvents>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -62,11 +62,12 @@ class WriteOffScreenViewModel(
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         ).updateState()
-                        loadData ( action = { token, url ->
-                            getLinenById(
-                                rfid = action.marker, accessToken = token, url = url
-                            )
-                        },
+                        loadData(
+                            action = { token, url ->
+                                getLinenById(
+                                    rfid = action.marker, accessToken = token, url = url
+                                )
+                            },
                             navigate = {
                                 viewModelScope.launch {
                                     _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
@@ -83,11 +84,12 @@ class WriteOffScreenViewModel(
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         ).updateState()
-                        loadData ( action = { token, url ->
-                            getLinenById(
-                                rfid = action.marker, accessToken = token, url = url
-                            )
-                        },
+                        loadData(
+                            action = { token, url ->
+                                getLinenById(
+                                    rfid = action.marker, accessToken = token, url = url
+                                )
+                            },
                             navigate = {
                                 viewModelScope.launch {
                                     _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
@@ -125,9 +127,15 @@ class WriteOffScreenViewModel(
                     isActiveScanner = action.isActive
                 ).updateState()
             }
+
+            WriteOffScreenAction.CloseSuccessDialog -> {
+                _state.value.copy(
+                    isShowSuccessDialog = false
+                )
+                    .updateState()
+            }
         }
     }
-
 
 
     private fun getLocalData() {
@@ -193,31 +201,63 @@ class WriteOffScreenViewModel(
                 isShowDialog = true
             ).updateState()
         } else {
-            sendWriteOff()
+            sendWriteOff(
+                state.value.remoteLinens.map { it.rfid }
+            )
         }
     }
 
     private fun removeAndSend() {
+        val writeOffMarkers = state.value.markers.filter { marker -> marker in state.value.remoteLinens.map { it.rfid } }
         _state.value.copy(
-            markers = state.value.markers.filter { marker -> marker in state.value.remoteLinens.map { it.rfid } },
+            markers = writeOffMarkers,
             isShowDialog = false
         ).updateState()
-        sendWriteOff()
+        sendWriteOff(
+            writeOffMarkers
+        )
     }
 
-    private fun sendWriteOff() {
-        _state.value.copy(
-            isLoading = true
-        ).updateState()
-        loadData (action = { token, url ->
-            //TODO
-        },
+    private fun sendWriteOff(
+        writeOffMarkers: List<String>
+    ) {
+        loadData(
+            action = { token, url ->
+                _state.value.copy(
+                    isLoading = true
+                ).updateState()
+                viewModelScope.launch {
+                    when (val result = remoteRepository.writeOffLinens(
+                        rfids = writeOffMarkers,
+                        baseUrl = url,
+                        token = token,
+                        reason = state.value.reasonWriteOff,
+                        comment = state.value.actWriteOff
+                    )) {
+                        is ResultWork.Error -> {
+                            _state.value.copy(
+                                isLoading = false,
+                                message = result.error.asUiText()
+                            ).updateState()
+                        }
+
+                        is ResultWork.Success -> {
+                            _state.value.copy(
+                                isLoading = false,
+                                isShowSuccessDialog = true,
+                                remoteLinens = result.data
+                            ).updateState()
+                        }
+                    }
+                }
+            },
             navigate = {
                 viewModelScope.launch {
                     _eventFlow.emit(UiWriteOffEvents.LoginNavigationEvent)
                 }
             })
     }
+
 
     private fun WriteOffScreenState.updateState() {
         _state.update {

@@ -18,7 +18,8 @@ data class WriteOffScreenState(
     val isShowDialog: Boolean = false,
     val filterMarkers: List<Filter> = emptyList(),
     val isActiveScanner: Boolean = false,
-    val reasons: List<ReasonWriteOff> = ReasonWriteOff.entries
+    val reasons: List<ReasonWriteOff> = ReasonWriteOff.entries,
+    val isShowSuccessDialog: Boolean = false,
 )
 
 sealed class UiWriteOffEvents {
