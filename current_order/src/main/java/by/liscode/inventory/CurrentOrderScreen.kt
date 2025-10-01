@@ -245,22 +245,22 @@ fun CurrentOrderScreenScreen(
                 state.order?.let { order ->
                     UiRowTwoText(
                         title = "${stringResource(R.string.laundry)}:",
-                        value = order.employee.name,
+                        value = order.laundry.name,
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.address)}:",
-                        value = order.employee.position,
+                        value = order.laundry.location,
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.contact)}:",
-                        value = order.employee.login,
+                        value = order.laundry.contactPersonFullname?:"",
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.phone)}:",
-                        value = order.employee.phone,
+                        value = order.laundry.contactPersonPhone?:"",
                     )
                     DividerSpacer()
                     UiClickableRow(
@@ -278,8 +278,8 @@ fun CurrentOrderScreenScreen(
                     Spacer(modifier = modifier.height(8.dp))
                     UiRowTitleThreeElements(
                         title = stringResource(R.string.fund),
-                        firstNumber = order.linens.size,
-                        secondNumber = order.linens.map { it.rfid }
+                        firstNumber = order.items.size,
+                        secondNumber = order.items.map { it.rfid }
                             .filter { it in state.markers }.size
                     )
 

@@ -34,13 +34,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.domain.model.Client
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.UserData
 import by.liscode.domain.model.UserRole
 import by.liscode.domain.model.UserType
 import by.liscode.resources.R
+import by.liscode.resources.mock.linens
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
@@ -58,7 +58,7 @@ fun OrdersScreenRoot(
     bottomRoutes: @Composable () -> Unit,
     onNavigateToLoginScreen: () -> Unit,
     onNavigateToCreateOrderScreen: () -> Unit,
-    onNavigateToOrderScreen: (String) -> Unit,
+    onNavigateToOrderScreen: (Int) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = true) {
@@ -83,7 +83,7 @@ fun OrdersScreenScreen(
     state: OrdersScreenState,
     bottomRoutes: @Composable () -> Unit,
     onNavigateToCreateOrderScreen: () -> Unit,
-    onNavigateToOrderScreen: (String) -> Unit,
+    onNavigateToOrderScreen: (Int) -> Unit,
     onAction: (OrdersScreenAction) -> Unit,
 ) {
     UiBaseScaffold(
@@ -203,35 +203,56 @@ fun OrdersScreenScreen(
 private fun Preview() {
     val orders = (1..10).map {
         Order(
-            id = "$it",
+            id = 1,
             createdAt = Clock.System.now()
                 .toLocalDateTime(TimeZone.currentSystemDefault()),
-            updatedAt = Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()),
-            hotelId = "1",
-            linenId = "2",
-            creatorId = "User",
+            hotelId = 1,
             address = "Moscow",
             comment = "",
-            status = StatusOrder.entries.random(),
-            commentStatus = "",
+            status = StatusOrder.FORMED,
             actFilePath = "",
-            client = Client(
-                id = 1,
-                email = "",
-                name = "Тринадцатый Климент Романович",
-                location = "Москва",
-                phone = "7894561236",
-                clientType = ""
-            ),
-            employee = Employee(
+            laundry = Client(
                 id = 1,
                 name = "ООО Ромашка",
-                position = "Москва",
+                location = "Москва",
                 phone = "7894561237",
-                login = ""
+                about = "",
+                avatar = "",
+                clientType = "laundry",
+                contactPersonFullname = "Dima",
+                contactPersonPhone = "7894561237",
+                email = "",
+                entityType = "individual",
+                inn = "",
+                kpp = "",
+                legalAddress =  "Москва",
+                ogrnip = "",
+                site = ""
             ),
-            linens = emptyList()
+            items = linens,
+            creatorId = 3,
+            hotel = Client(
+                id = 1,
+                name = "ООО Ромашка",
+                location = "Москва",
+                phone = "7894561237",
+                about = "",
+                avatar = "",
+                clientType = "hotel",
+                contactPersonFullname = "Ivan",
+                contactPersonPhone = "7894561237",
+                email = "",
+                entityType = "individual",
+                inn = "",
+                kpp = "",
+                legalAddress =  "Москва",
+                ogrnip = "",
+                site = ""
+            ),
+            laundryId = 1,
+            statusComment = "",
+            updatedAt = Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
         )
     }
     MobileAppAndroidForTerminalTheme {

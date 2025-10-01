@@ -2,7 +2,6 @@ package by.liscode.domain.repository
 
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.ReasonWriteOff
@@ -50,7 +49,6 @@ interface RemoteRepository {
         token: String
     ): ResultWork<List<TypeLinen>, DataError>
 
-    suspend fun getEmployees(baseUrl: String, token: String): ResultWork<List<Employee>, DataError>
     suspend fun getOrderStatuses(
         baseUrl: String,
         token: String
@@ -61,11 +59,6 @@ interface RemoteRepository {
         token: String
     ): ResultWork<List<ReasonWriteOff>, DataError>
 
-    suspend fun getEmployeeById(
-        baseUrl: String,
-        token: String,
-        id: Int
-    ): ResultWork<Employee, DataError>
 
     suspend fun getClients(baseUrl: String, token: String): ResultWork<List<Client>, DataError>
     suspend fun getClientById(
@@ -88,12 +81,16 @@ interface RemoteRepository {
     suspend fun getOrderById(
         baseUrl: String,
         token: String,
-        id: String
+        id: Int
     ): ResultWork<Order, DataError>
 
     suspend fun createOrder(
         baseUrl: String,
         token: String,
+        rfids: List<String>,
+        laundryId: Int,
+        address: String,
+        sendAct: Boolean = true,
     ): ResultWork<Order, DataError>
 
     suspend fun acceptOrderInUse(

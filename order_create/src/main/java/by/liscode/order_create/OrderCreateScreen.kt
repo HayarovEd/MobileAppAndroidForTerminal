@@ -1,4 +1,4 @@
-package ru.modulmoney.order_create
+package by.liscode.order_create
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,8 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
@@ -133,7 +133,32 @@ fun OrderCreateScreenScreen(
     onBack: () -> Unit,
 ) {
 
+    if (state.isShowSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onAction(OrderCreateScreenAction.CloseSuccessDialog)
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.linen_success_stock),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(OrderCreateScreenAction.CloseSuccessDialog)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
 
+            },
+        )
+    }
     if (state.isShowWarning) {
         AlertDialog(
             onDismissRequest = {},
@@ -309,17 +334,17 @@ fun OrderCreateScreenScreen(
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.address)}:",
-                        value = laundry.position,
+                        value = laundry.location,
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.contact)}:",
-                        value = laundry.login,
+                        value = laundry.contactPersonFullname?:"",
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.phone)}:",
-                        value = laundry.phone,
+                        value = laundry.contactPersonPhone?:"",
                     )
                 }
                 DividerSpacer()
@@ -415,12 +440,23 @@ private fun Preview1() {
 @Composable
 private fun Preview2() {
     val laundries = (1..5).map {
-        Employee(
+        Client(
             id = it,
-            name = "name $it",
-            position = "Moscow",
-            phone = "123455678",
-            login = "Ivan"
+            name = "ООО Ромашка N$it",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "laundry",
+            contactPersonFullname = "Dima",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
         )
     }
     MobileAppAndroidForTerminalTheme {
@@ -446,12 +482,23 @@ private fun Preview2() {
 @Composable
 private fun Preview3() {
     val laundries = (1..5).map {
-        Employee(
+        Client(
             id = it,
-            name = "name $it",
-            position = "Moscow",
-            phone = "123455678",
-            login = "Ivan"
+            name = "ООО Ромашка N$it",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "laundry",
+            contactPersonFullname = "Dima",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
         )
     }
     val typeLinen1 = TypeLinen(

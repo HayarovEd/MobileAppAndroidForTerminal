@@ -14,7 +14,8 @@ const val TERMINAL_ITEMS_BY_RFID = "terminal/items/by-rfid"
 const val TERMINAL_EMPLOYEES = "terminal/employees"
 const val TERMINAL_ORDER_STATUSES = "terminal/enums/order-statuses"
 const val TERMINAL_WRITE_OFF_REASONS = "terminal/enums/write-off-reasons"
-
+const val TERMINAL_ORDERS = "terminal/orders"
+//const val ACCEPRT_IN
 
 const val PREFERENCES = "preferences"
 const val LOCAL_DB = "local_db"

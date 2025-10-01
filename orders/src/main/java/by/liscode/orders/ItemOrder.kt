@@ -23,10 +23,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Client
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.utils.formateUiDateTime
+import by.liscode.resources.mock.linens
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.asStatusOrderText
 import kotlinx.datetime.TimeZone
@@ -90,7 +90,7 @@ fun ItemOrder(
                 ) {
                     Text(
                         modifier = modifier.weight(1f),
-                        text = order.client.name,
+                        text = order.laundry.contactPersonFullname?:"",
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -119,7 +119,7 @@ fun ItemOrder(
                 Spacer(modifier = modifier.height(5.dp))
                 Text(
                     modifier = modifier,
-                    text = order.employee.phone,
+                    text = order.laundry.contactPersonPhone?:"",
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -135,35 +135,56 @@ private fun ItemOrderView() {
     MobileAppAndroidForTerminalTheme {
         ItemOrder(
             order = Order(
-                id = "1",
+                id = 1,
                 createdAt = Clock.System.now()
                     .toLocalDateTime(TimeZone.currentSystemDefault()),
-                updatedAt = Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()),
-                hotelId = "1",
-                linenId = "2",
-                creatorId = "User",
+                hotelId = 1,
                 address = "Moscow",
                 comment = "",
-                status = StatusOrder.REGISTERED,
-                commentStatus = "",
+                status = StatusOrder.FORMED,
                 actFilePath = "",
-                client = Client(
-                    id = 1,
-                    email = "",
-                    name = "Тринадцатый Климент Романович",
-                    location = "Москва",
-                    phone = "7894561236",
-                    clientType = ""
-                ),
-                employee = Employee(
+                laundry = Client(
                     id = 1,
                     name = "ООО Ромашка",
-                    position = "Москва",
+                    location = "Москва",
                     phone = "7894561237",
-                    login = ""
+                    about = "",
+                    avatar = "",
+                    clientType = "laundry",
+                    contactPersonFullname = "Dima",
+                    contactPersonPhone = "7894561237",
+                    email = "",
+                    entityType = "individual",
+                    inn = "",
+                    kpp = "",
+                    legalAddress =  "Москва",
+                    ogrnip = "",
+                    site = ""
                 ),
-                linens = emptyList()
+                items = linens,
+                creatorId = 3,
+                hotel = Client(
+                    id = 1,
+                    name = "ООО Ромашка",
+                    location = "Москва",
+                    phone = "7894561237",
+                    about = "",
+                    avatar = "",
+                    clientType = "hotel",
+                    contactPersonFullname = "Ivan",
+                    contactPersonPhone = "7894561237",
+                    email = "",
+                    entityType = "individual",
+                    inn = "",
+                    kpp = "",
+                    legalAddress =  "Москва",
+                    ogrnip = "",
+                    site = ""
+                ),
+                laundryId = 1,
+                statusComment = "",
+                updatedAt = Clock.System.now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault()),
             ),
             onClickOrder = {}
         )

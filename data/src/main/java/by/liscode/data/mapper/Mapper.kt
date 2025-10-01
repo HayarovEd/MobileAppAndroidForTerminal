@@ -3,20 +3,22 @@ package by.liscode.data.mapper
 import by.liscode.data.remote.request.CounterpartyRequest
 import by.liscode.data.remote.request.LinenDtoRequest
 import by.liscode.data.remote.request.TypeLinenRequest
+import by.liscode.data.remote.response.ClientDto
 import by.liscode.data.remote.response.CounterpartyDto
 import by.liscode.data.remote.response.LinenDto
-import by.liscode.data.remote.response.ClientDto
-import by.liscode.data.remote.response.EmployeeDto
+import by.liscode.data.remote.response.OrderDto
 import by.liscode.data.remote.response.TypeLinenDto
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
+import by.liscode.domain.model.Order
 import by.liscode.domain.model.TypeLinen
+import by.liscode.domain.utils.convertStringDateToLocalDateTime
 import by.liscode.domain.utils.convertToStateLinen
 import by.liscode.domain.utils.convertToStateLinenString
 import by.liscode.domain.utils.convertToStatusLinen
 import by.liscode.domain.utils.convertToStatusLinenString
+import by.liscode.domain.utils.convertToStatusOrder
 
 fun TypeLinenDto.convertToTypeLinen(): TypeLinen {
     return TypeLinen(
@@ -107,20 +109,40 @@ fun Linen.convertToLinenDtoRequest(): LinenDtoRequest {
 fun ClientDto.convertToClient(): Client {
     return Client(
         id = id,
-        email = email,
         name = name,
         location = location,
         phone = phone,
-        clientType = clientType
+        about = about,
+        avatar = avatar,
+        clientType = clientType,
+        contactPersonPhone = contactPersonPhone,
+        contactPersonFullname = contactPersonFullname,
+        email = email,
+        entityType = entityType,
+        inn = inn,
+        kpp = kpp,
+        legalAddress = legalAddress,
+        ogrnip = ogrnip,
+        site = site
     )
 }
 
-fun EmployeeDto.convertToEmployee(): Employee {
-    return Employee(
+fun OrderDto.convertToOrder(): Order {
+    return Order(
+        actFilePath = actFilePath,
+        address = address,
+        comment = comment,
+        createdAt = convertStringDateToLocalDateTime(createdAt),
+        creatorId = creatorId,
+        hotel = hotelDto.convertToClient(),
+        hotelId = hotelId,
         id = id,
-        name = name,
-        position = position,
-        phone = phone,
-        login = login
+        items = items.map { it.convertToLinen() },
+        laundry = laundryDto.convertToClient(),
+        laundryId = laundryId,
+        status = convertToStatusOrder(status),
+        statusComment = statusComment,
+        updatedAt = convertStringDateToLocalDateTime(updatedAt)
     )
 }
+

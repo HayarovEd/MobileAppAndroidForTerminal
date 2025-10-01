@@ -13,8 +13,7 @@ data class OrdersScreenState(
     val sortedOrders: SortedOrders = SortedOrders.DEFAULT
 ) {
     private val filteredOrders = orders.filter {
-        it.id.contains(query)
-                || it.client.name.contains(query)
+                it.laundry.name.contains(query)
                 || it.address.contains(
             query
         )

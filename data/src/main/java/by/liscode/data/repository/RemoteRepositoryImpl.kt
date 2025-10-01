@@ -3,10 +3,11 @@ package by.liscode.data.repository
 import android.util.Log
 import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToClient
-import by.liscode.data.mapper.convertToEmployee
 import by.liscode.data.mapper.convertToLinen
+import by.liscode.data.mapper.convertToOrder
 import by.liscode.data.mapper.convertToTypeLinen
 import by.liscode.data.remote.request.CounterpartyPost
+import by.liscode.data.remote.request.CreateOrderRequest
 import by.liscode.data.remote.request.LinenInToStockRequest
 import by.liscode.data.remote.request.RfidInToUseRequest
 import by.liscode.data.remote.response.ClientItemsResponse
@@ -14,14 +15,12 @@ import by.liscode.data.remote.response.ClientProfileResponse
 import by.liscode.data.remote.response.ClientsProfileResponse
 import by.liscode.data.remote.response.CounterPartyResponse
 import by.liscode.data.remote.response.CounterPartyResponseFromPost
-import by.liscode.data.remote.response.EmployeeResponse
-import by.liscode.data.remote.response.EmployeesResponse
 import by.liscode.data.remote.response.LinenDtoMultiResponse
 import by.liscode.data.remote.response.LinenDtoSingleResponse
+import by.liscode.data.remote.response.OrderDtoResponse
 import by.liscode.data.remote.response.TypesLinenResponse
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.ReasonWriteOff
@@ -33,7 +32,6 @@ import by.liscode.domain.repository.RemoteRepository
 import by.liscode.domain.utils.DataError
 import by.liscode.domain.utils.TERMINAL_CLIENTS
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
-import by.liscode.domain.utils.TERMINAL_EMPLOYEES
 import by.liscode.domain.utils.TERMINAL_ITEMS
 import by.liscode.domain.utils.TERMINAL_ITEMS_BY_RFID
 import by.liscode.domain.utils.TERMINAL_ITEMS_INTO_USE
@@ -41,6 +39,7 @@ import by.liscode.domain.utils.TERMINAL_ITEMS_IN_STOCK
 import by.liscode.domain.utils.TERMINAL_LINEN_STATE
 import by.liscode.domain.utils.TERMINAL_LINEN_STATUS
 import by.liscode.domain.utils.TERMINAL_LINEN_TIPES
+import by.liscode.domain.utils.TERMINAL_ORDERS
 import by.liscode.domain.utils.TERMINAL_ORDER_STATUSES
 import by.liscode.domain.utils.TERMINAL_WRITE_OFF_REASONS
 import by.liscode.domain.utils.convertToReasonWriteOff
@@ -292,38 +291,7 @@ class RemoteRepositoryImpl(
     }
 
 
-    override suspend fun getEmployees(
-        baseUrl: String,
-        token: String,
-    ): ResultWork<List<Employee>, DataError> {
-        return withContext(Dispatchers.IO) {
-            handleRemoteResponse {
-                val response = httpClient.get("$baseUrl/$TERMINAL_EMPLOYEES") {
-                    bearerAuth(token)
-                    contentType(ContentType.Application.Json)
-                }
-                val result = response.body<EmployeesResponse>()
-                result.employees.map { it.convertToEmployee() }
-            }
-        }
-    }
 
-    override suspend fun getEmployeeById(
-        baseUrl: String,
-        token: String,
-        id: Int,
-    ): ResultWork<Employee, DataError> {
-        return withContext(Dispatchers.IO) {
-            handleRemoteResponse {
-                val response = httpClient.get("$baseUrl/$TERMINAL_EMPLOYEES/$id") {
-                    bearerAuth(token)
-                    contentType(ContentType.Application.Json)
-                }
-                val result = response.body<EmployeeResponse>()
-                result.employee.convertToEmployee()
-            }
-        }
-    }
 
     override suspend fun getClients(
         baseUrl: String,
@@ -395,13 +363,37 @@ class RemoteRepositoryImpl(
     override suspend fun getOrderById(
         baseUrl: String,
         token: String,
-        id: String
+        id: Int
     ): ResultWork<Order, DataError> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun createOrder(baseUrl: String, token: String): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+    override suspend fun createOrder(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>,
+        laundryId: Int,
+        address: String,
+        sendAct: Boolean,
+    ): ResultWork<Order, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        CreateOrderRequest(
+                            address = address,
+                            laundryId = laundryId,
+                            rfids = rfids,
+                            sendAct = sendAct
+                        )
+                    )
+                }
+                val result = response.body<OrderDtoResponse>()
+                result.orderDto.convertToOrder()
+            }
+        }
     }
 
     override suspend fun acceptOrderInUse(

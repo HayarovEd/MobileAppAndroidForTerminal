@@ -2,7 +2,6 @@ package by.liscode.resources.mock
 
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.StateLinen
@@ -65,99 +64,162 @@ val linens = (1..10).map {
 
 @OptIn(ExperimentalTime::class)
 val order = Order(
-    id = "1",
+    id = 1,
     createdAt = Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()),
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    hotelId = "1",
-    linenId = "2",
-    creatorId = "User",
+    hotelId = 1,
     address = "Moscow",
     comment = "",
     status = StatusOrder.FORMED,
-    commentStatus = "",
     actFilePath = "",
-    client = Client(
-        id = 1,
-        email = "",
-        name = "Тринадцатый Климент Романович",
-        location = "Москва",
-        phone = "7894561236",
-        clientType = ""
-    ),
-    employee = Employee(
+    laundry = Client(
         id = 1,
         name = "ООО Ромашка",
-        position = "Москва",
+        location = "Москва",
         phone = "7894561237",
-        login = "Dima"
+        about = "",
+        avatar = "",
+        clientType = "laundry",
+        contactPersonFullname = "Dima",
+        contactPersonPhone = "7894561237",
+        email = "",
+        entityType = "individual",
+        inn = "",
+        kpp = "",
+        legalAddress =  "Москва",
+        ogrnip = "",
+        site = ""
     ),
-    linens = linens
+    items = linens,
+    creatorId = 3,
+    hotel = Client(
+        id = 1,
+        name = "ООО Ромашка",
+        location = "Москва",
+        phone = "7894561237",
+        about = "",
+        avatar = "",
+        clientType = "hotel",
+        contactPersonFullname = "Ivan",
+        contactPersonPhone = "7894561237",
+        email = "",
+        entityType = "individual",
+        inn = "",
+        kpp = "",
+        legalAddress =  "Москва",
+        ogrnip = "",
+        site = ""
+    ),
+    laundryId = 1,
+    statusComment = "",
+    updatedAt = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()),
 )
 
 @OptIn(ExperimentalTime::class)
 val order1 = Order(
-    id = "1",
+    id = 1,
     createdAt = Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()),
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    hotelId = "1",
-    linenId = "2",
-    creatorId = "User",
+    hotelId = 1,
     address = "Moscow",
     comment = "",
     status = StatusOrder.REGISTERED,
-    commentStatus = "",
     actFilePath = "",
-    client = Client(
-        id = 1,
-        email = "",
-        name = "Тринадцатый Климент Романович",
-        location = "Москва",
-        phone = "7894561236",
-        clientType = ""
-    ),
-    employee = Employee(
+    laundry = Client(
         id = 1,
         name = "ООО Ромашка",
-        position = "Москва",
+        location = "Москва",
         phone = "7894561237",
-        login = "Dima"
+        about = "",
+        avatar = "",
+        clientType = "laundry",
+        contactPersonFullname = "Dima",
+        contactPersonPhone = "7894561237",
+        email = "",
+        entityType = "individual",
+        inn = "",
+        kpp = "",
+        legalAddress =  "Москва",
+        ogrnip = "",
+        site = ""
     ),
-    linens = linens
+    items = linens,
+    creatorId = 3,
+    hotel = Client(
+        id = 1,
+        name = "ООО Ромашка",
+        location = "Москва",
+        phone = "7894561237",
+        about = "",
+        avatar = "",
+        clientType = "hotel",
+        contactPersonFullname = "Ivan",
+        contactPersonPhone = "7894561237",
+        email = "",
+        entityType = "individual",
+        inn = "",
+        kpp = "",
+        legalAddress =  "Москва",
+        ogrnip = "",
+        site = ""
+    ),
+    laundryId = 1,
+    statusComment = "",
+    updatedAt = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()),
 )
 
 @OptIn(ExperimentalTime::class)
 val order2 = Order(
-    id = "1",
+    id = 1,
     createdAt = Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()),
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
-    hotelId = "1",
-    linenId = "2",
-    creatorId = "User",
+    hotelId = 1,
     address = "Moscow",
     comment = "",
     status = StatusOrder.IN_PRODUCTION,
-    commentStatus = "",
     actFilePath = "",
-    client = Client(
-        id = 1,
-        email = "",
-        name = "Тринадцатый Климент Романович",
-        location = "Москва",
-        phone = "7894561236",
-        clientType = ""
-    ),
-    employee = Employee(
+    laundry = Client(
         id = 1,
         name = "ООО Ромашка",
-        position = "Москва",
+        location = "Москва",
         phone = "7894561237",
-        login = "Dima"
+        about = "",
+        avatar = "",
+        clientType = "laundry",
+        contactPersonFullname = "Dima",
+        contactPersonPhone = "7894561237",
+        email = "",
+        entityType = "individual",
+        inn = "",
+        kpp = "",
+        legalAddress =  "Москва",
+        ogrnip = "",
+        site = ""
     ),
-    linens = linens
+    items = linens,
+    creatorId = 3,
+    hotel = Client(
+        id = 1,
+        name = "ООО Ромашка",
+        location = "Москва",
+        phone = "7894561237",
+        about = "",
+        avatar = "",
+        clientType = "hotel",
+        contactPersonFullname = "Ivan",
+        contactPersonPhone = "7894561237",
+        email = "",
+        entityType = "individual",
+        inn = "",
+        kpp = "",
+        legalAddress =  "Москва",
+        ogrnip = "",
+        site = ""
+    ),
+    laundryId = 1,
+    statusComment = "",
+    updatedAt = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()),
 )

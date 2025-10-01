@@ -1,4 +1,4 @@
-package ru.modulmoney.order_create
+package by.liscode.order_create
 
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
@@ -139,6 +139,13 @@ class OrderCreateScreenViewModel(
                     isShowWarning = false
                 ).updateState()
             }
+
+            OrderCreateScreenAction.CloseSuccessDialog -> {
+                _state.value.copy(
+                    isShowSuccessDialog = false
+                )
+                    .updateState()
+            }
         }
     }
 
@@ -181,7 +188,7 @@ class OrderCreateScreenViewModel(
         )
             .updateState()
         viewModelScope.launch {
-            when (val result = remoteRepository.getEmployees(
+            when (val result = remoteRepository.getClients(
                 baseUrl = url,
                 token = accessToken
             )) {
@@ -228,37 +235,84 @@ class OrderCreateScreenViewModel(
 
 
     private fun createOrder() {
-        _state.value.copy(
-            isLoading = true
-        )
-            .updateState()
-        viewModelScope.launch {
-            if (state.value.notApprovedLinens.isEmpty()) {
-                //TODO - send state.value.approvedLines
-                _state.value.copy(
-                    isLoading = false
-                )
-                    .updateState()
-            } else {
-                _state.value.copy(
-                    isShowWarning = true
-                ).updateState()
-            }
+        if (state.value.notApprovedLinens.isEmpty()) {
+            loadData(
+                action = { token, url ->
+                    createNewOrder(
+                        accessToken = token,
+                        url = url,
+                        rfids = state.value.approvedLinens.map { it.rfid }
+                    )
+                },
+                navigate = {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiOrderCreateEvents.LoginNavigationEvent)
+                    }
+                }
+            )
+        } else {
+            _state.value.copy(
+                isShowWarning = true
+            ).updateState()
         }
     }
 
     private fun createOrderWithAllLinens() {
         _state.value.copy(
-            isLoading = true,
             isShowWarning = false
         )
             .updateState()
+        loadData(
+            action = { token, url ->
+                createNewOrder(
+                    accessToken = token,
+                    url = url,
+                    rfids = state.value.markers
+                )
+            },
+            navigate = {
+                viewModelScope.launch {
+                    _eventFlow.emit(UiOrderCreateEvents.LoginNavigationEvent)
+                }
+            }
+        )
+    }
+
+    private fun createNewOrder(
+        accessToken: String,
+        url: String,
+        rfids: List<String>,
+    ) {
         viewModelScope.launch {
-            //TODO - send state.value.remoteLines
-            _state.value.copy(
-                isLoading = false
-            )
-                .updateState()
+            state.value.currentLaundry?.let { currentLaundry ->
+                _state.value.copy(
+                    isLoading = true
+                )
+                    .updateState()
+                when (val result = remoteRepository.createOrder(
+                    baseUrl = url,
+                    token = accessToken,
+                    rfids = rfids,
+                    laundryId = currentLaundry.id,
+                    address = currentLaundry.location
+                )) {
+                    is ResultWork.Error -> {
+                        _state.value.copy(
+                            isLoading = false,
+                            message = result.error.asUiText()
+                        )
+                            .updateState()
+                    }
+
+                    is ResultWork.Success -> {
+                        _state.value.copy(
+                            isLoading = false,
+                            isShowSuccessDialog = true,
+                        )
+                            .updateState()
+                    }
+                }
+            }
         }
     }
 

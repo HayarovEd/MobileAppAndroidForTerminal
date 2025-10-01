@@ -18,11 +18,11 @@ data class CurrentOrderScreenState(
     val isActiveScanner: Boolean = false,
 ) {
     val unknownMarkers = (order?.let {
-        markers.filter { it !in order.linens.map { linen -> linen.rfid } }
+        markers.filter { it !in order.items.map { linen -> linen.rfid } }
     } ?: markers)
 
     val sortedLinens = order?.let {
-        it.linens.groupBy { it.typeLinen }
+        it.items.groupBy { it.typeLinen }
             .mapValues { (_, linens) ->
                 linens.sortedBy { it.typeLinen.outFormat() }
             }
