@@ -56,7 +56,7 @@ fun FilteringScreen(
             title = stringResource(R.string.on_rfid_marker),
             selected = filterByType is FilterByType.FilterByMask,
             onClick =  {
-                updateFilter(FilterByType.FilterByMask(filterRfid))
+                updateFilter(FilterByType.FilterByMask)
             }
         )
         Spacer(modifier = modifier.height(4.dp))
@@ -90,7 +90,7 @@ private fun Preview3() {
     MobileAppAndroidForTerminalTheme{
         FilteringScreen(
             filterRfid = "Marker N5",
-            filterByType = FilterByType.FilterByMask("Marker N5"),
+            filterByType = FilterByType.FilterByMask,
             updateFilter = {},
             updateFilterRfid = {}
         )

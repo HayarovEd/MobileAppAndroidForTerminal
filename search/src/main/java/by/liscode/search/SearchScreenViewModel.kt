@@ -202,9 +202,11 @@ class SearchScreenViewModel(
                 }
 
                 is ResultWork.Success -> {
-                    _state.value.copy(
-                        remoteLinens = state.value.remoteLinens + result.data
-                    ).updateState()
+                    if (result.data !in state.value.remoteLinens) {
+                        _state.value.copy(
+                            remoteLinens = state.value.remoteLinens + result.data
+                        ).updateState()
+                    }
                 }
             }
         }

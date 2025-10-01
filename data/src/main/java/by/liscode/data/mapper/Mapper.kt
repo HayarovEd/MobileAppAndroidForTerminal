@@ -43,7 +43,6 @@ fun TypeLinen.convertToTypeLinenRequest(): TypeLinenRequest {
         density = this.density,
         sku = this.sku,
         maxWash = this.maxWash,
-        clientId = clientId
     )
 }
 

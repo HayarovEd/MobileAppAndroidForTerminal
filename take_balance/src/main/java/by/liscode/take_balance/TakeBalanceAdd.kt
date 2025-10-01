@@ -402,7 +402,6 @@ private fun Preview3() {
             density = "100",
             sku = "",
             maxWash = 10,
-            clientId = 2
         )
     }
     val markers = (1..10).map {

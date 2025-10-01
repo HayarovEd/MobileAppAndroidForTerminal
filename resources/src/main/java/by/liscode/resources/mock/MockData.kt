@@ -27,7 +27,6 @@ val typeLinen1 = TypeLinen(
     density = "",
     sku = "100% хлопок",
     maxWash = 10,
-    clientId = 1
 )
 val typeLinen2 = TypeLinen(
     id = 2,
@@ -39,7 +38,6 @@ val typeLinen2 = TypeLinen(
     density = "",
     sku = "100% хлопок",
     maxWash = 10,
-    clientId = 1
 )
 val linens = (1..10).map {
     Linen(

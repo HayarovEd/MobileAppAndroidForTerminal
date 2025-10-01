@@ -347,7 +347,6 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (1..10).map { "Marker N$it" }
     val linens = (3..7).map {
@@ -404,7 +403,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (1..10).map { "Marker N$it" }
     val linens = (3..7).map {

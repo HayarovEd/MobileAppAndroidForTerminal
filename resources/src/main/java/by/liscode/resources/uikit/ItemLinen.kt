@@ -91,7 +91,6 @@ private fun ItemLinenView() {
                     density = "100%",
                     sku = "хлопок",
                     maxWash = 10,
-                    clientId = 1
                 ),
                 discount = "dsk",
                 weight = 135,

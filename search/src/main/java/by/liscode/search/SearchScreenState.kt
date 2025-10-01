@@ -1,6 +1,5 @@
 package by.liscode.search
 
-import by.liscode.domain.model.Client
 import by.liscode.domain.model.Filter
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
@@ -19,18 +18,17 @@ data class SearchScreenState(
     val searchState: SearchState = SearchState.SEARCH,
     val filterByType: FilterByType = FilterByType.All,
     val filterRfid: String = "",
-    val clients: List<Client> = emptyList()
 ) {
     val filteredLinen = when (filterByType) {
         FilterByType.All -> remoteLinens
         is FilterByType.FilterByMask -> {
-            remoteLinens.filter { it.rfid.contains(filterByType.mask, ignoreCase = true) }
+            remoteLinens.filter { it.rfid.contains(filterRfid, ignoreCase = true) }
         }
     }
     val groupedLinenByClientId  = filteredLinen
-        .groupBy { it.typeLinen.clientId }
+        .groupBy { it.clientId }
     val groupedLinenByClientIdAndTypeLinen  = filteredLinen
-        .groupBy { it.typeLinen.clientId }
+        .groupBy { it.clientId }
         .mapValues { (_, linens) ->
             linens.groupBy { it.typeLinen }
         }
@@ -49,6 +47,5 @@ enum class SearchState {
 
 sealed interface FilterByType {
     data object All : FilterByType
-   // data object ClientId: FilterByType
-    class FilterByMask(val mask: String) : FilterByType
+    data object FilterByMask : FilterByType
 }

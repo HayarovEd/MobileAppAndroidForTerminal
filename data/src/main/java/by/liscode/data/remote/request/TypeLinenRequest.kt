@@ -23,6 +23,4 @@ data class TypeLinenRequest(
     val sku: String,
     @SerialName("max_wash")
     val maxWash: Int,
-    @SerialName("client_id")
-    val clientId:Int,
 )

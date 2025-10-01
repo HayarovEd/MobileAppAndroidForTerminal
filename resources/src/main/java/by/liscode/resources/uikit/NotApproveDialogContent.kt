@@ -100,7 +100,6 @@ private fun Preview() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -112,7 +111,6 @@ private fun Preview() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (1..4).map { "Marker N$it" }
     val linens = (1..14).map {

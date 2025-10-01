@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
@@ -26,7 +25,6 @@ fun TypeLinenScreen(
     modifier: Modifier = Modifier,
     groupedLinen: Map<Int, Map<TypeLinen, List<Linen>>>,
     outMarkers: List<String>,
-    clients: List<Client>
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -35,8 +33,7 @@ fun TypeLinenScreen(
         groupedLinen.keys.sortedBy { it }.forEach { clientId ->
             stickyHeader {
                 UiRowTitleTwoElements(
-                    title = clients.firstOrNull { it.id == clientId }?.name
-                        ?: clientId.toString(),
+                    title = clientId.toString(),
                     firstNumber = groupedLinen[clientId]?.values?.sumOf { it.size }?:0
                 )
             }
@@ -73,7 +70,6 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -85,7 +81,6 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val linens = (1..49).map {
         Linen(
@@ -112,24 +107,13 @@ private fun Preview1() {
     }
     val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
-    val clients = (1..10).map {
-        Client(
-            id = it,
-            email = "email",
-            name = "Client N$it",
-            location = "location",
-            phone = "12345678",
-            clientType = ""
-        )
-    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            groupedLinen = linens.groupBy { it.typeLinen.clientId }
+            groupedLinen = linens.groupBy { it.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
             outMarkers = outMarkers,
-            clients = clients
         )
     }
 }
@@ -149,7 +133,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -161,7 +144,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 2
     )
     val clientId = 2
     val linens = (1..49).map {
@@ -189,25 +171,14 @@ private fun Preview2() {
     }
     val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
-    val clients = (1..10).map {
-        Client(
-            id = it,
-            email = "email",
-            name = "Client N$it",
-            location = "location",
-            phone = "12345678",
-            clientType = ""
-        )
-    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            groupedLinen = linens.filter { it.typeLinen.clientId == clientId }
-                .groupBy { it.typeLinen.clientId }
+            groupedLinen = linens.filter { it.clientId == clientId }
+                .groupBy { it.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
             outMarkers = outMarkers,
-            clients = clients
         )
     }
 }
@@ -227,7 +198,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -239,7 +209,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 2
     )
     val linens = (1..49).map {
         Linen(
@@ -266,25 +235,14 @@ private fun Preview3() {
     }
     val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
-    val clients = (1..10).map {
-        Client(
-            id = it,
-            email = "email",
-            name = "Client N$it",
-            location = "location",
-            phone = "12345678",
-            clientType = ""
-        )
-    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.filter { it.rfid == "Marker N5" }
-                .groupBy { it.typeLinen.clientId }
+                .groupBy { it.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
             outMarkers = outMarkers,
-            clients = clients
         )
     }
 }
