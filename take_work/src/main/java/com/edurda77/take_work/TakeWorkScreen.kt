@@ -209,9 +209,7 @@ private fun TakeWorkScreenScreen(
                         ) {
                             items(
                                 items = state.remoteLinens,
-                                key = {
-                                    it.id
-                                }) { linen ->
+                                ) { linen ->
                                 ItemLinen(
                                     linen = linen
                                 )

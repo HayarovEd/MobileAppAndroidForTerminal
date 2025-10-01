@@ -41,64 +41,64 @@ fun convertToUserType(type: String): UserType {
 
 fun convertToReasonWriteOff(reason: String): ReasonWriteOff {
     return when (reason) {
-        "Повреждено" -> ReasonWriteOff.DAMAGED
-        "Изношено" -> ReasonWriteOff.WORN_OUT
+        "damaged" -> ReasonWriteOff.DAMAGED
+        "worn_out" -> ReasonWriteOff.WORN_OUT
         else -> ReasonWriteOff.WORN_OUT
     }
 }
 
 fun convertToStatusLinen(status: String): StatusLinen {
     return when (status) {
-        "На складе" -> StatusLinen.IN_STOCK
-        "В работе" -> StatusLinen.IN_USE
-        "В заказе" -> StatusLinen.IN_ORDER
-        "В пути" -> StatusLinen.IN_TRANSIT
-        "В производстве" -> StatusLinen.IN_PRODUCTION
-        "Списан" -> StatusLinen.WRITE_OFF
+        "in_stock" -> StatusLinen.IN_STOCK
+        "in_use" -> StatusLinen.IN_USE
+        "in_order" -> StatusLinen.IN_ORDER
+        "in_transit" -> StatusLinen.IN_TRANSIT
+        "in_production" -> StatusLinen.IN_PRODUCTION
+        "written_off" -> StatusLinen.WRITE_OFF
         else -> StatusLinen.IN_STOCK
     }
 }
 
 fun convertToStatusLinenString(statusLinen: StatusLinen): String {
     return when (statusLinen) {
-        StatusLinen.IN_STOCK -> "На складе"
-        StatusLinen.IN_USE -> "В работе"
-        StatusLinen.IN_ORDER -> "В заказе"
-        StatusLinen.IN_TRANSIT -> "В пути"
-        StatusLinen.IN_PRODUCTION -> "В производстве"
-        StatusLinen.WRITE_OFF -> "Списан"
+        StatusLinen.IN_STOCK -> "in_stock"
+        StatusLinen.IN_USE -> "in_use"
+        StatusLinen.IN_ORDER -> "in_order"
+        StatusLinen.IN_TRANSIT -> "in_transit"
+        StatusLinen.IN_PRODUCTION -> "in_production"
+        StatusLinen.WRITE_OFF -> "written_off"
     }
 }
 
 fun convertToStateLinen(state: String): StateLinen {
     return when (state) {
-        "Новое" -> StateLinen.NEW
-        "Отличное" -> StateLinen.EXCELLENT
-        "Хорошее" -> StateLinen.GOOD
-        "Удовлетворительное" -> StateLinen.SATISFACTORY
-        "Списано" -> StateLinen.WRITTEN_OFF
+        "new" -> StateLinen.NEW
+        "excellent" -> StateLinen.EXCELLENT
+        "good" -> StateLinen.GOOD
+        "satisfactory" -> StateLinen.SATISFACTORY
+        "written_off" -> StateLinen.WRITTEN_OFF
         else -> StateLinen.NEW
     }
 }
 
 fun convertToStateLinenString(stateLinen: StateLinen): String {
     return when (stateLinen) {
-        StateLinen.NEW -> "Новое"
-        StateLinen.EXCELLENT -> "Отличное"
-        StateLinen.GOOD -> "Хорошее"
-        StateLinen.SATISFACTORY -> "Удовлетворительное"
-        StateLinen.WRITTEN_OFF -> "Списано"
+        StateLinen.NEW -> "new"
+        StateLinen.EXCELLENT -> "excellent"
+        StateLinen.GOOD -> "good"
+        StateLinen.SATISFACTORY -> "satisfactory"
+        StateLinen.WRITTEN_OFF -> "written_off"
     }
 }
 
 fun convertToStatusOrder(status: String): StatusOrder {
     return when (status) {
-        "Зарегистрирован" -> StatusOrder.REGISTERED
-        "Доставка в прачечную" -> StatusOrder.IN_TRANSIT
-        "В производстве" -> StatusOrder.IN_PRODUCTION
-        "Сформирован" -> StatusOrder.FORMED
-         "Доставка к клиенту" -> StatusOrder.IN_DELIVERY
-        "Выполнен" -> StatusOrder.COMPLETED
+        "registered" -> StatusOrder.REGISTERED
+        "in_transit" -> StatusOrder.IN_TRANSIT
+        "in_production" -> StatusOrder.IN_PRODUCTION
+        "formed" -> StatusOrder.FORMED
+         "in_delivery" -> StatusOrder.IN_DELIVERY
+        "completed" -> StatusOrder.COMPLETED
         else -> StatusOrder.REGISTERED
     }
 }

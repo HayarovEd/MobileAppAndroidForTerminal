@@ -18,10 +18,6 @@ import by.liscode.data.remote.response.EmployeeResponse
 import by.liscode.data.remote.response.EmployeesResponse
 import by.liscode.data.remote.response.LinenDtoMultiResponse
 import by.liscode.data.remote.response.LinenDtoSingleResponse
-import by.liscode.data.remote.response.ReasonWriteOffResponse
-import by.liscode.data.remote.response.StateLinenResponse
-import by.liscode.data.remote.response.StatusLinenResponse
-import by.liscode.data.remote.response.StatusOrderResponse
 import by.liscode.data.remote.response.TypesLinenResponse
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
@@ -58,11 +54,14 @@ import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 
 class RemoteRepositoryImpl(
     private val httpClient: HttpClient
@@ -101,14 +100,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<StateLinenResponse>().itemStateLinenDto
-                listOf(
-                    convertToStateLinen(result.excellent),
-                    convertToStateLinen(result.good),
-                    convertToStateLinen(result.new),
-                    convertToStateLinen(result.satisfactory),
-                    convertToStateLinen(result.writtenOff)
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "item_states"
                 )
+                result.map {
+                    convertToStateLinen(it.key)
+                }
             }
         }
     }
@@ -123,15 +121,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<StatusLinenResponse>().itemStatusesLinenDto
-                listOf(
-                    convertToStatusLinen(result.inStock),
-                    convertToStatusLinen(result.inUse),
-                    convertToStatusLinen(result.inOrder),
-                    convertToStatusLinen(result.inTransit),
-                    convertToStatusLinen(result.inProduction),
-                    convertToStatusLinen(result.writtenOff),
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "item_statuses"
                 )
+                result.map {
+                    convertToStatusLinen(it.key)
+                }
             }
         }
     }
@@ -146,14 +142,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<StatusOrderResponse>().orderStatusesDto
-                listOf(
-                    convertToStatusOrder(result.registered),
-                    convertToStatusOrder(result.inTransit),
-                    convertToStatusOrder(result.inProduction),
-                    convertToStatusOrder(result.formed),
-                    convertToStatusOrder(result.completed),
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "order_statuses"
                 )
+                result.map {
+                    convertToStatusOrder(it.key)
+                }
             }
         }
     }
@@ -168,11 +163,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<ReasonWriteOffResponse>().writeOffReasonsDto
-                listOf(
-                    convertToReasonWriteOff(result.damaged),
-                    convertToReasonWriteOff(result.wornOut),
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "write_off_reasons"
                 )
+                result.map {
+                    convertToReasonWriteOff(it.key)
+                }
             }
         }
     }
@@ -432,4 +429,12 @@ class RemoteRepositoryImpl(
     }
 
 
+    private suspend fun parseManually(
+        response: HttpResponse,
+        keyResponse: String
+    ): Map<String, String> {
+        val jsonObject = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val writeOffReasonsObject = jsonObject[keyResponse]!!.jsonObject
+        return writeOffReasonsObject.mapValues { it.value.toString().removeSurrounding("\"") }
+    }
 }
