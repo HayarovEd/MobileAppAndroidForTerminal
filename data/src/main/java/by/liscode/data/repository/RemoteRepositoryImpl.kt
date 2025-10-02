@@ -21,6 +21,7 @@ import by.liscode.data.remote.response.LinenDtoMultiResponse
 import by.liscode.data.remote.response.LinenDtoSingleResponse
 import by.liscode.data.remote.response.OrderDtoResponse
 import by.liscode.data.remote.response.OrdersResponse
+import by.liscode.data.remote.response.SingleOrderResponse
 import by.liscode.data.remote.response.TypesLinenResponse
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
@@ -399,7 +400,16 @@ class RemoteRepositoryImpl(
         token: String,
         id: Int
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.get("$baseUrl/$TERMINAL_ORDERS/$id") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                }
+                val result = response.body<SingleOrderResponse>().orderDtoShort
+                result.convertShortToOrder()
+            }
+        }
     }
 
     override suspend fun createOrder(

@@ -6,6 +6,7 @@ import by.liscode.data.remote.request.TypeLinenRequest
 import by.liscode.data.remote.response.ClientDto
 import by.liscode.data.remote.response.CounterpartyDto
 import by.liscode.data.remote.response.LinenDto
+import by.liscode.data.remote.response.LinenDtoWothoutClientId
 import by.liscode.data.remote.response.OrderDto
 import by.liscode.data.remote.response.OrderDtoShort
 import by.liscode.data.remote.response.TypeLinenDto
@@ -89,6 +90,24 @@ fun LinenDto.convertToLinen(): Linen {
     )
 }
 
+fun LinenDtoWothoutClientId.convertWothoutClientIdToLinen(): Linen {
+    return Linen(
+        id = id,
+        clientId = -1,
+        rfid = rfid,
+        typeId = typeId,
+        typeLinen = typeLinen.convertToTypeLinen(),
+        discount = discount,
+        weight = weight,
+        state = convertToStateLinen(state),
+        washCount = washCount,
+        status = convertToStatusLinen(status),
+        price = price,
+        counterpartyId = counterpartyId,
+        counterparty = counterparty.convertToCounterparty()
+    )
+}
+
 
 fun Linen.convertToLinenDtoRequest(): LinenDtoRequest {
     return LinenDtoRequest(
@@ -157,7 +176,7 @@ fun OrderDtoShort.convertShortToOrder(): Order {
         hotel = hotelDto.convertToClient(),
         hotelId = hotelId,
         id = id,
-        items = emptyList(),
+        items = items.map { it.convertWothoutClientIdToLinen() },
         laundry = laundryDto.convertToClient(),
         laundryId = laundryId,
         status = convertToStatusOrder(status),

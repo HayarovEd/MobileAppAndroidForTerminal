@@ -1,15 +1,14 @@
-package by.liscode.data.remote.tests
-
+package by.liscode.data.remote.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Item(
+data class LinenDtoWothoutClientId(
     @SerialName("consignment")
     val consignment: String,
     @SerialName("counterparty")
-    val counterparty: Counterparty,
+    val counterparty: CounterpartyDto,
     @SerialName("counterparty_id")
     val counterpartyId: Int,
     @SerialName("created_at")
@@ -29,7 +28,7 @@ data class Item(
     @SerialName("status")
     val status: String,
     @SerialName("type")
-    val type: Type,
+    val typeLinen: TypeLinenDto,
     @SerialName("type_id")
     val typeId: Int,
     @SerialName("updated_at")

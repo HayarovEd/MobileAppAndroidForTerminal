@@ -22,6 +22,8 @@ data class OrderDtoShort(
     val hotelId: Int,
     @SerialName("id")
     val id: Int,
+    @SerialName("items")
+    val items: List<LinenDtoWothoutClientId>,
     @SerialName("laundry")
     val laundryDto: ClientDto,
     @SerialName("laundry_id")
