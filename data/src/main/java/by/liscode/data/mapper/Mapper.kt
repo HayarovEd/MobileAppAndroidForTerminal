@@ -7,6 +7,7 @@ import by.liscode.data.remote.response.ClientDto
 import by.liscode.data.remote.response.CounterpartyDto
 import by.liscode.data.remote.response.LinenDto
 import by.liscode.data.remote.response.OrderDto
+import by.liscode.data.remote.response.OrderDtoShort
 import by.liscode.data.remote.response.TypeLinenDto
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
@@ -138,6 +139,25 @@ fun OrderDto.convertToOrder(): Order {
         hotelId = hotelId,
         id = id,
         items = items.map { it.convertToLinen() },
+        laundry = laundryDto.convertToClient(),
+        laundryId = laundryId,
+        status = convertToStatusOrder(status),
+        statusComment = statusComment,
+        updatedAt = convertStringDateToLocalDateTime(updatedAt)
+    )
+}
+
+fun OrderDtoShort.convertShortToOrder(): Order {
+    return Order(
+        actFilePath = actFilePath,
+        address = address,
+        comment = comment,
+        createdAt = convertStringDateToLocalDateTime(createdAt),
+        creatorId = creatorId,
+        hotel = hotelDto.convertToClient(),
+        hotelId = hotelId,
+        id = id,
+        items = emptyList(),
         laundry = laundryDto.convertToClient(),
         laundryId = laundryId,
         status = convertToStatusOrder(status),

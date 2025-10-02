@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class OrdersResponse(
     @SerialName("orders")
-    val orderDtos: List<OrderDto>
+    val orderDtos: List<OrderDtoShort>
 )
