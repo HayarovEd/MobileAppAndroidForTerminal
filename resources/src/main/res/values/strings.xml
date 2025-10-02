@@ -213,4 +213,7 @@
     <string name="linen_success_stock">Бельё успешно добавлено на склад</string>
     <string name="linen_success_write_off">Бельё успешно списано со склада</string>
     <string name="order_success_created">Заказ успешно создан</string>
+    <string name="order_comleted">Заказ завершен</string>
+    <string name="order_after_use">Заказ выполнен</string>
+    <string name="order_into_use">Заказ принят в работу</string>
 </resources>

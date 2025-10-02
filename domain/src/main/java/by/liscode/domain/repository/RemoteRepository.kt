@@ -96,18 +96,25 @@ interface RemoteRepository {
     suspend fun acceptOrderInUse(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean = true,
+        rfids: List<String>,
     ): ResultWork<Order, DataError>
 
     suspend fun formOrderAfterProduction(
         baseUrl: String,
-        token: String, order: Order
+        token: String,
+        orderId: Int,
+        ignoreMissing: Boolean = true,
+        rfids: List<String>,
     ): ResultWork<Order, DataError>
 
     suspend fun acceptOrderInToStock(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean = true,
+        rfids: List<String>,
     ): ResultWork<Order, DataError>
 
     suspend fun acceptToLinensInToStock(

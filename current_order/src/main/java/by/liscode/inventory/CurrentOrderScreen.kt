@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -122,6 +124,41 @@ fun CurrentOrderScreenScreen(
     updateVisibilityNotApproveDialog: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
+    val successMessage = when (state.visibilitySuccessDialog) {
+        VisibilitySuccessDialog.INVISIBLE -> ""
+        VisibilitySuccessDialog.SUCCESS_INTO_USE -> stringResource(R.string.order_into_use)
+        VisibilitySuccessDialog.SUCCESS_AFTER_USE -> stringResource(R.string.order_after_use)
+        VisibilitySuccessDialog.SUCCESS_INTO_STOCK -> stringResource(R.string.order_comleted)
+    }
+    if (state.visibilitySuccessDialog != VisibilitySuccessDialog.INVISIBLE) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    modifier = modifier.clickable(
+                        onClick = {
+                            onAction(CurrentOrderScreenAction.CloseSuccessDialog)
+                        }
+                    ),
+                    text = successMessage,
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(CurrentOrderScreenAction.CloseSuccessDialog)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        )
+    }
+
     if (visibleNotApproveDialog) {
         Dialog(
             onDismissRequest = {
@@ -176,21 +213,19 @@ fun CurrentOrderScreenScreen(
             ) {
                 state.order?.let { order ->
                     state.userData?.let { userData ->
-                        val enabled = true
-                        /*     (state.sortedLinens[false] == null || state.sortedLinens[false]?.values?.isEmpty() == true)
-                                     && (state.sortedLinens[true] != null && state.sortedLinens[true]?.values?.isNotEmpty() == true)
-                         */if (userData.userType == UserType.HOTEL
-                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                        && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
-                    ) {
-                        UiButton (
-                            title = stringResource(R.string.complete_order),
-                            enabled = enabled,
-                            onClick = {
-                                onAction(CurrentOrderScreenAction.UpdateOrder(StatusOrder.COMPLETED))
-                            }
-                        )
-                    }
+                        val enabled = state.enableUpdate
+                        if (userData.userType == UserType.HOTEL
+                            && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                            && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
+                        ) {
+                            UiButton(
+                                title = stringResource(R.string.complete_order),
+                                enabled = enabled,
+                                onClick = {
+                                    onAction(CurrentOrderScreenAction.UpdateOrder)
+                                }
+                            )
+                        }
                         if (userData.userType == UserType.LAUNDRY
                             && userData.userRole == UserRole.CLIENT_EMPLOYEE
                             && (order.status == StatusOrder.REGISTERED || order.status == StatusOrder.IN_TRANSIT)
@@ -199,7 +234,7 @@ fun CurrentOrderScreenScreen(
                                 title = stringResource(R.string.take_work),
                                 enabled = enabled,
                                 onClick = {
-                                    onAction(CurrentOrderScreenAction.UpdateOrder(StatusOrder.IN_PRODUCTION))
+                                    onAction(CurrentOrderScreenAction.UpdateOrder)
                                 }
                             )
                         }
@@ -211,7 +246,7 @@ fun CurrentOrderScreenScreen(
                                 title = stringResource(R.string.complete_work),
                                 enabled = enabled,
                                 onClick = {
-                                    onAction(CurrentOrderScreenAction.UpdateOrder(StatusOrder.FORMED))
+                                    onAction(CurrentOrderScreenAction.UpdateOrder)
                                 }
                             )
                         }
@@ -255,12 +290,12 @@ fun CurrentOrderScreenScreen(
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.contact)}:",
-                        value = order.laundry.contactPersonFullname?:"",
+                        value = order.laundry.contactPersonFullname ?: "",
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.phone)}:",
-                        value = order.laundry.contactPersonPhone?:"",
+                        value = order.laundry.contactPersonPhone ?: "",
                     )
                     DividerSpacer()
                     UiClickableRow(
@@ -295,7 +330,7 @@ fun CurrentOrderScreenScreen(
                             UiRowThreeElements(
                                 title = type,
                                 fontColor = fontColor,
-                                firstNumber = state.sortedLinens[type]?.size?:0,
+                                firstNumber = state.sortedLinens[type]?.size ?: 0,
                                 secondNumber = existLinen.map { it.rfid }
                                     .filter { it in state.markers }.size
                             )

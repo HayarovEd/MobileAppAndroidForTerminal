@@ -93,57 +93,66 @@ class CurrentOrderScreenViewModel(
             }
 
             is CurrentOrderScreenAction.UpdateOrder -> {
-                when (action.statusOrder) {
-                    StatusOrder.REGISTERED, StatusOrder.IN_TRANSIT -> {
-                        loadData(
-                            action = { token, url ->
-                                takeOrderToProduction(
-                                    url = url,
-                                    token = token
-                                )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiCurrentOrderEvents.LoginNavigationEvent)
+                state.value.order?.let {
+                    when (it.status) {
+                        StatusOrder.REGISTERED, StatusOrder.IN_TRANSIT -> {
+                            loadData(
+                                action = { token, url ->
+                                    takeOrderToProduction(
+                                        url = url,
+                                        token = token
+                                    )
+                                },
+                                navigate = {
+                                    viewModelScope.launch {
+                                        _eventFlow.emit(UiCurrentOrderEvents.LoginNavigationEvent)
+                                    }
                                 }
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    StatusOrder.IN_PRODUCTION -> {
-                        loadData(
-                            action = { token, url ->
-                                takeOrderFromProduction(
-                                    url = url,
-                                    token = token
-                                )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiCurrentOrderEvents.LoginNavigationEvent)
+                        StatusOrder.IN_PRODUCTION -> {
+                            loadData(
+                                action = { token, url ->
+                                    takeOrderFromProduction(
+                                        url = url,
+                                        token = token
+                                    )
+                                },
+                                navigate = {
+                                    viewModelScope.launch {
+                                        _eventFlow.emit(UiCurrentOrderEvents.LoginNavigationEvent)
+                                    }
                                 }
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    StatusOrder.FORMED, StatusOrder.IN_DELIVERY -> {
-                        loadData(
-                            action = { token, url ->
-                                takeOrderToStock(
-                                    url = url,
-                                    token = token
-                                )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiCurrentOrderEvents.LoginNavigationEvent)
+                        StatusOrder.FORMED, StatusOrder.IN_DELIVERY -> {
+                            loadData(
+                                action = { token, url ->
+                                    takeOrderToStock(
+                                        url = url,
+                                        token = token
+                                    )
+                                },
+                                navigate = {
+                                    viewModelScope.launch {
+                                        _eventFlow.emit(UiCurrentOrderEvents.LoginNavigationEvent)
+                                    }
                                 }
-                            }
-                        )
-                    }
+                            )
+                        }
 
-                    StatusOrder.COMPLETED -> {}
+                        StatusOrder.COMPLETED -> {}
+                    }
                 }
+            }
+
+            CurrentOrderScreenAction.CloseSuccessDialog -> {
+                _state.value.copy(
+                    visibilitySuccessDialog = VisibilitySuccessDialog.INVISIBLE
+                )
+                    .updateState()
             }
         }
     }
@@ -235,7 +244,8 @@ class CurrentOrderScreenViewModel(
                 when (val result = remoteRepository.acceptOrderInUse(
                     baseUrl = url,
                     token = token,
-                    order = order
+                    orderId = order.id,
+                    rfids = order.items.map { it.rfid }
                 )) {
                     is ResultWork.Error -> {
                         _state.value.copy(
@@ -248,7 +258,8 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Success -> {
                         _state.value.copy(
                             isLoading = false,
-                            order = result.data
+                            order = result.data,
+                            visibilitySuccessDialog = VisibilitySuccessDialog.SUCCESS_INTO_USE
                         )
                             .updateState()
                     }
@@ -270,7 +281,8 @@ class CurrentOrderScreenViewModel(
                 when (val result = remoteRepository.formOrderAfterProduction(
                     baseUrl = url,
                     token = token,
-                    order = order
+                    orderId = order.id,
+                    rfids = order.items.map { it.rfid }
                 )) {
                     is ResultWork.Error -> {
                         _state.value.copy(
@@ -283,7 +295,8 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Success -> {
                         _state.value.copy(
                             isLoading = false,
-                            order = result.data
+                            order = result.data,
+                            visibilitySuccessDialog = VisibilitySuccessDialog.SUCCESS_AFTER_USE
                         )
                             .updateState()
                     }
@@ -305,7 +318,8 @@ class CurrentOrderScreenViewModel(
                 when (val result = remoteRepository.acceptOrderInToStock(
                     baseUrl = url,
                     token = token,
-                    order = order
+                    orderId = order.id,
+                    rfids = order.items.map { it.rfid }
                 )) {
                     is ResultWork.Error -> {
                         _state.value.copy(
@@ -318,7 +332,8 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Success -> {
                         _state.value.copy(
                             isLoading = false,
-                            order = result.data
+                            order = result.data,
+                            visibilitySuccessDialog = VisibilitySuccessDialog.SUCCESS_INTO_STOCK
                         )
                             .updateState()
                     }

@@ -12,6 +12,7 @@ import by.liscode.data.remote.request.CreateOrderRequest
 import by.liscode.data.remote.request.LinenInToStockRequest
 import by.liscode.data.remote.request.LinenWtiteOffRequest
 import by.liscode.data.remote.request.RfidInToUseRequest
+import by.liscode.data.remote.request.UpdateOrderRequest
 import by.liscode.data.remote.response.ClientItemsResponse
 import by.liscode.data.remote.response.ClientProfileResponse
 import by.liscode.data.remote.response.ClientsProfileResponse
@@ -33,6 +34,9 @@ import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.utils.FORM_AFTER_PRODUCTION
+import by.liscode.domain.utils.ACCEPT_INTO_STOCK
+import by.liscode.domain.utils.ACCEPT_IN_PRODUCTION
 import by.liscode.domain.utils.DataError
 import by.liscode.domain.utils.TERMINAL_CLIENTS
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
@@ -388,7 +392,6 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-               // Log.d("REST TERMINAL", response.bodyAsText())
                 val result = response.body<OrdersResponse>().orderDtos
                 result.map { it.convertShortToOrder() }
             }
@@ -443,25 +446,78 @@ class RemoteRepositoryImpl(
     override suspend fun acceptOrderInUse(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean,
+        rfids: List<String>,
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS/$orderId/$ACCEPT_IN_PRODUCTION") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        UpdateOrderRequest(
+                            rfids = rfids,
+                            ignoreMissing = ignoreMissing
+                        )
+                    )
+                }
+
+                val result = response.body<SingleOrderResponse>()
+                result.orderDtoShort.convertShortToOrder()
+            }
+        }
     }
 
     override suspend fun formOrderAfterProduction(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean,
+        rfids: List<String>,
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS/$orderId/$FORM_AFTER_PRODUCTION") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        UpdateOrderRequest(
+                            rfids = rfids,
+                            ignoreMissing = ignoreMissing
+                        )
+                    )
+                }
+                Log.d("REST TERMINAL", response.bodyAsText())
+                val result = response.body<SingleOrderResponse>()
+                result.orderDtoShort.convertShortToOrder()
+            }
+        }
     }
 
     override suspend fun acceptOrderInToStock(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean,
+        rfids: List<String>,
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS/$orderId/$ACCEPT_INTO_STOCK") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        UpdateOrderRequest(
+                            rfids = rfids,
+                            ignoreMissing = ignoreMissing
+                        )
+                    )
+                }
+                val result = response.body<SingleOrderResponse>()
+                result.orderDtoShort.convertShortToOrder()
+            }
+        }
     }
 
 

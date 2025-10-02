@@ -16,6 +16,7 @@ data class CurrentOrderScreenState(
     val isLoading: Boolean = false,
     val markers: List<String> = emptyList(),
     val isActiveScanner: Boolean = false,
+    val visibilitySuccessDialog: VisibilitySuccessDialog = VisibilitySuccessDialog.INVISIBLE
 ) {
     val unknownMarkers = (order?.let {
         markers.filter { it !in order.items.map { linen -> linen.rfid } }
@@ -27,10 +28,19 @@ data class CurrentOrderScreenState(
                 linens.sortedBy { it.typeLinen.outFormat() }
             }
     } ?: emptyMap()
-
+    val enableUpdate = order?.let {
+        it.items.map {item ->  item.rfid }.all { rf-> rf in markers }
+    }?:false
 }
 
 
 sealed class UiCurrentOrderEvents {
     data object LoginNavigationEvent : UiCurrentOrderEvents()
+}
+
+enum class VisibilitySuccessDialog{
+    INVISIBLE,
+    SUCCESS_INTO_USE,
+    SUCCESS_AFTER_USE,
+    SUCCESS_INTO_STOCK,
 }
