@@ -2,7 +2,6 @@ package by.liscode.data.repository
 
 import android.util.Log
 import by.liscode.data.handler.handleRemoteResponse
-import by.liscode.data.mapper.convertShortToOrder
 import by.liscode.data.mapper.convertToClient
 import by.liscode.data.mapper.convertToLinen
 import by.liscode.data.mapper.convertToOrder
@@ -393,7 +392,7 @@ class RemoteRepositoryImpl(
                     contentType(ContentType.Application.Json)
                 }
                 val result = response.body<OrdersResponse>().orderDtos
-                result.map { it.convertShortToOrder() }
+                result.map { it.convertToOrder() }
             }
         }
     }
@@ -410,7 +409,7 @@ class RemoteRepositoryImpl(
                     contentType(ContentType.Application.Json)
                 }
                 val result = response.body<SingleOrderResponse>().orderDtoShort
-                result.convertShortToOrder()
+                result.convertToOrder()
             }
         }
     }
@@ -464,7 +463,7 @@ class RemoteRepositoryImpl(
                 }
 
                 val result = response.body<SingleOrderResponse>()
-                result.orderDtoShort.convertShortToOrder()
+                result.orderDtoShort.convertToOrder()
             }
         }
     }
@@ -490,7 +489,7 @@ class RemoteRepositoryImpl(
                 }
                 Log.d("REST TERMINAL", response.bodyAsText())
                 val result = response.body<SingleOrderResponse>()
-                result.orderDtoShort.convertShortToOrder()
+                result.orderDtoShort.convertToOrder()
             }
         }
     }
@@ -515,7 +514,7 @@ class RemoteRepositoryImpl(
                     )
                 }
                 val result = response.body<SingleOrderResponse>()
-                result.orderDtoShort.convertShortToOrder()
+                result.orderDtoShort.convertToOrder()
             }
         }
     }

@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SingleOrderResponse(
     @SerialName("order")
-    val orderDtoShort: OrderDtoShort
+    val orderDtoShort: OrderDto
 )

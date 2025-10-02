@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
@@ -25,6 +26,7 @@ fun TypeLinenScreen(
     modifier: Modifier = Modifier,
     groupedLinen: Map<Int, Map<TypeLinen, List<Linen>>>,
     outMarkers: List<String>,
+    clients: List<Client>,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -33,7 +35,9 @@ fun TypeLinenScreen(
         groupedLinen.keys.sortedBy { it }.forEach { clientId ->
             stickyHeader {
                 UiRowTitleTwoElements(
-                    title = clientId.toString(),
+                    title = "${clients.firstOrNull{
+                        it.id == clientId
+                    }?.name}",
                     firstNumber = groupedLinen[clientId]?.values?.sumOf { it.size }?:0
                 )
             }
@@ -107,6 +111,26 @@ private fun Preview1() {
     }
     val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
+    val clients = (0..4).map {
+        Client(
+            id = it,
+            name = "ООО Ромашка",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "hotel",
+            contactPersonFullname = "Ivan",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.groupBy { it.clientId }
@@ -114,6 +138,7 @@ private fun Preview1() {
                     linens.groupBy { it.typeLinen }
                 },
             outMarkers = outMarkers,
+            clients = clients
         )
     }
 }
@@ -170,6 +195,26 @@ private fun Preview2() {
         )
     }
     val markers = (1..70).map { "Marker N$it" }
+    val clients = (0..4).map {
+        Client(
+            id = it,
+            name = "ООО Ромашка",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "hotel",
+            contactPersonFullname = "Ivan",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
+        )
+    }
     val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
@@ -179,6 +224,7 @@ private fun Preview2() {
                     linens.groupBy { it.typeLinen }
                 },
             outMarkers = outMarkers,
+            clients = clients
         )
     }
 }
@@ -235,6 +281,26 @@ private fun Preview3() {
     }
     val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
+    val clients = (0..4).map {
+        Client(
+            id = it,
+            name = "ООО Ромашка",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "hotel",
+            contactPersonFullname = "Ivan",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.filter { it.rfid == "Marker N5" }
@@ -243,6 +309,7 @@ private fun Preview3() {
                     linens.groupBy { it.typeLinen }
                 },
             outMarkers = outMarkers,
+            clients = clients
         )
     }
 }

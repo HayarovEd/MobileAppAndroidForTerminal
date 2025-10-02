@@ -189,11 +189,15 @@ class SearchScreenViewModel(
 
 
     private fun getLinenById(
-        rfid: String, accessToken: String, url: String
+        rfid: String,
+        accessToken: String,
+        url: String
     ) {
         viewModelScope.launch {
             when (val result = remoteRepository.getLinenByRfid(
-                baseUrl = url, token = accessToken, rfid = rfid
+                baseUrl = url,
+                token = accessToken,
+                rfid = rfid
             )) {
                 is ResultWork.Error -> {
                     _state.value.copy(
@@ -206,6 +210,42 @@ class SearchScreenViewModel(
                         _state.value.copy(
                             remoteLinens = state.value.remoteLinens + result.data
                         ).updateState()
+                        if (state.value.clients.isEmpty() || result.data.clientId !in state.value.clients.map { it.id }) {
+                            getClientById(
+                                url = url,
+                                accessToken = accessToken,
+                                clientId = result.data.clientId
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getClientById(
+        accessToken: String,
+        url: String,
+        clientId: Int
+    ) {
+        viewModelScope.launch {
+            when (val result = remoteRepository.getClientById(
+                baseUrl = url,
+                token = accessToken,
+                id = clientId
+            )) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        message = result.error.asUiText()
+                    ).updateState()
+                }
+
+                is ResultWork.Success -> {
+                    if (result.data !in state.value.clients) {
+                        _state.value.copy(
+                            clients = state.value.clients + result.data
+                        ).updateState()
+
                     }
                 }
             }

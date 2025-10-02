@@ -187,12 +187,14 @@ fun SearchScreenScreen(
                                 TypeNameScreen(
                                     groupedLinen = state.groupedLinenByClientId,
                                     outMarkers = state.outMarkers,
+                                    clients = state.clients
                                 )
                             }
                             GroupLinen.TYPE_LINEN -> {
                                 TypeLinenScreen(
                                     groupedLinen = state.groupedLinenByClientIdAndTypeLinen,
                                     outMarkers = state.outMarkers,
+                                    clients = state.clients
                                 )
                             }
                         }
