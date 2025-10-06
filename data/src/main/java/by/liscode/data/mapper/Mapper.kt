@@ -2,11 +2,13 @@ package by.liscode.data.mapper
 
 import by.liscode.data.remote.response.ClientDto
 import by.liscode.data.remote.response.CounterpartyDto
+import by.liscode.data.remote.response.InventoryDto
 import by.liscode.data.remote.response.LinenDto
 import by.liscode.data.remote.response.OrderDto
 import by.liscode.data.remote.response.TypeLinenDto
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
+import by.liscode.domain.model.Inventory
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.TypeLinen
@@ -100,4 +102,13 @@ fun OrderDto.convertToOrder(): Order {
         updatedAt = convertStringDateToLocalDateTime(updatedAt)
     )
 }
+
+fun InventoryDto.convertToinventory(): Inventory {
+    return Inventory(
+        inStock = inStock,
+        submitted = submitted,
+        type = type.convertToTypeLinen()
+    )
+}
+
 

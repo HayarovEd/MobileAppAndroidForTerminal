@@ -20,6 +20,7 @@ const val ACCEPT_IN_PRODUCTION = "accept-into-production"
 const val FORM_AFTER_PRODUCTION = "form-after-production"
 const val ACCEPT_INTO_STOCK = "accept-into-stock"
 
+const val TERMINAL_INVENTORY = "terminal/inventory"
 const val PREFERENCES = "preferences"
 const val LOCAL_DB = "local_db"
 

@@ -216,4 +216,5 @@
     <string name="order_comleted">Заказ завершен</string>
     <string name="order_after_use">Заказ выполнен</string>
     <string name="order_into_use">Заказ принят в работу</string>
+    <string name="data_inventory_sended">Результаты инвенторизации успешно отправлены</string>
 </resources>

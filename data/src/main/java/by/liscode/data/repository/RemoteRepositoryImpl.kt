@@ -6,6 +6,7 @@ import by.liscode.data.mapper.convertToClient
 import by.liscode.data.mapper.convertToLinen
 import by.liscode.data.mapper.convertToOrder
 import by.liscode.data.mapper.convertToTypeLinen
+import by.liscode.data.mapper.convertToinventory
 import by.liscode.data.remote.request.CounterpartyPost
 import by.liscode.data.remote.request.CreateOrderRequest
 import by.liscode.data.remote.request.LinenInToStockRequest
@@ -17,6 +18,7 @@ import by.liscode.data.remote.response.ClientProfileResponse
 import by.liscode.data.remote.response.ClientsProfileResponse
 import by.liscode.data.remote.response.CounterPartyResponse
 import by.liscode.data.remote.response.CounterPartyResponseFromPost
+import by.liscode.data.remote.response.InventoryResponse
 import by.liscode.data.remote.response.LinenDtoMultiResponse
 import by.liscode.data.remote.response.LinenDtoSingleResponse
 import by.liscode.data.remote.response.OrderDtoResponse
@@ -25,6 +27,7 @@ import by.liscode.data.remote.response.SingleOrderResponse
 import by.liscode.data.remote.response.TypesLinenResponse
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
+import by.liscode.domain.model.Inventory
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.ReasonWriteOff
@@ -33,12 +36,13 @@ import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.repository.RemoteRepository
-import by.liscode.domain.utils.FORM_AFTER_PRODUCTION
 import by.liscode.domain.utils.ACCEPT_INTO_STOCK
 import by.liscode.domain.utils.ACCEPT_IN_PRODUCTION
 import by.liscode.domain.utils.DataError
+import by.liscode.domain.utils.FORM_AFTER_PRODUCTION
 import by.liscode.domain.utils.TERMINAL_CLIENTS
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
+import by.liscode.domain.utils.TERMINAL_INVENTORY
 import by.liscode.domain.utils.TERMINAL_ITEMS
 import by.liscode.domain.utils.TERMINAL_ITEMS_BY_RFID
 import by.liscode.domain.utils.TERMINAL_ITEMS_INTO_USE
@@ -519,6 +523,28 @@ class RemoteRepositoryImpl(
         }
     }
 
+
+    override suspend fun sendResultInventory(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>,
+    ): ResultWork<List<Inventory>, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_INVENTORY") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        RfidInToUseRequest(
+                            rfids = rfids,
+                        )
+                    )
+                }
+                val result = response.body<InventoryResponse>()
+                result.inventoryDto.map { it.convertToinventory() }
+            }
+        }
+    }
 
     private suspend fun parseManually(
         response: HttpResponse,

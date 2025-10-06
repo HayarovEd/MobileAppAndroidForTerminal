@@ -2,6 +2,7 @@ package by.liscode.inventory
 
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.model.GroupLinen
+import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -59,7 +60,19 @@ class InventoryScreenViewModel(
     fun onAction(action: InventoryScreenAction) {
         when (action) {
             InventoryScreenAction.SaveResult -> {
-                //TODO
+                loadData (
+                    action = { token, url ->
+                        sendResults(
+                            url = url,
+                            accessToken = token
+                        )
+                    },
+                    navigate = {
+                        viewModelScope.launch {
+                            _eventFlow.emit(UiInventoryEvents.LoginNavigationEvent)
+                        }
+                    }
+                )
             }
             is InventoryScreenAction.TakeMarker -> {
                 if (state.value.filterMarkers.isEmpty()) {
@@ -114,6 +127,13 @@ class InventoryScreenViewModel(
             is InventoryScreenAction.UpdateCurrentType -> {
                 _state.value.copy(
                     currentTypeLinen = action.typeLinen
+                )
+                    .updateState()
+            }
+
+            InventoryScreenAction.CloseSuccessDialog -> {
+                _state.value.copy(
+                    isShowSuccessDialog = false
                 )
                     .updateState()
             }
@@ -174,7 +194,39 @@ class InventoryScreenViewModel(
                 is ResultWork.Success -> {
                     _state.value.copy(
                         isLoading = false,
-                        remoteLinens = result.data
+                        remoteLinens = result.data.filter { it.status == StatusLinen.IN_STOCK }
+                    )
+                        .updateState()
+                }
+            }
+        }
+    }
+
+    private fun sendResults(
+        accessToken: String,
+        url: String
+    ) {
+        viewModelScope.launch {
+            _state.value.copy(
+                isLoading = true,
+            )
+                .updateState()
+            when (val result = remoteRepository.sendResultInventory(
+                baseUrl = url,
+                token = accessToken,
+                rfids = state.value.markers.filter { marker-> marker in state.value.remoteLinens.map { it.rfid } }
+            )) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        isLoading = false,
+                        message = result.error.asUiText()
+                    )
+                        .updateState()
+                }
+                is ResultWork.Success -> {
+                    _state.value.copy(
+                        isLoading = false,
+                        isShowSuccessDialog = true
                     )
                         .updateState()
                 }

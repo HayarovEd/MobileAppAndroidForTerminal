@@ -2,6 +2,7 @@ package by.liscode.domain.repository
 
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
+import by.liscode.domain.model.Inventory
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.ReasonWriteOff
@@ -135,4 +136,10 @@ interface RemoteRepository {
         reason: ReasonWriteOff,
         comment: String
     ): ResultWork<List<Linen>, DataError>
+
+    suspend fun sendResultInventory(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>
+    ): ResultWork<List<Inventory>, DataError>
 }

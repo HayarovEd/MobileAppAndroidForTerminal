@@ -23,6 +23,7 @@ data class InventoryScreenState(
     val filterMarkers: List<Filter> = emptyList(),
     val inventoryState: InventoryState = InventoryState.CHECKING,
     val currentTypeLinen: TypeLinen? = null,
+    val isShowSuccessDialog: Boolean = false,
 ) {
     val linenTypes = remoteLinens.map { it.typeLinen }.distinct()
     private val sortedLinens = remoteLinens.groupBy {

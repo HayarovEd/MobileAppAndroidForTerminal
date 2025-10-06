@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -110,6 +112,33 @@ fun InventoryScreenScreen(
     onAction: (InventoryScreenAction) -> Unit,
     onBackNavigate: () -> Unit
 ) {
+
+    if (state.isShowSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onAction(InventoryScreenAction.CloseSuccessDialog)
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.data_inventory_sended),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(InventoryScreenAction.CloseSuccessDialog)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+        )
+    }
     UiBaseScaffold(
         message = state.message,
         topBarContent = {

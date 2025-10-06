@@ -10,4 +10,6 @@ sealed interface InventoryScreenAction {
     class UpdateCurrentType(val typeLinen: TypeLinen):InventoryScreenAction
     data object UpdateGrouping:InventoryScreenAction
     class UpdateInventoryState(val inventoryState: InventoryState):InventoryScreenAction
+
+    data object CloseSuccessDialog:InventoryScreenAction
 }
