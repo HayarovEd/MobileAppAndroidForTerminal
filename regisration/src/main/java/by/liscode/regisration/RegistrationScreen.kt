@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -28,6 +29,7 @@ import by.liscode.resources.uikit.InputRow
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiOutlandedButton
+import by.liscode.resources.uikit.UiTextField
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -81,17 +83,33 @@ fun RegistrationScreenScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(15.dp)
         ) {
-            InputRow(
-                title = stringResource(R.string.api_url),
-                content = state.url,
-                trailingIcon = ImageVector.vectorResource(R.drawable.outline_check_24),
-                onChangeContent = {
-                    onAction(RegistrationScreenAction.UpdateUrl(it))
-                },
-                onClickTrailingIcon = {
-                    onAction(RegistrationScreenAction.SaveUrl)
-                }
+            Text(
+                modifier = modifier,
+                text = stringResource(R.string.api_url),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyMedium,
             )
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                UiTextField(
+                    modifier.weight(6f),
+                    content = state.url,
+                    singleLine = true,
+                    maxLines = 1,
+                    onClickContent ={
+                        onAction(RegistrationScreenAction.UpdateUrl(it))
+                    }
+                )
+                UiIconButton(
+                    modifier.weight(1f),
+                    buttonColor = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    icon = ImageVector.vectorResource(R.drawable.outline_check_24),
+                    onClick = { onAction(RegistrationScreenAction.SaveUrl) }
+                )
+            }
             Spacer(modifier = modifier.height(10.dp))
             InputRow(
                 title = "${stringResource(R.string.login_client)}:",
@@ -119,7 +137,7 @@ fun RegistrationScreenScreen(
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
     MobileAppAndroidForTerminalTheme {
