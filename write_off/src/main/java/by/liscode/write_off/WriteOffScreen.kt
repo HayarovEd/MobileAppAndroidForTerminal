@@ -96,7 +96,10 @@ fun WriteOffScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(WriteOffScreenAction.TakeMarker(marker = it))
+                    onAction(WriteOffScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
                     onAction(WriteOffScreenAction.UpdateActivityScanner(it))

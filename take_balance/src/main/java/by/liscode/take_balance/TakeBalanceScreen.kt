@@ -1,6 +1,5 @@
 package by.liscode.take_balance
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -54,7 +53,6 @@ fun TakeBalanceScreenRoot(
 
     val context = LocalContext.current
     val scanner =  rememberRfid().apply { init(context) }
-    var isActive by remember { mutableStateOf(false) }
     LaunchedEffect(state.settings) {
         state.settings?.let {
             scanner.applySettings(it)
@@ -65,13 +63,15 @@ fun TakeBalanceScreenRoot(
         block = {
             processScan(
                 rfid = scanner,
-                isActive = isActive,
+                isActive = state.isActiveScanner,
                 block = {
-                    Log.d("REST TERMINAL", "scanned marker $it")
-                    onAction(TakeBalanceScreenAction.TakeMarker(marker = it))
+                    onAction(TakeBalanceScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
-                    isActive = it
+                    onAction(TakeBalanceScreenAction.UpdateActivityScanner(it))
                 }
             )
         },

@@ -1,11 +1,13 @@
 package by.liscode.take_balance
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.repository.SoundRepository
+import by.liscode.domain.utils.InfoMessage
+import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
@@ -24,6 +26,7 @@ class TakeBalanceScreenViewModel(
     private val localRepository: LocalRepository,
     jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
+    private val soundRepository: SoundRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
     jwtRepository = jwtRepository
@@ -191,7 +194,7 @@ class TakeBalanceScreenViewModel(
             is TakeBalanceScreenAction.TakeMarker -> {
                 if (state.value.filterMarkers.isEmpty()) {
                     if (!state.value.markers.contains(action.marker)) {
-                        Log.d("REST TERMINAL", "saved marker no filter ${action.marker}")
+                        soundRepository.playSound(action.sound)
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         )
@@ -204,7 +207,7 @@ class TakeBalanceScreenViewModel(
                                 ignoreCase = true
                             )
                         } && !state.value.markers.contains(action.marker)) {
-                        Log.d("REST TERMINAL", "saved marker with filter ${action.marker}")
+                        soundRepository.playSound(action.sound)
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         )
@@ -225,6 +228,14 @@ class TakeBalanceScreenViewModel(
                     isShowSuccessDialog = false
                 )
                     .updateState()
+            }
+
+            is TakeBalanceScreenAction.UpdateActivityScanner -> {
+                _state.value.copy(
+                    isActiveScanner = action.isActive,
+                    message = if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                        InfoMessage.RFIDWork.STOPPED.asText()
+                ).updateState()
             }
         }
     }

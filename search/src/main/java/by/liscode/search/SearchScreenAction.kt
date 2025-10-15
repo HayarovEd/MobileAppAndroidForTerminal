@@ -2,7 +2,10 @@ package by.liscode.search
 
 sealed interface SearchScreenAction {
     class UpdateActivityScanner(val isActive: Boolean): SearchScreenAction
-    class TakeMarker(val marker:String):SearchScreenAction
+    class TakeMarker(
+        val marker:String,
+        val sound: Int
+    ):SearchScreenAction
     class UpdateFilter(val filterByType: FilterByType):SearchScreenAction
     data object UpdateGroupping:SearchScreenAction
     class UpdateSearchState(val searchState: SearchState):SearchScreenAction

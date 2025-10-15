@@ -27,6 +27,7 @@ data class TakeBalanceScreenState(
     val queryCounterparty: String = "",
     val filterMarkers: List<Filter> = emptyList(),
     val isShowSuccessDialog: Boolean = false,
+    val isActiveScanner: Boolean = false,
 ) {
     val searchedCounterParties = counterparties.filter { it.name.contains(queryCounterparty, ignoreCase = true) }
 }

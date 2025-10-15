@@ -100,7 +100,10 @@ fun OrderCreateScreenRoot(
                     onAction(OrderCreateScreenAction.UpdateActivityScanner(it))
                 },
                 blockScan = {
-                    onAction(OrderCreateScreenAction.TakeMarker(it))
+                    onAction(OrderCreateScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 }
             )
         },

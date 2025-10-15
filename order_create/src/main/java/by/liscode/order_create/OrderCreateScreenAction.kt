@@ -4,8 +4,12 @@ import by.liscode.domain.model.Client
 import by.liscode.resources.model.ScannerWork
 
 sealed interface OrderCreateScreenAction {
-    class UpdateActivityScanner(val scannerWork: ScannerWork) : OrderCreateScreenAction
-    class TakeMarker(val marker: String) : OrderCreateScreenAction
+    class UpdateActivityScanner(
+        val scannerWork: ScannerWork) : OrderCreateScreenAction
+    class TakeMarker(
+        val marker: String,
+        val sound: Int
+    ) : OrderCreateScreenAction
     class UpdateLaundry(val laundry: Client) : OrderCreateScreenAction
     data object CreateOrder:OrderCreateScreenAction
     data object CreateOrderWithNotApprovedMarkers:OrderCreateScreenAction

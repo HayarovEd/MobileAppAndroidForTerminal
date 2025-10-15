@@ -95,7 +95,10 @@ fun CurrentOrderScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(CurrentOrderScreenAction.TakeMarker(marker = it))
+                    onAction(CurrentOrderScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
                     onAction(CurrentOrderScreenAction.UpdateActivityScanner(it))

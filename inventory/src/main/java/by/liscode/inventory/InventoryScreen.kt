@@ -90,7 +90,10 @@ fun InventoryScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(InventoryScreenAction.TakeMarker(marker = it))
+                    onAction(InventoryScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
                     onAction(InventoryScreenAction.UpdateActivityScanner(it))

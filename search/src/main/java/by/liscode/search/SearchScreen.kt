@@ -71,7 +71,10 @@ fun SearchScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(SearchScreenAction.TakeMarker(marker = it))
+                    onAction(SearchScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
                     onAction(SearchScreenAction.UpdateActivityScanner(it))

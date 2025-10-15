@@ -22,6 +22,10 @@ sealed interface TakeBalanceScreenAction {
         val inn: String,
         val phone: String,
     ):TakeBalanceScreenAction
-    class TakeMarker(val marker:String):TakeBalanceScreenAction
+    class TakeMarker(
+        val marker:String,
+        val sound: Int
+    ):TakeBalanceScreenAction
     class RemoveMarker(val marker:String):TakeBalanceScreenAction
+    class UpdateActivityScanner(val isActive: Boolean): TakeBalanceScreenAction
 }
