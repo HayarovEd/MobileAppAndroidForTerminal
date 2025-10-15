@@ -4,6 +4,7 @@ import by.liscode.domain.model.Filter
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.RfidSetting
+import by.liscode.resources.model.ScannerWork
 import by.liscode.resources.uikit.UiText
 
 data class TakeWorkScreenState(
@@ -15,6 +16,7 @@ data class TakeWorkScreenState(
     val filterMarkers: List<Filter> = emptyList(),
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val isShowResultDialog: Boolean = false,
+    val scannerWork: ScannerWork = ScannerWork.CLEAR
 ) {
     val sortedGroups = remoteLinens.groupBy {
         it.typeLinen

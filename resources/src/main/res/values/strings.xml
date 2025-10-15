@@ -217,4 +217,6 @@
     <string name="order_after_use">Заказ выполнен</string>
     <string name="order_into_use">Заказ принят в работу</string>
     <string name="data_inventory_sended">Результаты инвенторизации успешно отправлены</string>
+    <string name="scan_stopped">Сканирование остановлено</string>
+    <string name="scan_started">Сканирование начато</string>
 </resources>

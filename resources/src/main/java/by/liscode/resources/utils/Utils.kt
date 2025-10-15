@@ -59,7 +59,6 @@ fun processWorkScan(
     scannerWork: ScannerWork,
     rfid: RFIDWithUHFUART,
     blockScan: (String) -> Unit,
-    blockClear: () -> Unit,
     updateScannerWork: (ScannerWork) -> Unit,
 ) {
     when (scannerWork) {
@@ -79,7 +78,6 @@ fun processWorkScan(
             updateScannerWork(ScannerWork.STOP)
         }
         ScannerWork.STOP -> {
-            blockClear()
             updateScannerWork(ScannerWork.CLEAR)
         }
     }

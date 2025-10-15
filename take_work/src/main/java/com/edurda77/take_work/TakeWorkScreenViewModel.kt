@@ -7,6 +7,10 @@ import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.repository.SoundRepository
+import by.liscode.domain.utils.InfoMessage
+import by.liscode.resources.model.ScannerWork
+import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
@@ -24,6 +28,7 @@ class TakeWorkScreenViewModel(
     private val localRepository: LocalRepository,
     jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
+    private val soundRepository: SoundRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
     jwtRepository = jwtRepository
@@ -47,6 +52,7 @@ class TakeWorkScreenViewModel(
             is TakeWorkScreenAction.TakeMarker -> {
                 if (state.value.filterMarkers.isEmpty()) {
                     if (!state.value.markers.contains(action.marker)) {
+                        soundRepository.playSound(action.sound)
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         )
@@ -73,6 +79,7 @@ class TakeWorkScreenViewModel(
                                 ignoreCase = true
                             )
                         } && !state.value.markers.contains(action.marker)) {
+                        soundRepository.playSound(action.sound)
                         _state.value.copy(
                             markers = state.value.markers + action.marker
                         )
@@ -112,14 +119,6 @@ class TakeWorkScreenViewModel(
 
             }
 
-            TakeWorkScreenAction.ClearMarkers -> {
-                _state.value.copy(
-                    markers = emptyList(),
-                    remoteLinens = emptyList()
-                )
-                    .updateState()
-            }
-
             TakeWorkScreenAction.UpdateGrouping -> {
                 when (state.value.groupLinen) {
                     GroupLinen.NAME -> {
@@ -143,6 +142,25 @@ class TakeWorkScreenViewModel(
                     isShowResultDialog = false
                 )
                     .updateState()
+            }
+
+            is TakeWorkScreenAction.UpdateActivityScanner -> {
+                _state.value.copy(
+                    scannerWork = action.scannerWork,
+                    message = when (action.scannerWork) {
+                        ScannerWork.CLEAR -> null
+                        ScannerWork.SCANNER -> InfoMessage.RFIDWork.STARTED.asText()
+                        ScannerWork.STOP -> InfoMessage.RFIDWork.STOPPED.asText()
+                    }
+                )
+                    .updateState()
+                if (action.scannerWork == ScannerWork.CLEAR) {
+                    _state.value.copy(
+                        markers = emptyList(),
+                        remoteLinens = emptyList()
+                    )
+                        .updateState()
+                }
             }
         }
     }

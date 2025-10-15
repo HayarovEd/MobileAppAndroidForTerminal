@@ -22,9 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,7 +36,6 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
-import by.liscode.resources.model.ScannerWork
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.FundAppBar
@@ -64,7 +60,6 @@ fun TakeWorkScreenRoot(
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner =  rememberRfid().apply { init(context) }
-    var scannerWork by remember { mutableStateOf(ScannerWork.CLEAR)}
 
 
     LaunchedEffect(key1 = true) {
@@ -85,15 +80,12 @@ fun TakeWorkScreenRoot(
         block = {
             processWorkScan(
                 rfid = scanner,
-                scannerWork = scannerWork,
+                scannerWork = state.scannerWork,
                 updateScannerWork = {
-                    scannerWork = it
+                    onAction(TakeWorkScreenAction.UpdateActivityScanner(it))
                 },
                 blockScan = {
-                    onAction(TakeWorkScreenAction.TakeMarker(it))
-                },
-                blockClear = {
-                    onAction(TakeWorkScreenAction.ClearMarkers)
+                    onAction(TakeWorkScreenAction.TakeMarker(marker = it, sound = R.raw.beep))
                 }
             )
         },

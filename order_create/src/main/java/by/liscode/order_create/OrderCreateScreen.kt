@@ -101,8 +101,7 @@ fun OrderCreateScreenRoot(
                 },
                 blockScan = {
                     onAction(OrderCreateScreenAction.TakeMarker(it))
-                },
-                blockClear = {}
+                }
             )
         },
         back = {

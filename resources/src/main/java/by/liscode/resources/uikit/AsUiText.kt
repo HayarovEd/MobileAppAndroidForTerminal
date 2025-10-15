@@ -15,6 +15,7 @@ import by.liscode.domain.utils.DataError.Network.UNAUTHORIZED
 import by.liscode.domain.utils.DataError.Network.UNKNOWN
 import by.liscode.domain.utils.DataError.PasswordError.PASSWORD_BLANK
 import by.liscode.domain.utils.DataError.SerializationError.FORMAT_ERROR
+import by.liscode.domain.utils.InfoMessage
 import com.nine.statio.domain.utils.ResultWork
 
 fun DataError.asUiText(): UiText {
@@ -86,6 +87,19 @@ fun DataError.asUiText(): UiText {
         REQUEST_TIMEOUT -> {
             StringResource(
                 R.string.request_timeout
+            )
+        }
+    }
+}
+
+fun InfoMessage.asText() : UiText {
+    return when (this) {
+        InfoMessage.RFIDWork.STOPPED ->  StringResource(
+            R.string.scan_stopped
+        )
+        InfoMessage.RFIDWork.STARTED -> {
+            StringResource(
+                R.string.scan_started
             )
         }
     }
