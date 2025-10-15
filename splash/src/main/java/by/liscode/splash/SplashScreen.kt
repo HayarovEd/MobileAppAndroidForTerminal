@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.UiBaseScaffold
@@ -30,7 +31,7 @@ fun SplashScreenRoot(
     onNavigateToFundScreen: () -> Unit,
     onNavigateToLoginScreen: () -> Unit,
 ) {
-
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
