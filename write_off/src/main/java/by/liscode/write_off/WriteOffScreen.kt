@@ -102,6 +102,10 @@ fun WriteOffScreenRoot(
                     onAction(WriteOffScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
 
@@ -109,7 +113,10 @@ fun WriteOffScreenRoot(
         state = state,
         onAction = onAction,
         isOpenTypeReasonMenu = isOpenTypeReasonMenu,
-        onBackNavigate = onBackNavigate,
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate ()
+        },
         updateVisibilityTypeReasonMenu = {
             isOpenTypeReasonMenu = it
         }

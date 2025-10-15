@@ -70,7 +70,8 @@ fun rememberMapLifecycleObserver(
 
 @Composable
 fun OnScan(
-    block: () -> Unit
+    block: () -> Unit,
+    back: () -> Unit
 ) {
     val context = LocalContext.current
     val view = LocalView.current
@@ -90,6 +91,9 @@ fun OnScan(
                     KeyEvent.KEYCODE_MACRO_3 -> {
                         Log.d("REST TERMINAL", "result action")
                         block()
+                    }
+                    KeyEvent.KEYCODE_BACK -> {
+                        back()
                     }
                 }
             }

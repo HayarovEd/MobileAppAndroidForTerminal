@@ -104,6 +104,10 @@ fun OrderCreateScreenRoot(
                 },
                 blockClear = {}
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
     OrderCreateScreenScreen(
@@ -117,7 +121,10 @@ fun OrderCreateScreenRoot(
         updateVisibilityNotApproveDialog = {
             visibleNotApproveDialog = it
         },
-        onBack = onBackNavigate
+        onBack = {
+            scanner.free()
+            onBackNavigate ()
+        }
     )
 }
 

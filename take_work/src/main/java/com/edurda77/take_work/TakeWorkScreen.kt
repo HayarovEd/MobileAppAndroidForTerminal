@@ -66,6 +66,7 @@ fun TakeWorkScreenRoot(
     val scanner =  rememberRfid().apply { init(context) }
     var scannerWork by remember { mutableStateOf(ScannerWork.CLEAR)}
 
+
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -73,6 +74,7 @@ fun TakeWorkScreenRoot(
             }
         }
     }
+
 
     LaunchedEffect(state.settings) {
         state.settings?.let {
@@ -94,12 +96,19 @@ fun TakeWorkScreenRoot(
                     onAction(TakeWorkScreenAction.ClearMarkers)
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBack ()
         }
     )
     TakeWorkScreenScreen(
         state = state,
         onAction = onAction,
-        onBack = onBack
+        onBack = {
+            scanner.free()
+            onBack ()
+        }
     )
 }
 

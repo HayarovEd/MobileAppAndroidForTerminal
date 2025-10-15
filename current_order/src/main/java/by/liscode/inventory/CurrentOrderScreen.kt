@@ -101,6 +101,10 @@ fun CurrentOrderScreenRoot(
                     onAction(CurrentOrderScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
 
@@ -111,7 +115,10 @@ fun CurrentOrderScreenRoot(
         updateVisibilityNotApproveDialog = {
             visibleNotApproveDialog = it
         },
-        onBack = onBackNavigate
+        onBack = {
+            scanner.free()
+            onBackNavigate ()
+        }
     )
 }
 

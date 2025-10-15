@@ -77,12 +77,19 @@ fun SearchScreenRoot(
                     onAction(SearchScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
     SearchScreenScreen(
         state = state,
         onAction = viewModel::onAction,
-        onBackNavigate = onBackNavigate
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate ()
+        }
     )
 }
 

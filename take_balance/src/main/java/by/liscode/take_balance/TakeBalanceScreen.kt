@@ -74,6 +74,10 @@ fun TakeBalanceScreenRoot(
                     isActive = it
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
     TakeBalanceScreenScreen(
@@ -82,7 +86,10 @@ fun TakeBalanceScreenRoot(
         isOpenTypeLinenMenu = isOpenTypeLinenMenu,
         isOpenedStateLinenMenu = isOpenedStateLinenMenu,
         onAction = onAction,
-        onBackNavigate = onBackNavigate,
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate ()
+        },
         updateVisibilityAddDialog = {
             visibleAddDialog = it
         },

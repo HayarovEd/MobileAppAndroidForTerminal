@@ -96,12 +96,19 @@ fun InventoryScreenRoot(
                     onAction(InventoryScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
     InventoryScreenScreen(
         state = state,
         onAction = onAction,
-        onBackNavigate = onBackNavigate
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate ()
+        }
     )
 }
 
@@ -358,7 +365,8 @@ fun InventoryScreenScreen(
                                                         InventoryScreenAction.UpdateCurrentType(
                                                             linenType
                                                         )
-                                                    )}
+                                                    )
+                                                }
                                             ),
                                         text = linenType.outFormat(),
                                         color = if (state.currentTypeLinen == linenType) colorScheme.primary else colorScheme.onBackground,
