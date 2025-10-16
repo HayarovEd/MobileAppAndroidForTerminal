@@ -111,7 +111,7 @@ class TakeWorkScreenViewModel(
             TakeWorkScreenAction.UpdateStatusToWork -> {
                 loadData(
                     action = { token, url ->
-                        sendLinenInUse(
+                        checkInToUse(
                             accessToken = token,
                             url = url
                         )
@@ -167,6 +167,33 @@ class TakeWorkScreenViewModel(
                     )
                         .updateState()
                 }
+            }
+
+            TakeWorkScreenAction.CloseWarning -> {
+                _state.value.copy(
+                    isShowWarning = false
+                ).updateState()
+            }
+
+            TakeWorkScreenAction.SendAndCloseWarning -> {
+                loadData(
+                    action = { token, url ->
+                        sendLinenInUse(
+                            accessToken = token,
+                            url = url,
+                            rfids = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }.map { it.rfid }
+                        )
+                    },
+                    navigate = {
+                        viewModelScope.launch {
+                            _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
+                        }
+                    }
+                )
+                _state.value.copy(
+                    isShowWarning = false
+                )
+                    .updateState()
             }
         }
     }
@@ -229,9 +256,28 @@ class TakeWorkScreenViewModel(
         }
     }
 
+    private fun checkInToUse(
+        accessToken: String,
+        url: String,
+    ) {
+        if (state.value.remoteLinens.all { it.status == StatusLinen.IN_STOCK }) {
+            sendLinenInUse(
+                accessToken = accessToken,
+                url = url,
+                rfids = state.value.remoteLinens.map { it.rfid }
+            )
+        } else {
+            _state.value.copy(
+                isShowWarning = true
+            ).updateState()
+        }
+    }
+
+
     private fun sendLinenInUse(
         accessToken: String,
-        url: String
+        url: String,
+        rfids: List<String>
     ) {
         _state.value.copy(
             isLoading = true
@@ -240,7 +286,7 @@ class TakeWorkScreenViewModel(
             when (val result = remoteRepository.sendLinenInToUse(
                 baseUrl = url,
                 token = accessToken,
-                rfids = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }.map { it.rfid }
+                rfids = rfids
             )) {
                 is ResultWork.Error -> {
                     _state.value.copy(

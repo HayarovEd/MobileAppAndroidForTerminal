@@ -18,6 +18,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -142,6 +143,44 @@ private fun TakeWorkScreenScreen(
         )
     }
 
+
+    if (state.isShowWarning) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    text = stringResource(R.string.have_markers_not_in_stock),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(TakeWorkScreenAction.SendAndCloseWarning)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        onAction(TakeWorkScreenAction.CloseWarning)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        )
+    }
 
     UiBaseScaffold(
         message = state.message,

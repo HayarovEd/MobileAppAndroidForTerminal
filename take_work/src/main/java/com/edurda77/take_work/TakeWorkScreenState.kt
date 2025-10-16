@@ -16,6 +16,7 @@ data class TakeWorkScreenState(
     val filterMarkers: List<Filter> = emptyList(),
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val isShowResultDialog: Boolean = false,
+    val isShowWarning: Boolean = false,
     val scannerWork: ScannerWork = ScannerWork.CLEAR
 ) {
     val sortedGroups = remoteLinens.groupBy {

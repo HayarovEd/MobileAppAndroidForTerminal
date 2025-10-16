@@ -11,4 +11,6 @@ sealed interface TakeWorkScreenAction {
     data object UpdateGrouping:TakeWorkScreenAction
     data object CloseResultDialog:TakeWorkScreenAction
     class UpdateActivityScanner(val scannerWork: ScannerWork): TakeWorkScreenAction
+    data object CloseWarning:TakeWorkScreenAction
+    data object SendAndCloseWarning:TakeWorkScreenAction
 }
