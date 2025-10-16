@@ -84,7 +84,7 @@ class InventoryScreenViewModel(
                 viewModelScope.launch {
                     mutex.withLock {
                         if (state.value.filterMarkers.isEmpty()) {
-                            if (!state.value.markers.contains(action.marker)) {
+                            if (!state.value.markers.contains(action.marker)&&state.value.remoteLinens.map { it.rfid }.contains(action.marker)) {
                                 soundRepository.playSound(action.sound)
                                 _state.value.copy(
                                     markers = state.value.markers + action.marker
@@ -97,7 +97,7 @@ class InventoryScreenViewModel(
                                         it.query,
                                         ignoreCase = true
                                     )
-                                } && !state.value.markers.contains(action.marker)) {
+                                } && !state.value.markers.contains(action.marker) && state.value.remoteLinens.map { it.rfid }.contains(action.marker)) {
                                 soundRepository.playSound(action.sound)
                                 _state.value.copy(
                                     markers = state.value.markers + action.marker

@@ -319,20 +319,24 @@ fun WriteOffScreenScreen(
                                 modifier = modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Text(
-                                    modifier = modifier.weight(1f),
-                                    text = marker,
-                                    color = colorScheme.onPrimaryContainer,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                    ),
-                                )
-                                val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
-                                currentLinen?.let { linen->
+                                Column (
+                                    modifier = modifier.weight(1f)
+                                ){
+                                    val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
+                                    currentLinen?.let { linen->
+                                        Text(
+                                            modifier = modifier,
+                                            text = linen.printFormat(),
+                                            color = colorScheme.onBackground,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontWeight = FontWeight.Bold,
+                                            ),
+                                        )
+                                    }
                                     Text(
-                                        modifier = modifier.weight(2f),
-                                        text = linen.printFormat(),
-                                        color = colorScheme.onBackground,
+                                        modifier = modifier,
+                                        text = marker,
+                                        color = colorScheme.onPrimaryContainer,
                                         style = MaterialTheme.typography.bodyMedium,
                                     )
                                 }

@@ -65,8 +65,8 @@ fun TypeLinenScreen(
                         val fontColor = if (status) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                         UiRowThreeElements(
                             title = type,
-                            firstNumber = linens.count { element->  markers.contains(element) },
-                            secondNumber = linens.size,
+                            firstNumber = linens.size,
+                            secondNumber = linens.count { element->  markers.contains(element) },
                             fontColor = fontColor
                         )
                     }
