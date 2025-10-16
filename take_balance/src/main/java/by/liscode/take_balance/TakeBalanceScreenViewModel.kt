@@ -1,6 +1,7 @@
 package by.liscode.take_balance
 
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.StateLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -398,7 +399,14 @@ class TakeBalanceScreenViewModel(
                         is ResultWork.Success -> {
                             _state.value.copy(
                                 isLoading = false,
-                                isShowSuccessDialog = true
+                                isShowSuccessDialog = true,
+                                markers = emptyList(),
+                                currentTypeLinen = null,
+                                articleNumber = "",
+                                currentStateLinen = StateLinen.NEW,
+                                weight = "",
+                                billLading = "",
+                                currentCounterparty = null,
                             )
                                 .updateState()
                         }

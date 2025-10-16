@@ -256,7 +256,8 @@ class TakeWorkScreenViewModel(
                     _state.value.copy(
                         isLoading = false,
                         isShowResultDialog = true,
-                        remoteLinens = updatedLinens
+                        remoteLinens = emptyList(),
+                        markers = emptyList()
                     ).updateState()
                 }
             }

@@ -1,6 +1,7 @@
 package by.liscode.write_off
 
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.ReasonWriteOff
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -262,7 +263,10 @@ class WriteOffScreenViewModel(
                             _state.value.copy(
                                 isLoading = false,
                                 isShowSuccessDialog = true,
-                                remoteLinens = result.data
+                                remoteLinens = emptyList(),
+                                markers = emptyList(),
+                                actWriteOff = "",
+                                reasonWriteOff = ReasonWriteOff.DAMAGED
                             ).updateState()
                         }
                     }

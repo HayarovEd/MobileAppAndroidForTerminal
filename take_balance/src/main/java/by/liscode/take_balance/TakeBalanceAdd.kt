@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,20 +28,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.TypeLinen
+import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
-import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asStateLinenText
 
@@ -115,6 +115,7 @@ fun TakeBalanceAddScreen(
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                    Spacer(modifier = modifier.width(5.dp))
                     Box {
                         Text(
                             modifier = modifier.clickable(
@@ -122,7 +123,7 @@ fun TakeBalanceAddScreen(
                                     updateVisibleTypeLinenMenu(true)
                                 }
                             ),
-                            text = if (state.currentTypeLinen == null) stringResource(R.string.choose) else state.currentTypeLinen.name,
+                            text = if (state.currentTypeLinen == null) stringResource(R.string.choose) else state.currentTypeLinen.outFormat(),
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
@@ -140,7 +141,7 @@ fun TakeBalanceAddScreen(
                                     text = {
                                         Text(
                                             modifier = modifier,
-                                            text = it.name,
+                                            text = it.outFormat(),
                                             color = MaterialTheme.colorScheme.onBackground,
                                             style = MaterialTheme.typography.bodyMedium,
                                         )
@@ -168,6 +169,7 @@ fun TakeBalanceAddScreen(
                     UiTextField(
                         content = state.articleNumber,
                         placeholder = "",
+                        imeAction = ImeAction.Next,
                         onClickContent = {
                             updateArticleNumber(it)
                         }
@@ -241,6 +243,7 @@ fun TakeBalanceAddScreen(
                         content = state.weight,
                         placeholder = "",
                         isOnlyDigit = true,
+                        imeAction = ImeAction.Next,
                         onClickContent = {
                             updateWeight(it)
                         }
@@ -267,6 +270,7 @@ fun TakeBalanceAddScreen(
                     UiTextField(
                         modifier = modifier.weight(1f),
                         content = state.billLading,
+                        imeAction = ImeAction.Done,
                         placeholder = stringResource(R.string.bill_lading_label),
                         onClickContent = {
                             updateBillLading(it)
@@ -327,12 +331,12 @@ fun TakeBalanceAddScreen(
                                 fontWeight = FontWeight.Bold,
                             ),
                         )
-                        UiIconButton(
+                        /*UiIconButton(
                             icon = ImageVector.vectorResource(R.drawable.outline_delete_24),
                             onClick = {
                                 deleteMarker(marker)
                             }
-                        )
+                        )*/
                     }
                 }
             }
