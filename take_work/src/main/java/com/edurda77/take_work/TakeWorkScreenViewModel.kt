@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class TakeWorkScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
@@ -34,7 +36,7 @@ class TakeWorkScreenViewModel(
     jwtRepository = jwtRepository
 ) {
 
-
+    private val mutex = Mutex()
     private val _state = MutableStateFlow(TakeWorkScreenState())
     val state = _state
         .onStart {
@@ -50,56 +52,60 @@ class TakeWorkScreenViewModel(
     fun onAction(action: TakeWorkScreenAction) {
         when (action) {
             is TakeWorkScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.isEmpty()) {
-                    if (!state.value.markers.contains(action.marker)) {
-                        soundRepository.playSound(action.sound)
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker,
-                                    accessToken = token,
-                                    url = url
+                viewModelScope.launch {
+                    mutex.withLock {
+                        if (state.value.filterMarkers.isEmpty()) {
+                            if (!state.value.markers.contains(action.marker)) {
+                                soundRepository.playSound(action.sound)
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
-                                }
-                            }
-                        )
-                    }
-                } else {
-                    if (state.value.filterMarkers.any {
-                            action.marker.contains(
-                                it.query,
-                                ignoreCase = true
-                            )
-                        } && !state.value.markers.contains(action.marker)) {
-                        soundRepository.playSound(action.sound)
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker,
-                                    accessToken = token,
-                                    url = url
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker,
+                                            accessToken = token,
+                                            url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
+                                        }
+                                    }
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
-                                }
                             }
-                        )
+                        } else {
+                            if (state.value.filterMarkers.any {
+                                    action.marker.contains(
+                                        it.query,
+                                        ignoreCase = true
+                                    )
+                                } && !state.value.markers.contains(action.marker)) {
+                                soundRepository.playSound(action.sound)
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
+                                )
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker,
+                                            accessToken = token,
+                                            url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
-                }
+                 }
             }
 
             TakeWorkScreenAction.UpdateStatusToWork -> {

@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class InventoryScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
@@ -33,7 +35,7 @@ class InventoryScreenViewModel(
     jwtRepository = jwtRepository
 ) {
 
-
+    private val mutex = Mutex()
     private val _state = MutableStateFlow(InventoryScreenState())
     val state = _state
         .onStart {
@@ -79,28 +81,33 @@ class InventoryScreenViewModel(
                 )
             }
             is InventoryScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.isEmpty()) {
-                    if (!state.value.markers.contains(action.marker)) {
-                        soundRepository.playSound(action.sound)
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                    }
-                } else {
-                    if (state.value.filterMarkers.any {
-                            action.marker.contains(
-                                it.query,
-                                ignoreCase = true
-                            )
-                        } && !state.value.markers.contains(action.marker)) {
-                        soundRepository.playSound(action.sound)
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
+                viewModelScope.launch {
+                    mutex.withLock {
+                        if (state.value.filterMarkers.isEmpty()) {
+                            if (!state.value.markers.contains(action.marker)) {
+                                soundRepository.playSound(action.sound)
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
+                                )
+                                    .updateState()
+                            }
+                        } else {
+                            if (state.value.filterMarkers.any {
+                                    action.marker.contains(
+                                        it.query,
+                                        ignoreCase = true
+                                    )
+                                } && !state.value.markers.contains(action.marker)) {
+                                soundRepository.playSound(action.sound)
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
+                                )
+                                    .updateState()
+                            }
+                        }
                     }
                 }
+
             }
             is InventoryScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(

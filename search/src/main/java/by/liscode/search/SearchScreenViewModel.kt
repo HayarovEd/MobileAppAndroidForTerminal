@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class SearchScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
@@ -32,7 +34,7 @@ class SearchScreenViewModel(
     jwtRepository = jwtRepository
 ) {
 
-
+    private val mutex = Mutex()
     private val _state = MutableStateFlow(SearchScreenState())
     val state = _state
         .onStart {
@@ -49,52 +51,57 @@ class SearchScreenViewModel(
     fun onAction(action: SearchScreenAction) {
         when (action) {
             is SearchScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.isEmpty()) {
-                    if (!state.value.markers.contains(action.marker)) {
-                        soundRepository.playSound(action.sound)
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                viewModelScope.launch {
+                    mutex.withLock {
+                        if (state.value.filterMarkers.isEmpty()) {
+                            if (!state.value.markers.contains(action.marker)) {
+                                soundRepository.playSound(action.sound)
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                                }
-                            }
-                        )
-                    }
-                } else {
-                    if (state.value.filterMarkers.any {
-                            action.marker.contains(
-                                it.query,
-                                ignoreCase = true
-                            )
-                        } && !state.value.markers.contains(action.marker)) {
-                        soundRepository.playSound(action.sound)
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker, accessToken = token, url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                                        }
+                                    }
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                                }
                             }
-                        )
+                        } else {
+                            if (state.value.filterMarkers.any {
+                                    action.marker.contains(
+                                        it.query,
+                                        ignoreCase = true
+                                    )
+                                } && !state.value.markers.contains(action.marker)) {
+                                soundRepository.playSound(action.sound)
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
+                                )
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker, accessToken = token, url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
+
             }
 
             is SearchScreenAction.UpdateActivityScanner -> {
