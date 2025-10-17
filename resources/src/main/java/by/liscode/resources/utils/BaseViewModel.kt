@@ -125,7 +125,7 @@ abstract class BaseViewModel(
                         it.query,
                         ignoreCase = true
                     )
-                } && !isUpdate) {
+                } && isUpdate) {
                 delay(150)
                 soundRepository.playSound(sound)
                 actionAddMarker(marker)
