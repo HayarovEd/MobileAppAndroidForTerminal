@@ -58,6 +58,7 @@ import by.liscode.resources.uikit.UiRowThreeElements
 import by.liscode.resources.uikit.UiRowTitleThreeElements
 import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -71,6 +72,7 @@ fun CurrentOrderScreenRoot(
     onBackNavigate: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner = rememberRfid().apply { init(context) }
@@ -84,8 +86,8 @@ fun CurrentOrderScreenRoot(
         }
     }
 
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -113,6 +115,7 @@ fun CurrentOrderScreenRoot(
 
     CurrentOrderScreenScreen(
         state = state,
+        baseState = baseState,
         visibleNotApproveDialog = visibleNotApproveDialog,
         onAction = viewModel::onAction,
         updateVisibilityNotApproveDialog = {
@@ -121,7 +124,7 @@ fun CurrentOrderScreenRoot(
         onBack = {
             scanner.free()
             onBackNavigate ()
-        }
+        },
     )
 }
 
@@ -129,6 +132,7 @@ fun CurrentOrderScreenRoot(
 fun CurrentOrderScreenScreen(
     modifier: Modifier = Modifier,
     state: CurrentOrderScreenState,
+    baseState: BaseState,
     visibleNotApproveDialog: Boolean,
     onAction: (CurrentOrderScreenAction) -> Unit,
     updateVisibilityNotApproveDialog: (Boolean) -> Unit,
@@ -186,7 +190,7 @@ fun CurrentOrderScreenScreen(
     }
 
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             Row(
                 modifier = modifier
@@ -361,10 +365,11 @@ private fun Preview() {
     MobileAppAndroidForTerminalTheme {
         CurrentOrderScreenScreen(
             state = CurrentOrderScreenState(),
+            baseState = BaseState(),
             visibleNotApproveDialog = false,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
-            onBack = {}
+            onBack = {},
         )
     }
 }
@@ -378,10 +383,11 @@ private fun Preview1() {
     MobileAppAndroidForTerminalTheme {
         CurrentOrderScreenScreen(
             state = CurrentOrderScreenState(),
+            baseState = BaseState(),
             visibleNotApproveDialog = true,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
-            onBack = {}
+            onBack = {},
         )
     }
 }
@@ -400,10 +406,11 @@ private fun Preview2() {
                 markers = markers,
                 order = order
             ),
+            baseState = BaseState(),
             visibleNotApproveDialog = false,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
-            onBack = {}
+            onBack = {},
         )
     }
 }
@@ -427,10 +434,11 @@ private fun Preview3() {
                 order = order,
                 markers = markers
             ),
+            baseState = BaseState(),
             visibleNotApproveDialog = true,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
-            onBack = {}
+            onBack = {},
         )
     }
 }
@@ -455,10 +463,11 @@ private fun Preview4() {
                 order = order,
                 markers = markers
             ),
+            baseState = BaseState(),
             visibleNotApproveDialog = true,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
-            onBack = {}
+            onBack = {},
         )
     }
 }
@@ -483,10 +492,11 @@ private fun Preview5() {
                 order = order1,
                 markers = markers
             ),
+            baseState = BaseState(),
             visibleNotApproveDialog = true,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
-            onBack = {}
+            onBack = {},
         )
     }
 }
@@ -513,8 +523,9 @@ private fun Preview6() {
             ),
             visibleNotApproveDialog = true,
             onAction = {},
+            baseState = BaseState(),
             updateVisibilityNotApproveDialog = {},
-            onBack = {}
+            onBack = {},
         )
     }
 }

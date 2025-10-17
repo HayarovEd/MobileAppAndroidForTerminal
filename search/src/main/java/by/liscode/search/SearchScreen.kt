@@ -37,6 +37,7 @@ import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -49,6 +50,7 @@ fun SearchScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner = rememberRfid().apply { init(context) }
@@ -60,8 +62,8 @@ fun SearchScreenRoot(
             }
         }
     }
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -88,6 +90,7 @@ fun SearchScreenRoot(
     )
     SearchScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = viewModel::onAction,
         onBackNavigate = {
             scanner.free()
@@ -100,11 +103,12 @@ fun SearchScreenRoot(
 fun SearchScreenScreen(
     modifier: Modifier = Modifier,
     state: SearchScreenState,
+    baseState: BaseState,
     onAction: (SearchScreenAction) -> Unit,
     onBackNavigate: () -> Unit
 ) {
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             when (state.searchState) {
                 SearchState.SEARCH -> {
@@ -233,6 +237,7 @@ private fun Preview1() {
     MobileAppAndroidForTerminalTheme {
         SearchScreenScreen(
             state = SearchScreenState(),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -247,6 +252,7 @@ private fun Preview2() {
             state = SearchScreenState(
                 searchState = SearchState.FILTERING
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )

@@ -31,13 +31,13 @@ class WriteOffScreenViewModel(
     private val soundRepository: SoundRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository
 ) {
 
     private val mutex = Mutex()
     private val _state = MutableStateFlow(WriteOffScreenState())
     val state = _state.onStart {
-        getLocalData()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -66,7 +66,7 @@ class WriteOffScreenViewModel(
             is WriteOffScreenAction.TakeMarker -> {
                 viewModelScope.launch {
                     mutex.withLock {
-                        if (state.value.filterMarkers.isEmpty()) {
+                        if (baseState.value.filterMarkers.isEmpty()) {
                             if (!state.value.markers.contains(action.marker)) {
                                 soundRepository.playSound(action.sound)
                                 _state.value.copy(
@@ -86,7 +86,7 @@ class WriteOffScreenViewModel(
                                 )
                             }
                         } else {
-                            if (state.value.filterMarkers.any {
+                            if (baseState.value.filterMarkers.any {
                                     action.marker.contains(
                                         it.query, ignoreCase = true
                                     )
@@ -139,9 +139,9 @@ class WriteOffScreenViewModel(
             is WriteOffScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
                     isActiveScanner = action.isActive,
-                    message = if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
-                        InfoMessage.RFIDWork.STOPPED.asText()
                 ).updateState()
+                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                    InfoMessage.RFIDWork.STOPPED.asText())
             }
 
             WriteOffScreenAction.CloseSuccessDialog -> {
@@ -154,33 +154,6 @@ class WriteOffScreenViewModel(
     }
 
 
-    private fun getLocalData() {
-        viewModelScope.launch {
-            localRepository.getAllFilters().collect {
-                when (it) {
-                    is ResultWork.Error -> {
-                        _state.value.copy(
-                            message = it.error.asUiText()
-                        ).updateState()
-                    }
-
-                    is ResultWork.Success -> {
-                        _state.value.copy(
-                            filterMarkers = it.data
-                        ).updateState()
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            dataStoreRepository.getRfidSettings().collect {
-                _state.value.copy(
-                    settings = it
-                ).updateState()
-            }
-        }
-    }
-
     private fun getLinenById(
         rfid: String, accessToken: String, url: String
     ) {
@@ -189,9 +162,7 @@ class WriteOffScreenViewModel(
                 baseUrl = url, token = accessToken, rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    ).updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -255,8 +226,8 @@ class WriteOffScreenViewModel(
                         is ResultWork.Error -> {
                             _state.value.copy(
                                 isLoading = false,
-                                message = result.error.asUiText()
                             ).updateState()
+                            updateMessage(result.error.asUiText())
                         }
 
                         is ResultWork.Success -> {

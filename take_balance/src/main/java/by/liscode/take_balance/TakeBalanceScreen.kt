@@ -27,6 +27,7 @@ import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -39,6 +40,7 @@ fun TakeBalanceScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val  onAction = viewModel::onAction
     var visibleAddDialog by remember { mutableStateOf(false) }
     var isOpenTypeLinenMenu by remember { mutableStateOf(false) }
@@ -53,8 +55,8 @@ fun TakeBalanceScreenRoot(
 
     val context = LocalContext.current
     val scanner =  rememberRfid().apply { init(context) }
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -82,6 +84,7 @@ fun TakeBalanceScreenRoot(
     )
     TakeBalanceScreenScreen(
         state = state,
+        baseState = baseState,
         visibleAddDialog = visibleAddDialog,
         isOpenTypeLinenMenu = isOpenTypeLinenMenu,
         isOpenedStateLinenMenu = isOpenedStateLinenMenu,
@@ -106,6 +109,7 @@ fun TakeBalanceScreenRoot(
 fun TakeBalanceScreenScreen(
     modifier: Modifier = Modifier,
     state: TakeBalanceScreenState,
+    baseState: BaseState,
     visibleAddDialog: Boolean,
     isOpenTypeLinenMenu: Boolean,
     isOpenedStateLinenMenu: Boolean,
@@ -169,7 +173,7 @@ fun TakeBalanceScreenScreen(
         }
     }
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             when (state.stateScreen) {
                 StateScreen.ADD -> {
@@ -284,6 +288,7 @@ private fun Preview1() {
             state = TakeBalanceScreenState(
                 stateScreen = StateScreen.COUNTERPARTY
             ),
+            baseState = BaseState(),
             visibleAddDialog = false,
             isOpenedStateLinenMenu = false,
             isOpenTypeLinenMenu = true,
@@ -308,6 +313,7 @@ private fun Preview2() {
             state = TakeBalanceScreenState(
                 stateScreen = StateScreen.ADD
             ),
+            baseState = BaseState(),
             visibleAddDialog = false,
             isOpenedStateLinenMenu = false,
             isOpenTypeLinenMenu = true,
@@ -332,6 +338,7 @@ private fun Preview3() {
                 stateScreen = StateScreen.ADD,
                 isShowSuccessDialog = true
             ),
+            baseState = BaseState(),
             visibleAddDialog = false,
             isOpenedStateLinenMenu = false,
             isOpenTypeLinenMenu = true,

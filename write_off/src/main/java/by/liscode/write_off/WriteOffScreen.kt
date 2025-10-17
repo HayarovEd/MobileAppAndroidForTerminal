@@ -61,6 +61,7 @@ import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asReasonText
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -73,6 +74,7 @@ fun WriteOffScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     var isOpenTypeReasonMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -85,8 +87,8 @@ fun WriteOffScreenRoot(
             }
         }
     }
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -114,6 +116,7 @@ fun WriteOffScreenRoot(
 
     WriteOffScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = onAction,
         isOpenTypeReasonMenu = isOpenTypeReasonMenu,
         onBackNavigate = {
@@ -130,6 +133,7 @@ fun WriteOffScreenRoot(
 fun WriteOffScreenScreen(
     modifier: Modifier = Modifier,
     state: WriteOffScreenState,
+    baseState: BaseState,
     isOpenTypeReasonMenu: Boolean,
     onAction: (WriteOffScreenAction) -> Unit,
     onBackNavigate: () -> Unit,
@@ -178,7 +182,7 @@ fun WriteOffScreenScreen(
     }
 
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             FundAppBar(
                 title = stringResource(R.string.write_off_linen),
@@ -366,6 +370,7 @@ private fun Preview() {
             state = WriteOffScreenState(
                 isShowDialog = true
             ),
+            baseState = BaseState(),
             isOpenTypeReasonMenu = false,
             updateVisibilityTypeReasonMenu = {},
             onAction = {},
@@ -423,6 +428,7 @@ private fun Preview1() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             isOpenTypeReasonMenu = false,
             updateVisibilityTypeReasonMenu = {},
             onAction = {},
@@ -480,6 +486,7 @@ private fun Preview2() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             isOpenTypeReasonMenu = true,
             updateVisibilityTypeReasonMenu = {},
             onAction = {},

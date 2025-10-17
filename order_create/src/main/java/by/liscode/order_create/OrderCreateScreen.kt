@@ -60,6 +60,7 @@ import by.liscode.resources.uikit.UiRowTitleTwoElements
 import by.liscode.resources.uikit.UiRowTwoElements
 import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processWorkScan
 import kotlinx.coroutines.flow.collectLatest
@@ -72,6 +73,7 @@ fun OrderCreateScreenRoot(
     onBackNavigate: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner = rememberRfid().apply { init(context) }
@@ -86,8 +88,8 @@ fun OrderCreateScreenRoot(
         }
     }
 
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -114,6 +116,7 @@ fun OrderCreateScreenRoot(
     )
     OrderCreateScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = viewModel::onAction,
         visibleLaundryMenu = visibleLaundryMenu,
         visibleNotApproveDialog = visibleNotApproveDialog,
@@ -134,6 +137,7 @@ fun OrderCreateScreenRoot(
 fun OrderCreateScreenScreen(
     modifier: Modifier = Modifier,
     state: OrderCreateScreenState,
+    baseState: BaseState,
     visibleLaundryMenu: Boolean,
     visibleNotApproveDialog: Boolean,
     updateVisibilityLaundryMenu: (Boolean) -> Unit,
@@ -222,7 +226,7 @@ fun OrderCreateScreenScreen(
         }
     }
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             Row(
                 modifier = modifier
@@ -413,6 +417,7 @@ private fun Preview() {
             state = OrderCreateScreenState(
                 isShowWarning = true
             ),
+            baseState = BaseState(),
             visibleLaundryMenu = false,
             visibleNotApproveDialog = false,
             onAction = {},
@@ -432,6 +437,7 @@ private fun Preview1() {
     MobileAppAndroidForTerminalTheme {
         OrderCreateScreenScreen(
             state = OrderCreateScreenState(),
+            baseState = BaseState(),
             visibleLaundryMenu = false,
             visibleNotApproveDialog = false,
             onAction = {},
@@ -474,6 +480,7 @@ private fun Preview2() {
                 currentLaundry = laundries.first(),
                 laundries = laundries
             ),
+            baseState = BaseState(),
             visibleLaundryMenu = false,
             visibleNotApproveDialog = false,
             onAction = {},
@@ -564,6 +571,7 @@ private fun Preview3() {
                 remoteLinens = linens,
                 markers = markers
             ),
+            baseState = BaseState(),
             visibleLaundryMenu = false,
             visibleNotApproveDialog = false,
             onAction = {},

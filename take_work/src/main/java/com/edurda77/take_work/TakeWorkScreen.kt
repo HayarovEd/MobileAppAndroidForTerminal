@@ -45,6 +45,7 @@ import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiButton
 import by.liscode.resources.uikit.UiRowTwoText
+import by.liscode.resources.uikit.UiText
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processWorkScan
@@ -58,6 +59,7 @@ fun TakeWorkScreenRoot(
     onBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner =  rememberRfid().apply { init(context) }
@@ -72,8 +74,8 @@ fun TakeWorkScreenRoot(
     }
 
 
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -97,6 +99,7 @@ fun TakeWorkScreenRoot(
     )
     TakeWorkScreenScreen(
         state = state,
+        message = baseState.message,
         onAction = onAction,
         onBack = {
             scanner.free()
@@ -111,6 +114,7 @@ fun TakeWorkScreenRoot(
 private fun TakeWorkScreenScreen(
     modifier: Modifier = Modifier,
     state: TakeWorkScreenState,
+    message: UiText?,
     onAction: (TakeWorkScreenAction) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -183,7 +187,7 @@ private fun TakeWorkScreenScreen(
     }
 
     UiBaseScaffold(
-        message = state.message,
+        message = message,
         topBarContent = {
             FundAppBar(
                 title = stringResource(R.string.take_work),
@@ -309,6 +313,7 @@ private fun Preview() {
                 markers = (1..25).map { "$it"},
                 remoteLinens = linens
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )
@@ -326,6 +331,7 @@ private fun Preview2() {
                 ),
                 isLoading = true
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )
@@ -389,6 +395,7 @@ private fun Preview3() {
                 remoteLinens = linens,
                 groupLinen = GroupLinen.TYPE_LINEN
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )
@@ -403,6 +410,7 @@ private fun Preview4() {
             state = TakeWorkScreenState(
                 isShowResultDialog = true
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )

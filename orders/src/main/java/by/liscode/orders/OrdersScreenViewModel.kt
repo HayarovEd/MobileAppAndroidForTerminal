@@ -3,6 +3,7 @@ package by.liscode.orders
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
+import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
@@ -20,9 +21,11 @@ class OrdersScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
+    private val localRepository: LocalRepository
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository
 ){
 
 
@@ -99,9 +102,9 @@ class OrdersScreenViewModel(
                 is ResultWork.Error -> {
                     _state.value.copy(
                         isLoading = false,
-                        message = result.error.asUiText()
                     )
                         .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {

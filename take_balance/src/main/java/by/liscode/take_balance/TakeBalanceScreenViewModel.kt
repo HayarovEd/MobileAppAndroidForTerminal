@@ -32,14 +32,14 @@ class TakeBalanceScreenViewModel(
     private val soundRepository: SoundRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository
 ) {
 
     private val mutex = Mutex()
     private val _state = MutableStateFlow(TakeBalanceScreenState())
     val state = _state
         .onStart {
-            getLocalData()
             loadData(
                 action = { token, url ->
                     getRemoteData(
@@ -63,35 +63,6 @@ class TakeBalanceScreenViewModel(
     private val _eventFlow = MutableSharedFlow<UiTakeBalanceEvents>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private fun getLocalData() {
-        viewModelScope.launch {
-            localRepository.getAllFilters().collect {
-                when (it) {
-                    is ResultWork.Error -> {
-                        _state.value.copy(
-                            message = it.error.asUiText()
-                        )
-                            .updateState()
-                    }
-
-                    is ResultWork.Success -> {
-                        _state.value.copy(
-                            filterMarkers = it.data
-                        )
-                            .updateState()
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            dataStoreRepository.getRfidSettings().collect {
-                _state.value.copy(
-                    settings = it
-                )
-                    .updateState()
-            }
-        }
-    }
 
     fun onAction(action: TakeBalanceScreenAction) {
         when (action) {
@@ -197,7 +168,7 @@ class TakeBalanceScreenViewModel(
             is TakeBalanceScreenAction.TakeMarker -> {
                 viewModelScope.launch {
                     mutex.withLock {
-                        if (state.value.filterMarkers.isEmpty()) {
+                        if (baseState.value.filterMarkers.isEmpty()) {
                             if (!state.value.markers.contains(action.marker)) {
                                 soundRepository.playSound(action.sound)
                                 _state.value.copy(
@@ -206,7 +177,7 @@ class TakeBalanceScreenViewModel(
                                     .updateState()
                             }
                         } else {
-                            if (state.value.filterMarkers.any {
+                            if (baseState.value.filterMarkers.any {
                                     action.marker.contains(
                                         it.query,
                                         ignoreCase = true
@@ -241,9 +212,9 @@ class TakeBalanceScreenViewModel(
             is TakeBalanceScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
                     isActiveScanner = action.isActive,
-                    message = if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
-                        InfoMessage.RFIDWork.STOPPED.asText()
                 ).updateState()
+                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                    InfoMessage.RFIDWork.STOPPED.asText())
             }
         }
     }
@@ -277,10 +248,7 @@ class TakeBalanceScreenViewModel(
             }
             when (val result = counterpartiesResultDiff.await()) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -292,10 +260,7 @@ class TakeBalanceScreenViewModel(
             }
             when (val result = statesLinenResultDiff.await()) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -307,10 +272,7 @@ class TakeBalanceScreenViewModel(
             }
             when (val result = typesLinenDiff.await()) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -351,9 +313,9 @@ class TakeBalanceScreenViewModel(
                 is ResultWork.Error -> {
                     _state.value.copy(
                         isLoading = false,
-                        message = result.error.asUiText()
                     )
                         .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -391,9 +353,9 @@ class TakeBalanceScreenViewModel(
                         is ResultWork.Error -> {
                             _state.value.copy(
                                 isLoading = false,
-                                message = result.error.asUiText()
                             )
                                 .updateState()
+                            updateMessage(result.error.asUiText())
                         }
 
                         is ResultWork.Success -> {

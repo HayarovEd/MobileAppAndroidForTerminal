@@ -35,14 +35,15 @@ class CurrentOrderScreenViewModel(
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository
 ) {
     private val orderId = savedStateHandle.toRoute<NavigationRoute.CurrentOrder>().id
     private val mutex = Mutex()
     private val _state = MutableStateFlow(CurrentOrderScreenState())
     val state = _state
         .onStart {
-            getLocalData()
+            getUserData()
             loadData(
                 action = { token, url ->
                     getOrder(
@@ -72,7 +73,7 @@ class CurrentOrderScreenViewModel(
             is CurrentOrderScreenAction.TakeMarker -> {
                 viewModelScope.launch {
                     mutex.withLock {
-                        if (state.value.filterMarkers.isEmpty()) {
+                        if (baseState.value.filterMarkers.isEmpty()) {
                             if (!state.value.markers.contains(action.marker)) {
                                 soundRepository.playSound(action.sound)
                                 _state.value.copy(
@@ -81,7 +82,7 @@ class CurrentOrderScreenViewModel(
                                     .updateState()
                             }
                         } else {
-                            if (state.value.filterMarkers.any {
+                            if (baseState.value.filterMarkers.any {
                                     action.marker.contains(
                                         it.query,
                                         ignoreCase = true
@@ -102,9 +103,11 @@ class CurrentOrderScreenViewModel(
             is CurrentOrderScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
                     isActiveScanner = action.isActive,
-                    message = if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
-                        InfoMessage.RFIDWork.STOPPED.asText()
                 ).updateState()
+                updateMessage(
+                    if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                        InfoMessage.RFIDWork.STOPPED.asText()
+                )
             }
 
             is CurrentOrderScreenAction.UpdateOrder -> {
@@ -172,34 +175,7 @@ class CurrentOrderScreenViewModel(
         }
     }
 
-    private fun getLocalData() {
-        viewModelScope.launch {
-            localRepository.getAllFilters().collect {
-                when (it) {
-                    is ResultWork.Error -> {
-                        _state.value.copy(
-                            message = it.error.asUiText()
-                        )
-                            .updateState()
-                    }
-
-                    is ResultWork.Success -> {
-                        _state.value.copy(
-                            filterMarkers = it.data
-                        )
-                            .updateState()
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            dataStoreRepository.getRfidSettings().collect {
-                _state.value.copy(
-                    settings = it
-                )
-                    .updateState()
-            }
-        }
+    private fun getUserData() {
         viewModelScope.launch {
             dataStoreRepository.getBearer().collect { token ->
                 token?.let {
@@ -230,9 +206,9 @@ class CurrentOrderScreenViewModel(
                 is ResultWork.Error -> {
                     _state.value.copy(
                         isLoading = false,
-                        message = result.error.asUiText()
                     )
                         .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -265,9 +241,9 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Error -> {
                         _state.value.copy(
                             isLoading = false,
-                            message = result.error.asUiText()
                         )
                             .updateState()
+                        updateMessage(result.error.asUiText())
                     }
 
                     is ResultWork.Success -> {
@@ -302,9 +278,9 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Error -> {
                         _state.value.copy(
                             isLoading = false,
-                            message = result.error.asUiText()
                         )
                             .updateState()
+                        updateMessage(result.error.asUiText())
                     }
 
                     is ResultWork.Success -> {
@@ -339,9 +315,9 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Error -> {
                         _state.value.copy(
                             isLoading = false,
-                            message = result.error.asUiText()
                         )
                             .updateState()
+                        updateMessage(result.error.asUiText())
                     }
 
                     is ResultWork.Success -> {

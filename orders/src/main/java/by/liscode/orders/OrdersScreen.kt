@@ -45,6 +45,7 @@ import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
+import by.liscode.resources.utils.BaseState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -61,6 +62,7 @@ fun OrdersScreenRoot(
     onNavigateToOrderScreen: (Int) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -70,6 +72,7 @@ fun OrdersScreenRoot(
     }
     OrdersScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = viewModel::onAction,
         onNavigateToOrderScreen = onNavigateToOrderScreen,
         onNavigateToCreateOrderScreen = onNavigateToCreateOrderScreen,
@@ -81,13 +84,14 @@ fun OrdersScreenRoot(
 fun OrdersScreenScreen(
     modifier: Modifier = Modifier,
     state: OrdersScreenState,
+    baseState: BaseState,
     bottomRoutes: @Composable () -> Unit,
     onNavigateToCreateOrderScreen: () -> Unit,
     onNavigateToOrderScreen: (Int) -> Unit,
     onAction: (OrdersScreenAction) -> Unit,
 ) {
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             Row(
                 modifier = modifier
@@ -267,6 +271,7 @@ private fun Preview() {
                     expired = 0L
                 )
             ),
+            baseState = BaseState(),
             onAction = {},
             bottomRoutes = {},
             onNavigateToOrderScreen = {},

@@ -1,19 +1,13 @@
 package by.liscode.search
 
 import by.liscode.domain.model.Client
-import by.liscode.domain.model.Filter
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
-import by.liscode.domain.model.RfidSetting
-import by.liscode.resources.uikit.UiText
 
 data class SearchScreenState(
     val isLoading: Boolean = false,
-    val settings: RfidSetting? = null,
-    val message: UiText? = null,
     val markers: List<String> = emptyList(),
     val remoteLinens: List<Linen> = emptyList(),
-    val filterMarkers: List<Filter> = emptyList(),
     val isActiveScanner: Boolean = false,
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val searchState: SearchState = SearchState.SEARCH,

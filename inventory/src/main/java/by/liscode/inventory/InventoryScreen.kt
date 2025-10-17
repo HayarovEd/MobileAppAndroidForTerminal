@@ -55,6 +55,7 @@ import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiOutlandedButton
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -67,6 +68,7 @@ fun InventoryScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner = rememberRfid().apply { init(context) }
@@ -79,8 +81,8 @@ fun InventoryScreenRoot(
         }
     }
     Log.d("TEST WORK SCANNER APP", "filterByType ${state.filterByType} ")
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -107,6 +109,7 @@ fun InventoryScreenRoot(
     )
     InventoryScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = onAction,
         onBackNavigate = {
             scanner.free()
@@ -119,6 +122,7 @@ fun InventoryScreenRoot(
 fun InventoryScreenScreen(
     modifier: Modifier = Modifier,
     state: InventoryScreenState,
+    baseState: BaseState,
     onAction: (InventoryScreenAction) -> Unit,
     onBackNavigate: () -> Unit
 ) {
@@ -150,7 +154,7 @@ fun InventoryScreenScreen(
         )
     }
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             when (state.inventoryState) {
                 InventoryState.CHECKING -> {
@@ -445,6 +449,7 @@ private fun Preview() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -510,6 +515,7 @@ private fun Preview1() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -576,6 +582,7 @@ private fun Preview2() {
                 filterByType = FilterByType.FILTER_BY_TYPE_LINEN,
                 currentTypeLinen = typeLinen1
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -643,6 +650,7 @@ private fun Preview3() {
                 currentTypeLinen = typeLinen1,
                 groupLinen = GroupLinen.TYPE_LINEN
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -708,6 +716,7 @@ private fun Preview4() {
                 currentTypeLinen = typeLinen1,
                 inventoryState = InventoryState.FILTERING
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -772,6 +781,7 @@ private fun Preview5() {
                 filterByType = FilterByType.ALL,
                 inventoryState = InventoryState.FILTERING
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )

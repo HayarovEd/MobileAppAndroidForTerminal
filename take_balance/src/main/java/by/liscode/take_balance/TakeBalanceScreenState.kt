@@ -1,16 +1,11 @@
 package by.liscode.take_balance
 
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Filter
-import by.liscode.domain.model.RfidSetting
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.TypeLinen
-import by.liscode.resources.uikit.UiText
 
 data class TakeBalanceScreenState(
     val isLoading: Boolean = false,
-    val message: UiText? = null,
-    val settings: RfidSetting? = null,
     val markers: List<String> = emptyList(),
     val statesLinen: List<StateLinen> = StateLinen.entries, // release from remote
     val typesLinen: List<TypeLinen> = emptyList(),
@@ -25,7 +20,6 @@ data class TakeBalanceScreenState(
     val currentCounterparty: Counterparty? = null,
     val stateScreen: StateScreen = StateScreen.ADD,
     val queryCounterparty: String = "",
-    val filterMarkers: List<Filter> = emptyList(),
     val isShowSuccessDialog: Boolean = false,
     val isActiveScanner: Boolean = false,
 ) {
