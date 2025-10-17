@@ -1,13 +1,16 @@
 package by.liscode.resources.utils
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
+import by.liscode.domain.repository.SoundRepository
 import by.liscode.resources.uikit.UiText
 import by.liscode.resources.uikit.asUiText
 import com.nine.statio.domain.utils.ResultWork
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -21,6 +24,7 @@ abstract class BaseViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val jwtRepository: JwtRepository,
     private val localRepository: LocalRepository,
+    private val soundRepository: SoundRepository,
 ): ViewModel() {
 
     private val _baseState = MutableStateFlow(BaseState())
@@ -100,6 +104,33 @@ abstract class BaseViewModel(
             message = message
         )
             .updateState()
+    }
+
+    protected suspend fun takeMarker(
+        marker: String,
+        sound: Int,
+        isUpdate: Boolean,
+        actionAddMarker: (String) -> Unit,
+    ) {
+        if (baseState.value.filterMarkers.isEmpty()) {
+            if (isUpdate) {
+                delay(150)
+                soundRepository.playSound(sound)
+                Log.d("TEST SCAN MARKER", "marker $marker")
+                actionAddMarker(marker)
+            }
+        } else {
+            if (baseState.value.filterMarkers.any {
+                    marker.contains(
+                        it.query,
+                        ignoreCase = true
+                    )
+                } && !isUpdate) {
+                delay(150)
+                soundRepository.playSound(sound)
+                actionAddMarker(marker)
+            }
+        }
     }
 
     private fun BaseState.updateState() {

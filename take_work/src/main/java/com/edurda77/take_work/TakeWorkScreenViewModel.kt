@@ -26,15 +26,16 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class TakeWorkScreenViewModel(
-    private val dataStoreRepository: DataStoreRepository,
-    private val localRepository: LocalRepository,
+    dataStoreRepository: DataStoreRepository,
+    localRepository: LocalRepository,
     jwtRepository: JwtRepository,
+    soundRepository: SoundRepository,
     private val remoteRepository: RemoteRepository,
-    private val soundRepository: SoundRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
     jwtRepository = jwtRepository,
-    localRepository = localRepository
+    localRepository = localRepository,
+    soundRepository = soundRepository
 ) {
 
     private val mutex = Mutex()
@@ -53,9 +54,11 @@ class TakeWorkScreenViewModel(
             is TakeWorkScreenAction.TakeMarker -> {
                 viewModelScope.launch {
                     mutex.withLock {
-                        if (baseState.value.filterMarkers.isEmpty()) {
-                            if (!state.value.markers.contains(action.marker)) {
-                                soundRepository.playSound(action.sound)
+                        takeMarker(
+                            marker = action.marker,
+                            sound = action.sound,
+                            isUpdate = !state.value.markers.contains(action.marker),
+                            actionAddMarker = {
                                 _state.value.copy(
                                     markers = state.value.markers + action.marker
                                 )
@@ -75,36 +78,9 @@ class TakeWorkScreenViewModel(
                                     }
                                 )
                             }
-                        } else {
-                            if (baseState.value.filterMarkers.any {
-                                    action.marker.contains(
-                                        it.query,
-                                        ignoreCase = true
-                                    )
-                                } && !state.value.markers.contains(action.marker)) {
-                                soundRepository.playSound(action.sound)
-                                _state.value.copy(
-                                    markers = state.value.markers + action.marker
-                                )
-                                    .updateState()
-                                loadData(
-                                    action = { token, url ->
-                                        getLinenById(
-                                            rfid = action.marker,
-                                            accessToken = token,
-                                            url = url
-                                        )
-                                    },
-                                    navigate = {
-                                        viewModelScope.launch {
-                                            _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
-                                        }
-                                    }
-                                )
-                            }
-                        }
+                        )
                     }
-                 }
+                }
             }
 
             TakeWorkScreenAction.UpdateStatusToWork -> {

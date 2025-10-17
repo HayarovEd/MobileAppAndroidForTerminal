@@ -5,6 +5,7 @@ import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.repository.SoundRepository
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
@@ -21,11 +22,13 @@ class OrdersScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
     private val jwtRepository: JwtRepository,
     private val remoteRepository: RemoteRepository,
-    private val localRepository: LocalRepository
+    localRepository: LocalRepository,
+    soundRepository: SoundRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
     jwtRepository = jwtRepository,
-    localRepository = localRepository
+    localRepository = localRepository,
+    soundRepository = soundRepository,
 ){
 
 
