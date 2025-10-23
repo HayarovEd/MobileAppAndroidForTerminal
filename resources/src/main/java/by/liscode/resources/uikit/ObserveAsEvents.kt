@@ -8,6 +8,20 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+/*
+
+@Composable
+fun Sample() {
+    ObserveAsEvents(
+       viewmodel.events
+    ) { event->
+        when(event) {
+
+        }
+    }
+}
+*/
+
 
 @Composable
 fun <T> ObserveAsEvents(
