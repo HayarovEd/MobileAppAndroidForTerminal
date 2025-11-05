@@ -28,4 +28,6 @@ sealed interface TakeBalanceScreenAction {
     ):TakeBalanceScreenAction
     class RemoveMarker(val marker:String):TakeBalanceScreenAction
     class UpdateActivityScanner(val isActive: Boolean): TakeBalanceScreenAction
+    data object SendAndCloseWarning:TakeBalanceScreenAction
+    data object CloseWarning:TakeBalanceScreenAction
 }

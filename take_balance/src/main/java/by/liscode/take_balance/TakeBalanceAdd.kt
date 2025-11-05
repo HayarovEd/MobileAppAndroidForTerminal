@@ -52,6 +52,7 @@ fun TakeBalanceAddScreen(
     state: TakeBalanceScreenState,
     isOpenTypeLinenMenu: Boolean,
     isOpenedStateLinenMenu: Boolean,
+    remoteLinens: List<String>,
     updateVisibleInfo: () -> Unit,
     updateCurrentTypeLinen: (TypeLinen) -> Unit,
     updateCurrentStateLinen: (StateLinen) -> Unit,
@@ -326,7 +327,7 @@ fun TakeBalanceAddScreen(
                         Text(
                             modifier = modifier,
                             text = marker,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = if (marker in remoteLinens) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                             ),
@@ -359,6 +360,7 @@ private fun Preview() {
     val markers = (1..10).map {
         "marker 000$it"
     }
+    val remoteLinens = (1..5).map { "marker 000$it" }
     MobileAppAndroidForTerminalTheme {
         TakeBalanceAddScreen(
             state = TakeBalanceScreenState(
@@ -368,6 +370,7 @@ private fun Preview() {
             ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = true,
+            remoteLinens = remoteLinens,
             updateVisibleInfo = {},
             updateCurrentTypeLinen = {},
             updateCurrentStateLinen = {},
@@ -411,6 +414,7 @@ private fun Preview3() {
     val markers = (1..10).map {
         "marker 000$it"
     }
+    val remoteLinens = (1..5).map { "marker 000$it" }
     MobileAppAndroidForTerminalTheme {
         TakeBalanceAddScreen(
             state = TakeBalanceScreenState(
@@ -421,6 +425,7 @@ private fun Preview3() {
             ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,
+            remoteLinens = remoteLinens,
             updateVisibleInfo = {},
             updateCurrentTypeLinen = {},
             updateCurrentStateLinen = {},
@@ -451,6 +456,7 @@ private fun Preview2() {
             phone = "+7(555)55-55-222"
         )
     }
+    val remoteLinens = (1..5).map { "marker 000$it" }
     MobileAppAndroidForTerminalTheme {
         TakeBalanceAddScreen(
             state = TakeBalanceScreenState(
@@ -459,6 +465,7 @@ private fun Preview2() {
                 isOpenInfo = false,
                 markers = markers,
             ),
+            remoteLinens = remoteLinens,
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,
             updateVisibleInfo = {},

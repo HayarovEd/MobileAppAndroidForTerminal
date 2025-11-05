@@ -7,6 +7,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -147,6 +148,44 @@ fun TakeBalanceScreenScreen(
         )
     }
 
+    if (state.isShowWarning) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    text = stringResource(R.string.have_markers_in_balance),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(TakeBalanceScreenAction.SendAndCloseWarning)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        onAction(TakeBalanceScreenAction.CloseWarning)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        )
+    }
+
 
     if (visibleAddDialog) {
         Dialog(
@@ -229,6 +268,7 @@ fun TakeBalanceScreenScreen(
                     state = state,
                     isOpenTypeLinenMenu = isOpenTypeLinenMenu,
                     isOpenedStateLinenMenu = isOpenedStateLinenMenu,
+                    remoteLinens = state.remoteLinens.map { it.rfid },
                     updateVisibleInfo = {
                         onAction(TakeBalanceScreenAction.OpenInfo)
                     },

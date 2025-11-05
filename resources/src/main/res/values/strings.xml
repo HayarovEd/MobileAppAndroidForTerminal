@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MobileAppAndroidForTerminal</string>
+    <string name="app_name">CloudLaundry</string>
 
     //settings
     <string name="etsi_standard">Стандрат ETSI (865~868MHz)</string>
@@ -220,4 +220,5 @@
     <string name="scan_stopped">Сканирование остановлено</string>
     <string name="scan_started">Сканирование начато</string>
     <string name="have_markers_not_in_stock">Имеется белье в несоответствующем статусе. Исключить его?</string>
+    <string name="have_markers_in_balance">На складе уже имеются такие метки. Взять на баланс бех них?</string>
 </resources>

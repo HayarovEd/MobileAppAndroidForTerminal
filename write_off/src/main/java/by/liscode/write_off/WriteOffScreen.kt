@@ -35,10 +35,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,7 +55,6 @@ import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
-import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asReasonText
 import by.liscode.resources.uikit.rememberRfid
@@ -344,12 +341,12 @@ fun WriteOffScreenScreen(
                                         style = MaterialTheme.typography.bodyMedium,
                                     )
                                 }
-                                UiIconButton(
+                                /*UiIconButton(
                                     icon = ImageVector.vectorResource(R.drawable.outline_delete_24),
                                     onClick = {
                                         onAction(WriteOffScreenAction.RemoveMarker(marker))
                                     }
-                                )
+                                )*/
                             }
                         }
                     }

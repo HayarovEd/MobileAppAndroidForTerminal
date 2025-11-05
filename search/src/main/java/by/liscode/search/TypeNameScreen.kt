@@ -34,11 +34,12 @@ fun TypeNameScreen(
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         groupedLinen.keys.sortedBy { it }.forEach { clientId->
+            val client = clients.firstOrNull{
+                it.id == clientId
+            }
             stickyHeader {
                 UiRowTitleTwoElements(
-                    title = "${clients.firstOrNull{
-                        it.id == clientId
-                    }?.name}",
+                    title = client?.name?:stringResource(R.string.fund),
                     firstNumber = groupedLinen[clientId]?.size?:0
                 )
             }
@@ -48,19 +49,21 @@ fun TypeNameScreen(
                 )
             }
         }
-        stickyHeader {
-            UiRowTitleTwoElements(
-                title = stringResource(R.string.unknown_markers),
-                firstNumber = outMarkers.size
-            )
-        }
-        items(outMarkers) { marker->
-            Text(
-                modifier = modifier,
-                text = "${stringResource(R.string.rfid)}: $marker",
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        if (outMarkers.isNotEmpty()) {
+            stickyHeader {
+                UiRowTitleTwoElements(
+                    title = stringResource(R.string.unknown_markers),
+                    firstNumber = outMarkers.size
+                )
+            }
+            items(outMarkers) { marker ->
+                Text(
+                    modifier = modifier,
+                    text = "${stringResource(R.string.rfid)}: $marker",
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
