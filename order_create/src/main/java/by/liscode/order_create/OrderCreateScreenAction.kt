@@ -1,11 +1,10 @@
 package by.liscode.order_create
 
 import by.liscode.domain.model.Client
-import by.liscode.resources.model.ScannerWork
 
 sealed interface OrderCreateScreenAction {
     class UpdateActivityScanner(
-        val scannerWork: ScannerWork) : OrderCreateScreenAction
+        val isActive: Boolean) : OrderCreateScreenAction
     class TakeMarker(
         val marker: String,
         val sound: Int

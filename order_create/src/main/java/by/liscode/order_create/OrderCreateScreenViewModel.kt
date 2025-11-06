@@ -7,7 +7,6 @@ import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
 import by.liscode.domain.repository.SoundRepository
 import by.liscode.domain.utils.InfoMessage
-import by.liscode.resources.model.ScannerWork
 import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
@@ -104,21 +103,17 @@ class OrderCreateScreenViewModel(
 
             is OrderCreateScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
-                    scannerWork = action.scannerWork,
+                    isActiveScanner = action.isActive,
                 )
                     .updateState()
-                updateMessage(when (action.scannerWork) {
-                    ScannerWork.CLEAR -> null
-                    ScannerWork.SCANNER -> InfoMessage.RFIDWork.STARTED.asText()
-                    ScannerWork.STOP -> InfoMessage.RFIDWork.STOPPED.asText()
-                })
-                if (action.scannerWork == ScannerWork.CLEAR) {
+                if (action.isActive) {
                     _state.value.copy(
                         markers = emptyList(),
                         remoteLinens = emptyList()
-                    )
-                        .updateState()
+                    ).updateState()
                 }
+                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                    InfoMessage.RFIDWork.STOPPED.asText())
             }
 
             is OrderCreateScreenAction.UpdateLaundry -> {

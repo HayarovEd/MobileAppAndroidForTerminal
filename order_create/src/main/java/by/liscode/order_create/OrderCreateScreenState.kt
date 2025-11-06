@@ -3,12 +3,11 @@ package by.liscode.order_create
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StatusLinen
-import by.liscode.resources.model.ScannerWork
 
 data class OrderCreateScreenState(
     val isLoading: Boolean = false,
     val markers: List<String> = emptyList(),
-    val scannerWork: ScannerWork = ScannerWork.CLEAR,
+    val isActiveScanner: Boolean = false,
     val laundries: List<Client>  = emptyList(),
     val remoteLinens: List<Linen> = emptyList(),
     val isShowWarning: Boolean = false,

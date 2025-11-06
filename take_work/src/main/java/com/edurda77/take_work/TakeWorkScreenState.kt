@@ -2,7 +2,6 @@ package com.edurda77.take_work
 
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
-import by.liscode.resources.model.ScannerWork
 
 data class TakeWorkScreenState(
     val isLoading: Boolean = false,
@@ -11,7 +10,7 @@ data class TakeWorkScreenState(
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val isShowResultDialog: Boolean = false,
     val isShowWarning: Boolean = false,
-    val scannerWork: ScannerWork = ScannerWork.CLEAR
+    val isActiveScanner: Boolean = false,
 ) {
     val sortedGroups = remoteLinens.groupBy {
         it.typeLinen

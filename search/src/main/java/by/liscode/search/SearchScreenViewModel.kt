@@ -88,6 +88,12 @@ class SearchScreenViewModel(
                 _state.value.copy(
                     isActiveScanner = action.isActive,
                 ).updateState()
+                if (action.isActive) {
+                    _state.value.copy(
+                        markers = emptyList(),
+                        remoteLinens = emptyList()
+                    ).updateState()
+                }
                 updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
                     InfoMessage.RFIDWork.STOPPED.asText())
             }

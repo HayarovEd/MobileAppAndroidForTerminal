@@ -1,6 +1,5 @@
 package com.edurda77.take_work
 
-import by.liscode.resources.model.ScannerWork
 
 sealed interface TakeWorkScreenAction {
     class TakeMarker(
@@ -10,7 +9,7 @@ sealed interface TakeWorkScreenAction {
     data object UpdateStatusToWork:TakeWorkScreenAction
     data object UpdateGrouping:TakeWorkScreenAction
     data object CloseResultDialog:TakeWorkScreenAction
-    class UpdateActivityScanner(val scannerWork: ScannerWork): TakeWorkScreenAction
+    class UpdateActivityScanner(val isActive: Boolean): TakeWorkScreenAction
     data object CloseWarning:TakeWorkScreenAction
     data object SendAndCloseWarning:TakeWorkScreenAction
 }

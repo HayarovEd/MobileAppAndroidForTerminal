@@ -48,7 +48,7 @@ import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.UiText
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
-import by.liscode.resources.utils.processWorkScan
+import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -81,13 +81,13 @@ fun TakeWorkScreenRoot(
     }
     OnScan(
         block = {
-            processWorkScan(
+            processScan(
                 rfid = scanner,
-                scannerWork = state.scannerWork,
-                updateScannerWork = {
+                isActive = state.isActiveScanner,
+                updateIsActive = {
                     onAction(TakeWorkScreenAction.UpdateActivityScanner(it))
                 },
-                blockScan = {
+                block = {
                     onAction(TakeWorkScreenAction.TakeMarker(marker = it, sound = R.raw.beep))
                 }
             )
