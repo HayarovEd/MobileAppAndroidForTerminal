@@ -130,7 +130,7 @@ fun formateUiDateTime(dateTime: Date): String {
 fun convertStringDateToLocalDateTime (dateString: String): Date {
     //val instant = Instant.parse(dateString)
    // return instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
     return format.parse(dateString)
 }
 

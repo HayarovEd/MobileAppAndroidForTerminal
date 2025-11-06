@@ -395,6 +395,8 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
+                val textRes = response.bodyAsText()
+                Log.d("TEST TERMINAL DATE", "response $response")
                 val result = response.body<OrdersResponse>().orderDtos
                 result.map { it.convertToOrder() }
             }
