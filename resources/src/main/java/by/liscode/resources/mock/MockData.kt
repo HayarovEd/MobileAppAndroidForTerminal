@@ -8,9 +8,7 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.TypeLinen
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
+import java.util.Date
 import kotlin.time.ExperimentalTime
 
 val markers = (1..21).map { "Marker N$it" }
@@ -65,8 +63,7 @@ val linens = (1..10).map {
 @OptIn(ExperimentalTime::class)
 val order = Order(
     id = 1,
-    createdAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
+    createdAt = Date(),
     hotelId = 1,
     address = "Moscow",
     comment = "",
@@ -112,15 +109,13 @@ val order = Order(
     ),
     laundryId = 1,
     statusComment = "",
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
+    updatedAt = Date(),
 )
 
 @OptIn(ExperimentalTime::class)
 val order1 = Order(
     id = 1,
-    createdAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
+    createdAt = Date(),
     hotelId = 1,
     address = "Moscow",
     comment = "",
@@ -166,15 +161,13 @@ val order1 = Order(
     ),
     laundryId = 1,
     statusComment = "",
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
+    updatedAt = Date(),
 )
 
 @OptIn(ExperimentalTime::class)
 val order2 = Order(
     id = 1,
-    createdAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
+    createdAt = Date(),
     hotelId = 1,
     address = "Moscow",
     comment = "",
@@ -220,6 +213,5 @@ val order2 = Order(
     ),
     laundryId = 1,
     statusComment = "",
-    updatedAt = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()),
+    updatedAt = Date(),
 )

@@ -29,9 +29,7 @@ import by.liscode.domain.utils.formateUiDateTime
 import by.liscode.resources.mock.linens
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.asStatusOrderText
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
+import java.util.Date
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -136,8 +134,8 @@ private fun ItemOrderView() {
         ItemOrder(
             order = Order(
                 id = 1,
-                createdAt = Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()),
+                createdAt = Date()/*Clock.System.now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault())*/,
                 hotelId = 1,
                 address = "Moscow",
                 comment = "",
@@ -183,8 +181,7 @@ private fun ItemOrderView() {
                 ),
                 laundryId = 1,
                 statusComment = "",
-                updatedAt = Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()),
+                updatedAt = Date(),
             ),
             onClickOrder = {}
         )

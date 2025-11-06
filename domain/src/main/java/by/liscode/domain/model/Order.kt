@@ -1,12 +1,12 @@
 package by.liscode.domain.model
 
-import kotlinx.datetime.LocalDateTime
+import java.util.Date
 
 data class Order(
     val actFilePath: String?,
     val address: String,
     val comment: String?,
-    val createdAt: LocalDateTime,
+    val createdAt: Date,
     val creatorId: Int,
     val hotel: Client,
     val hotelId: Int,
@@ -16,5 +16,5 @@ data class Order(
     val laundryId: Int,
     val status: StatusOrder,
     val statusComment: String?,
-    val updatedAt: LocalDateTime
+    val updatedAt: Date
 )

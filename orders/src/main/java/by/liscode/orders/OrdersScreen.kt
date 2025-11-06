@@ -47,10 +47,8 @@ import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.utils.BaseState
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.koin.androidx.compose.koinViewModel
-import kotlin.time.Clock
+import java.util.Date
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -208,8 +206,7 @@ private fun Preview() {
     val orders = (1..10).map {
         Order(
             id = 1,
-            createdAt = Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()),
+            createdAt = Date(),
             hotelId = 1,
             address = "Moscow",
             comment = "",
@@ -255,8 +252,7 @@ private fun Preview() {
             ),
             laundryId = 1,
             statusComment = "",
-            updatedAt = Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()),
+            updatedAt = Date(),
         )
     }
     MobileAppAndroidForTerminalTheme {

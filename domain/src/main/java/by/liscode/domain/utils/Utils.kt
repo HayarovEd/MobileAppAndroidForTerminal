@@ -8,12 +8,10 @@ import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.model.UserRole
 import by.liscode.domain.model.UserType
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 
 fun fliterByListString(
@@ -122,14 +120,18 @@ fun Linen.printFormat(): String {
     return "${typeLinen.name}, ${typeLinen.size}, ${typeLinen.fabric}, ${typeLinen.sku}, ${typeLinen.color}, $weight"
 }
 
-fun formateUiDateTime(dateTime: LocalDateTime): String {
-    return "${dateTime.time.hour}.${dateTime.time.minute}\n${dateTime.date.day}.${dateTime.date.month.number}.${dateTime.date.year}"
+fun formateUiDateTime(dateTime: Date): String {
+    //return "${dateTime.time.hour}.${dateTime.time.minute}\n${dateTime.date.day}.${dateTime.date.month.number}.${dateTime.date.year}"
+    val format = SimpleDateFormat("HH:MM\ndd.MM.yyyy", Locale.getDefault())
+    return format.format(dateTime)
 }
 
 @OptIn(ExperimentalTime::class)
-fun convertStringDateToLocalDateTime (dateString: String): LocalDateTime {
-    val instant = Instant.parse(dateString)
-    return instant.toLocalDateTime(TimeZone.currentSystemDefault())
+fun convertStringDateToLocalDateTime (dateString: String): Date {
+    //val instant = Instant.parse(dateString)
+   // return instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+    return format.parse(dateString)
 }
 
 
