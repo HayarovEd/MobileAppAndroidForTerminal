@@ -1,6 +1,7 @@
 package by.liscode.order_create
 
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -136,6 +137,16 @@ class OrderCreateScreenViewModel(
             OrderCreateScreenAction.CloseSuccessDialog -> {
                 _state.value.copy(
                     isShowSuccessDialog = false
+                )
+                    .updateState()
+            }
+
+            OrderCreateScreenAction.UpdateGrouping -> {
+                _state.value.copy(
+                    groupLinen = when (state.value.groupLinen) {
+                        GroupLinen.NAME -> GroupLinen.TYPE_LINEN
+                        GroupLinen.TYPE_LINEN -> GroupLinen.NAME
+                    }
                 )
                     .updateState()
             }

@@ -1,6 +1,7 @@
 package by.liscode.order_create
 
 import by.liscode.domain.model.Client
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StatusLinen
 
@@ -13,11 +14,12 @@ data class OrderCreateScreenState(
     val isShowWarning: Boolean = false,
     val currentLaundry: Client? = null,
     val isShowSuccessDialog: Boolean = false,
+    val groupLinen: GroupLinen = GroupLinen.NAME,
 ) {
     val approvedLinens = remoteLinens.filter { it.status == StatusLinen.IN_STOCK || it.status == StatusLinen.IN_USE}
     val notApprovedLinens = remoteLinens - approvedLinens
     val unknownMarkers = markers - remoteLinens.map { it.rfid }
-    val gropedApprovedLinensByTipe = approvedLinens.groupBy { it.typeLinen }
+    val gropedApprovedLinensByType = approvedLinens.groupBy { it.typeLinen }
 }
 
 

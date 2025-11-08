@@ -14,4 +14,5 @@ sealed interface OrderCreateScreenAction {
     data object CreateOrderWithNotApprovedMarkers:OrderCreateScreenAction
     data object CloseWarning:OrderCreateScreenAction
     data object CloseSuccessDialog:OrderCreateScreenAction
+    data object UpdateGrouping:OrderCreateScreenAction
 }

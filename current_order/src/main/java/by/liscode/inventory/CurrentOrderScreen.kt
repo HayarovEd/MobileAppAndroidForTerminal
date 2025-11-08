@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -49,6 +48,7 @@ import by.liscode.resources.mock.order1
 import by.liscode.resources.mock.order2
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
+import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.NotApproveDialogContent
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
@@ -193,30 +193,10 @@ fun CurrentOrderScreenScreen(
     UiBaseScaffold(
         message = baseState.message,
         topBarContent = {
-            Row(
-                modifier = modifier
-                    .statusBarsPadding()
-                    .fillMaxWidth()
-                    .background(colorScheme.primary)
-                    .padding(15.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.order)} ${state.order?.id}",
-                    color = colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Spacer(modifier = modifier.weight(1f))
-                Text(
-                    modifier = modifier.clickable(
-                        onClick = onBack
-                    ),
-                    text = stringResource(R.string.back),
-                    color = colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
+            FundAppBar(
+                title = "${stringResource(R.string.order)} ${state.order?.id}",
+                onBack = onBack
+            )
         },
         bottomBarContent = {
             Row(
