@@ -154,18 +154,21 @@ fun OrderCreateScreenScreen(
                 onAction(OrderCreateScreenAction.CloseSuccessDialog)
             },
             title = {
-                Text(
-                    text = stringResource(R.string.order_success_created),
-                    color = colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+                state.order?.let {
+                    Text(
+                        text = stringResource(R.string.order_success_created, state.order.id),
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
             },
             confirmButton = {
                 Button(onClick = {
                     onAction(OrderCreateScreenAction.CloseSuccessDialog)
+                    onBack
                 }) {
                     Text(
-                        text = stringResource(R.string.ok),
+                        text = stringResource(R.string.is_known),
                         color = colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyMedium,
                     )

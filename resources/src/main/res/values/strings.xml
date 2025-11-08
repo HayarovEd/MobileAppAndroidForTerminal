@@ -212,7 +212,7 @@
     <string name="complete_work">Завершить работу</string>
     <string name="linen_success_stock">Бельё успешно добавлено на склад</string>
     <string name="linen_success_write_off">Бельё успешно списано со склада</string>
-    <string name="order_success_created">Заказ успешно создан</string>
+    <string name="order_success_created">Заказ успешно № %1$d создан</string>
     <string name="order_comleted">Заказ завершен</string>
     <string name="order_after_use">Заказ готов к отправке клиенту</string>
     <string name="order_into_use">Заказ взят в работу</string>
@@ -224,4 +224,5 @@
     <string name="not_finded_markers">Неподходящие метки</string>
     <string name="on_type_lineb">По типу белья</string>
     <string name="weight_kg_unit">кг</string>
+    <string name="is_known">Понятно</string>
 </resources>

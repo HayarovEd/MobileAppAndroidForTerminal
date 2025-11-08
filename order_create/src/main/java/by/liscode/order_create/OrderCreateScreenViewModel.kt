@@ -193,7 +193,7 @@ class OrderCreateScreenViewModel(
                 baseUrl = url, token = accessToken, rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                   updateMessage(result.error.asUiText(),)
+                  // updateMessage(result.error.asUiText(),)
                 }
 
                 is ResultWork.Success -> {
@@ -282,6 +282,7 @@ class OrderCreateScreenViewModel(
                         _state.value.copy(
                             isLoading = false,
                             isShowSuccessDialog = true,
+                            order = result.data
                         )
                             .updateState()
                     }
