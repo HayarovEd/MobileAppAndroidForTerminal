@@ -162,6 +162,7 @@ fun CurrentOrderScreenScreen(
             confirmButton = {
                 Button(onClick = {
                     onAction(CurrentOrderScreenAction.CloseSuccessDialog)
+                    onBack()
                 }) {
                     Text(
                         text = stringResource(R.string.ok),
@@ -311,14 +312,16 @@ fun CurrentOrderScreenScreen(
                         title = "${stringResource(R.string.phone)}:",
                         value = order.laundry.contactPersonPhone ?: "",
                     )
-                    DividerSpacer()
-                    UiClickableRow(
-                        title = stringResource(R.string.not_for_order),
-                        value = state.unknownMarkers.size.toString(),
-                        onClick = {
-                            updateVisibilityNotApproveDialog(true)
-                        }
-                    )
+                    if (state.unknownMarkers.isNotEmpty()) {
+                        DividerSpacer()
+                        UiClickableRow(
+                            title = stringResource(R.string.not_for_order),
+                            value = state.unknownMarkers.size.toString(),
+                            onClick = {
+                                updateVisibilityNotApproveDialog(true)
+                            }
+                        )
+                    }
                     Spacer(modifier = modifier.height(4.dp))
                     HorizontalDivider(
                         modifier = modifier.fillMaxWidth(),
