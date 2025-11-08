@@ -44,7 +44,6 @@ import by.liscode.resources.R
 import by.liscode.resources.mock.linens2
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
-import by.liscode.resources.uikit.UiRowTitleThreeElements
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asStateLinenText
 
@@ -72,7 +71,7 @@ fun TakeBalanceAddScreen(
             modifier = modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colorScheme.background)
                 .padding(15.dp),
         ) {
             CircularProgressIndicator(
@@ -86,14 +85,14 @@ fun TakeBalanceAddScreen(
             modifier = modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colorScheme.background)
                 .padding(15.dp),
         ) {
             OutlinedButton(
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (state.isOpenInfo) Color.Transparent else MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = if (state.isOpenInfo) Color.Transparent else colorScheme.onPrimaryContainer
                 ),
                 onClick = updateVisibleInfo
             ) {
@@ -102,7 +101,7 @@ fun TakeBalanceAddScreen(
                     text = if (state.isOpenInfo) stringResource(R.string.hide_info) else stringResource(
                         R.string.show_info
                     ),
-                    color = if (state.isOpenInfo) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primaryContainer,
+                    color = if (state.isOpenInfo) colorScheme.onPrimaryContainer else colorScheme.primaryContainer,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
@@ -116,7 +115,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.type)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Spacer(modifier = modifier.width(5.dp))
@@ -128,7 +127,7 @@ fun TakeBalanceAddScreen(
                                 }
                             ),
                             text = if (state.currentTypeLinen == null) stringResource(R.string.choose) else state.currentTypeLinen.outFormat(),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 textDecoration = TextDecoration.Underline
@@ -146,7 +145,7 @@ fun TakeBalanceAddScreen(
                                         Text(
                                             modifier = modifier,
                                             text = it.outFormat(),
-                                            color = MaterialTheme.colorScheme.onBackground,
+                                            color = colorScheme.onBackground,
                                             style = MaterialTheme.typography.bodyMedium,
                                         )
                                     },
@@ -167,7 +166,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.article)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     UiTextField(
@@ -188,7 +187,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.state_linen)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Box {
@@ -199,7 +198,7 @@ fun TakeBalanceAddScreen(
                                 }
                             ),
                             text = state.currentStateLinen.asStateLinenText().asString(),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 textDecoration = TextDecoration.Underline
@@ -217,7 +216,7 @@ fun TakeBalanceAddScreen(
                                         Text(
                                             modifier = modifier,
                                             text = it.asStateLinenText().asString(),
-                                            color = MaterialTheme.colorScheme.onBackground,
+                                            color = colorScheme.onBackground,
                                             style = MaterialTheme.typography.bodyMedium,
                                         )
                                     },
@@ -239,7 +238,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.weight_one)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     UiTextField(
@@ -255,7 +254,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.weight_unit)}.",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -268,7 +267,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.bill_lading)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     UiTextField(
@@ -290,7 +289,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.counterparty)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
@@ -300,7 +299,7 @@ fun TakeBalanceAddScreen(
                             }
                         ),
                         text = if (state.currentCounterparty == null) stringResource(R.string.choose) else state.currentCounterparty.name,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline
@@ -312,7 +311,7 @@ fun TakeBalanceAddScreen(
             Text(
                 modifier = modifier,
                 text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",
-                color = MaterialTheme.colorScheme.onBackground,
+                color = colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Bold,
                 ),

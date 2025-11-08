@@ -49,7 +49,7 @@ fun WarningDialogContent(
         ) {
             UiOutlandedButton(
                 modifier = modifier.weight(1f),
-                title = stringResource(R.string.not),
+                title = stringResource(R.string.cancel),
                 onClick = cancelUpdate
             )
             Spacer(modifier = modifier.width(10.dp))

@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -315,38 +316,67 @@ fun WriteOffScreenScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        items(state.markers) { marker ->
-                            Row(
-                                modifier = modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column (
-                                    modifier = modifier.weight(1f)
-                                ){
-                                    val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
-                                    currentLinen?.let { linen->
-                                        Text(
-                                            modifier = modifier,
-                                            text = linen.printFormat(),
-                                            color = colorScheme.onBackground,
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontWeight = FontWeight.Bold,
-                                            ),
-                                        )
-                                    }
+                        items(state.markersApprovedForWriteOff) { marker ->
+                            Column (
+                                modifier = modifier
+                            ){
+                                val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
+                                currentLinen?.let { linen->
                                     Text(
                                         modifier = modifier,
-                                        text = marker,
-                                        color = colorScheme.onPrimaryContainer,
-                                        style = MaterialTheme.typography.bodyMedium,
+                                        text = linen.printFormat(),
+                                        color = colorScheme.onBackground,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                        ),
                                     )
                                 }
-                                /*UiIconButton(
-                                    icon = ImageVector.vectorResource(R.drawable.outline_delete_24),
-                                    onClick = {
-                                        onAction(WriteOffScreenAction.RemoveMarker(marker))
-                                    }
-                                )*/
+                                Text(
+                                    modifier = modifier,
+                                    text = marker,
+                                    color = colorScheme.secondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+                        item {
+                            Row(
+                                modifier = modifier
+                                    .clip(shape = RoundedCornerShape(10.dp))
+                                    .fillMaxWidth()
+                                    .background(colorScheme.secondary)
+                                    .padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    modifier = modifier.weight(6f),
+                                    text = stringResource(R.string.not_finded_markers),
+                                    color = colorScheme.onSecondary,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                        }
+                        items(state.markersNotApprovedForWriteOff) { marker ->
+                            Column (
+                                modifier = modifier
+                            ){
+                                val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
+                                currentLinen?.let { linen->
+                                    Text(
+                                        modifier = modifier,
+                                        text = linen.printFormat(),
+                                        color = colorScheme.onBackground,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                        ),
+                                    )
+                                }
+                                Text(
+                                    modifier = modifier,
+                                    text = marker,
+                                    color = colorScheme.secondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
                             }
                         }
                     }
@@ -395,7 +425,7 @@ private fun Preview1() {
         maxWash = 10,
     )
     val markers = (1..10).map { "Marker N$it" }
-    val linens = (3..7).map {
+    val linens = (3..5).map {
         Linen(
             id = it,
             clientId = 0,

@@ -43,7 +43,7 @@ fun TypeNameScreen(
         )
         Spacer(modifier = modifier.height(10.dp))
         UiRowTitleThreeElements(
-            title = "",
+            title = stringResource(R.string.fund),
             firstNumber = size,
             secondNumber = markers.size,
         )

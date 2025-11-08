@@ -84,6 +84,31 @@ val linens2 = (4..7).map {
     )
 }
 
+val linens3 = (15..22).map {
+    Linen(
+        id = it,
+        clientId = 0,
+        rfid = "Marker N$it",
+        typeId = it + 3,
+        typeLinen = if (it % 2 == 0) typeLinen1 else typeLinen2,
+        discount = "",
+        weight = 135,
+        state = StateLinen.entries.random(),
+        washCount = 9,
+        status = StatusLinen.IN_STOCK,
+        price = "",
+        counterpartyId = 1,
+        counterparty = Counterparty(
+            id = it,
+            name = "name $it",
+            address = "Russia, Moscow, Baumana, $it",
+            inn = "333-333-333-0$it",
+            phone = "+7(555)55-55-222"
+        )
+    )
+}
+
+
 @OptIn(ExperimentalTime::class)
 val order = Order(
     id = 1,
