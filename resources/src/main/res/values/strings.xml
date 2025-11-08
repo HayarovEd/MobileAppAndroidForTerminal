@@ -221,4 +221,5 @@
     <string name="scan_started">Сканирование начато</string>
     <string name="have_markers_not_in_stock">Имеется белье в несоответствующем статусе. Исключить его?</string>
     <string name="have_markers_in_balance">На складе уже имеются такие метки. Взять на баланс без них?</string>
+    <string name="not_finded_markers">Неподходящие метки</string>
 </resources>

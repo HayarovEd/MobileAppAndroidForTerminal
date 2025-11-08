@@ -180,7 +180,7 @@ class TakeWorkScreenViewModel(
                 rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                   updateMessage(result.error.asUiText(),)
+                   //updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {

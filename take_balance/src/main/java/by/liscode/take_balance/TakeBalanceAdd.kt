@@ -22,11 +22,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,8 +41,10 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
+import by.liscode.resources.mock.linens2
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
+import by.liscode.resources.uikit.UiRowTitleThreeElements
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asStateLinenText
 
@@ -52,7 +56,6 @@ fun TakeBalanceAddScreen(
     state: TakeBalanceScreenState,
     isOpenTypeLinenMenu: Boolean,
     isOpenedStateLinenMenu: Boolean,
-    remoteLinens: List<String>,
     updateVisibleInfo: () -> Unit,
     updateCurrentTypeLinen: (TypeLinen) -> Unit,
     updateCurrentStateLinen: (StateLinen) -> Unit,
@@ -318,7 +321,7 @@ fun TakeBalanceAddScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                items(state.markers) { marker ->
+                items(state.markersInBalance) { marker ->
                     Row(
                         modifier = modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -327,17 +330,44 @@ fun TakeBalanceAddScreen(
                         Text(
                             modifier = modifier,
                             text = marker,
-                            color = if (marker in remoteLinens) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                             ),
                         )
-                        /*UiIconButton(
-                            icon = ImageVector.vectorResource(R.drawable.outline_delete_24),
-                            onClick = {
-                                deleteMarker(marker)
-                            }
-                        )*/
+                    }
+                }
+                item {
+                    Row(
+                        modifier = modifier
+                            .clip(shape = RoundedCornerShape(10.dp))
+                            .fillMaxWidth()
+                            .background(colorScheme.secondary)
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            modifier = modifier.weight(6f),
+                            text = stringResource(R.string.not_finded_markers),
+                            color = colorScheme.onSecondary,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                }
+                items(state.markersNotBalance) { marker ->
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            modifier = modifier,
+                            text = marker,
+                            color = colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                            ),
+                        )
                     }
                 }
             }
@@ -360,17 +390,17 @@ private fun Preview() {
     val markers = (1..10).map {
         "marker 000$it"
     }
-    val remoteLinens = (1..5).map { "marker 000$it" }
     MobileAppAndroidForTerminalTheme {
         TakeBalanceAddScreen(
             state = TakeBalanceScreenState(
                 statesLinen = StateLinen.entries,
                 counterparties = counterParties,
                 markers = markers,
+                remoteLinens = linens2,
+
             ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = true,
-            remoteLinens = remoteLinens,
             updateVisibleInfo = {},
             updateCurrentTypeLinen = {},
             updateCurrentStateLinen = {},
@@ -414,7 +444,6 @@ private fun Preview3() {
     val markers = (1..10).map {
         "marker 000$it"
     }
-    val remoteLinens = (1..5).map { "marker 000$it" }
     MobileAppAndroidForTerminalTheme {
         TakeBalanceAddScreen(
             state = TakeBalanceScreenState(
@@ -422,10 +451,10 @@ private fun Preview3() {
                 counterparties = counterParties,
                 typesLinen = typesLinen,
                 markers = markers,
+                remoteLinens = linens2,
             ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,
-            remoteLinens = remoteLinens,
             updateVisibleInfo = {},
             updateCurrentTypeLinen = {},
             updateCurrentStateLinen = {},
@@ -456,7 +485,6 @@ private fun Preview2() {
             phone = "+7(555)55-55-222"
         )
     }
-    val remoteLinens = (1..5).map { "marker 000$it" }
     MobileAppAndroidForTerminalTheme {
         TakeBalanceAddScreen(
             state = TakeBalanceScreenState(
@@ -464,8 +492,8 @@ private fun Preview2() {
                 counterparties = counterParties,
                 isOpenInfo = false,
                 markers = markers,
+                remoteLinens = linens2,
             ),
-            remoteLinens = remoteLinens,
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,
             updateVisibleInfo = {},

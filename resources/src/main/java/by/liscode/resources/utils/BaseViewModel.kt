@@ -116,7 +116,6 @@ abstract class BaseViewModel(
             if (isUpdate) {
                 delay(150)
                 soundRepository.playSound(sound)
-                Log.d("TEST SCAN MARKER", "marker $marker")
                 actionAddMarker(marker)
             }
         } else {

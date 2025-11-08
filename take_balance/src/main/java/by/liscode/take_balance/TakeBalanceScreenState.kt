@@ -17,7 +17,6 @@ data class TakeBalanceScreenState(
     val articleNumber: String = "",
     val currentStateLinen: StateLinen = StateLinen.NEW,
     val weight: String = "",
-    //val price: String = "",
     val billLading: String = "",
     val currentCounterparty: Counterparty? = null,
     val stateScreen: StateScreen = StateScreen.ADD,
@@ -27,6 +26,8 @@ data class TakeBalanceScreenState(
     val isShowWarning: Boolean = false,
 ) {
     val searchedCounterParties = counterparties.filter { it.name.contains(queryCounterparty, ignoreCase = true) }
+    val markersInBalance = markers.filter { it in  remoteLinens.map { linen -> linen.rfid }}
+    val markersNotBalance = markers.filter { it !in  remoteLinens.map { linen -> linen.rfid }}
 }
 
 enum class StateScreen{

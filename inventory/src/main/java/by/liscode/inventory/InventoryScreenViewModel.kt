@@ -168,7 +168,7 @@ class InventoryScreenViewModel(
                         isLoading = false,
                     )
                         .updateState()
-                    updateMessage(result.error.asUiText())
+                   // updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {

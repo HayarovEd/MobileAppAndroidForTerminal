@@ -268,7 +268,6 @@ fun TakeBalanceScreenScreen(
                     state = state,
                     isOpenTypeLinenMenu = isOpenTypeLinenMenu,
                     isOpenedStateLinenMenu = isOpenedStateLinenMenu,
-                    remoteLinens = state.remoteLinens.map { it.rfid },
                     updateVisibleInfo = {
                         onAction(TakeBalanceScreenAction.OpenInfo)
                     },
