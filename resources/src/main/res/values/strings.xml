@@ -223,4 +223,5 @@
     <string name="have_markers_in_balance">На складе уже имеются такие метки. Взять на баланс без них?</string>
     <string name="not_finded_markers">Неподходящие метки</string>
     <string name="on_type_lineb">По типу белья</string>
+    <string name="weight_kg_unit">кг</string>
 </resources>
