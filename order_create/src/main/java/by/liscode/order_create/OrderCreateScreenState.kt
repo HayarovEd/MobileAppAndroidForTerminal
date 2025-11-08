@@ -19,8 +19,9 @@ data class OrderCreateScreenState(
     val groupLinen: GroupLinen = GroupLinen.NAME,
 ) {
     val approvedLinens = remoteLinens.filter { it.status == StatusLinen.IN_STOCK || it.status == StatusLinen.IN_USE}
-    val notApprovedLinens = remoteLinens - approvedLinens
-    val unknownMarkers = markers - remoteLinens.map { it.rfid }
+    val notApprovedLinens = remoteLinens - approvedLinens.toSet()
+    val unknownMarkers = markers - remoteLinens.map { it.rfid }.toSet()
+
     val gropedApprovedLinensByType = approvedLinens.groupBy { it.typeLinen }
 }
 

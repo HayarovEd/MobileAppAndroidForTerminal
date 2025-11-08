@@ -70,7 +70,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OrderCreateScreenRoot(
-    viewModel: OrderCreateScreenViewModel = koinViewModel (),
+    viewModel: OrderCreateScreenViewModel = koinViewModel(),
     onNavigateToLoginScreen: () -> Unit,
     onBackNavigate: () -> Unit,
 ) {
@@ -104,16 +104,18 @@ fun OrderCreateScreenRoot(
                     onAction(OrderCreateScreenAction.UpdateActivityScanner(it))
                 },
                 block = {
-                    onAction(OrderCreateScreenAction.TakeMarker(
-                        marker = it,
-                        sound = R.raw.beep
-                    ))
+                    onAction(
+                        OrderCreateScreenAction.TakeMarker(
+                            marker = it,
+                            sound = R.raw.beep
+                        )
+                    )
                 }
             )
         },
         back = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
     OrderCreateScreenScreen(
@@ -130,7 +132,7 @@ fun OrderCreateScreenRoot(
         },
         onBack = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
 }
@@ -354,12 +356,12 @@ fun OrderCreateScreenScreen(
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.contact)}:",
-                        value = laundry.contactPersonFullname?:"",
+                        value = laundry.contactPersonFullname ?: "",
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.phone)}:",
-                        value = laundry.contactPersonPhone?:"",
+                        value = laundry.contactPersonPhone ?: "",
                     )
                 }
                 DividerSpacer()
@@ -486,7 +488,7 @@ private fun Preview2() {
             entityType = "individual",
             inn = "",
             kpp = "",
-            legalAddress =  "Москва",
+            legalAddress = "Москва",
             ogrnip = "",
             site = ""
         )
@@ -529,7 +531,7 @@ private fun Preview3() {
             entityType = "individual",
             inn = "",
             kpp = "",
-            legalAddress =  "Москва",
+            legalAddress = "Москва",
             ogrnip = "",
             site = ""
         )

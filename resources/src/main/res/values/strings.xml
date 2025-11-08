@@ -225,4 +225,5 @@
     <string name="on_type_lineb">По типу белья</string>
     <string name="weight_kg_unit">кг</string>
     <string name="is_known">Понятно</string>
+    <string name="sure_exit_create_order">Выйти из заявки? Информация о считанных метках не будет сохранена в заказе.</string>
 </resources>

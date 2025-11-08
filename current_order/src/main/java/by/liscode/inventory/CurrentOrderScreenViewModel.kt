@@ -3,6 +3,7 @@ package by.liscode.inventory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
@@ -168,7 +169,21 @@ class CurrentOrderScreenViewModel(
                     .updateState()
             }
 
-            CurrentOrderScreenAction.UpdateGrouping -> TODO()
+            CurrentOrderScreenAction.UpdateGrouping -> {
+                _state.value.copy(
+                    groupLinen = when (state.value.groupLinen) {
+                        GroupLinen.NAME -> GroupLinen.TYPE_LINEN
+                        GroupLinen.TYPE_LINEN -> GroupLinen.NAME
+                    }
+                )
+                    .updateState()
+            }
+            is CurrentOrderScreenAction.UpdateShowExitDialog -> {
+                _state.value.copy(
+                    isShowExitDialog = action.boolean
+                )
+                    .updateState()
+            }
         }
     }
 

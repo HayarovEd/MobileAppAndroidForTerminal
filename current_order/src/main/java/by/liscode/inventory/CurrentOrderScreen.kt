@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.UserData
 import by.liscode.domain.model.UserRole
@@ -49,6 +51,7 @@ import by.liscode.resources.mock.order2
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.FundAppBar
+import by.liscode.resources.uikit.ItemLinen
 import by.liscode.resources.uikit.NotApproveDialogContent
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
@@ -126,8 +129,12 @@ fun CurrentOrderScreenRoot(
                 )
             },
             back = {
-                scanner.free()
-                onBackNavigate()
+                if (state.markers.isNotEmpty()) {
+                    onAction(CurrentOrderScreenAction.UpdateShowExitDialog(true))
+                } else {
+                    scanner.free()
+                    onBackNavigate()
+                }
             }
         )
     }
@@ -142,9 +149,18 @@ fun CurrentOrderScreenRoot(
             visibleNotApproveDialog = it
         },
         onBack = {
-            scanner.free()
-            onBackNavigate ()
+            if (state.markers.isNotEmpty()) {
+                onAction(CurrentOrderScreenAction.UpdateShowExitDialog(true))
+            } else {
+                scanner.free()
+                onBackNavigate()
+            }
         },
+        onClickExit = {
+            onAction(CurrentOrderScreenAction.UpdateShowExitDialog(false))
+            scanner.free()
+            onBackNavigate()
+        }
     )
 }
 
@@ -157,6 +173,7 @@ fun CurrentOrderScreenScreen(
     visibleNotApproveDialog: Boolean,
     onAction: (CurrentOrderScreenAction) -> Unit,
     updateVisibilityNotApproveDialog: (Boolean) -> Unit,
+    onClickExit: () -> Unit,
     onBack: () -> Unit,
 ) {
     val successMessage = when (state.visibilitySuccessDialog) {
@@ -164,6 +181,41 @@ fun CurrentOrderScreenScreen(
         VisibilitySuccessDialog.SUCCESS_INTO_USE -> stringResource(R.string.order_into_use)
         VisibilitySuccessDialog.SUCCESS_AFTER_USE -> stringResource(R.string.order_after_use)
         VisibilitySuccessDialog.SUCCESS_INTO_STOCK -> stringResource(R.string.order_comleted)
+    }
+    if (state.isShowExitDialog) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    text = stringResource(R.string.sure_exit_create_order),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = onClickExit) {
+                    Text(
+                        text = stringResource(R.string.yes),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        onAction(CurrentOrderScreenAction.UpdateShowExitDialog(false))
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        )
     }
     if (state.visibilitySuccessDialog != VisibilitySuccessDialog.INVISIBLE) {
         AlertDialog(
@@ -349,7 +401,7 @@ fun CurrentOrderScreenScreen(
                             secondNumber = order.items.map { it.rfid }
                                 .filter { it in state.markers }.size
                         )
-                    } else  {
+                    } else {
                         UiRowTitleTwoElements(
                             title = stringResource(R.string.fund),
                             firstNumber = order.items.size,
@@ -361,24 +413,34 @@ fun CurrentOrderScreenScreen(
                         modifier = modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        items(state.sortedLinens.keys.toList()) { type ->
-                            if (isWorkWithOrder) {
-                                val existLinen = state.sortedLinens[type] ?: emptyList()
-                                val fontColor = if (existLinen.map { it.rfid }
-                                        .all { it in state.markers }) colorScheme.primary else colorScheme.error
-                                UiRowThreeElements(
-                                    title = type,
-                                    fontColor = fontColor,
-                                    firstNumber = state.sortedLinens[type]?.size ?: 0,
-                                    secondNumber = existLinen.map { it.rfid }
-                                        .filter { it in state.markers }.size
-                                )
-                            } else  {
-                                UiRowTwoElements(
-                                    title = type,
-                                    fontColor = colorScheme.primary,
-                                    firstNumber = state.sortedLinens[type]?.size ?: 0,
-                                )
+                        when (state.groupLinen) {
+                            GroupLinen.NAME -> {
+                                items(state.order.items) { linen ->
+                                    ItemLinen(linen = linen)
+                                }
+                            }
+
+                            GroupLinen.TYPE_LINEN -> {
+                                items(state.sortedLinens.keys.toList()) { type ->
+                                    if (isWorkWithOrder) {
+                                        val existLinen = state.sortedLinens[type] ?: emptyList()
+                                        val fontColor = if (existLinen.map { it.rfid }
+                                                .all { it in state.markers }) colorScheme.primary else colorScheme.error
+                                        UiRowThreeElements(
+                                            title = type,
+                                            fontColor = fontColor,
+                                            firstNumber = state.sortedLinens[type]?.size ?: 0,
+                                            secondNumber = existLinen.map { it.rfid }
+                                                .filter { it in state.markers }.size
+                                        )
+                                    } else {
+                                        UiRowTwoElements(
+                                            title = type,
+                                            fontColor = colorScheme.primary,
+                                            firstNumber = state.sortedLinens[type]?.size ?: 0,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -403,6 +465,7 @@ private fun Preview() {
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
@@ -422,6 +485,7 @@ private fun Preview1() {
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
@@ -446,6 +510,7 @@ private fun Preview2() {
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
@@ -469,6 +534,7 @@ private fun Preview21() {
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
@@ -498,6 +564,7 @@ private fun Preview3() {
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
@@ -528,6 +595,7 @@ private fun Preview4() {
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
@@ -558,6 +626,7 @@ private fun Preview5() {
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
@@ -588,6 +657,7 @@ private fun Preview6() {
             baseState = BaseState(),
             updateVisibilityNotApproveDialog = {},
             onBack = {},
+            onClickExit = {},
         )
     }
 }
