@@ -167,6 +167,8 @@ class CurrentOrderScreenViewModel(
                 )
                     .updateState()
             }
+
+            CurrentOrderScreenAction.UpdateGrouping -> TODO()
         }
     }
 

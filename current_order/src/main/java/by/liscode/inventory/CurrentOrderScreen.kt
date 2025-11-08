@@ -56,6 +56,8 @@ import by.liscode.resources.uikit.UiButton
 import by.liscode.resources.uikit.UiClickableRow
 import by.liscode.resources.uikit.UiRowThreeElements
 import by.liscode.resources.uikit.UiRowTitleThreeElements
+import by.liscode.resources.uikit.UiRowTitleTwoElements
+import by.liscode.resources.uikit.UiRowTwoElements
 import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.BaseState
@@ -91,31 +93,49 @@ fun CurrentOrderScreenRoot(
             scanner.applySettings(it)
         }
     }
-    OnScan(
-        block = {
-            processScan(
-                rfid = scanner,
-                isActive = state.isActiveScanner,
-                block = {
-                    onAction(CurrentOrderScreenAction.TakeMarker(
-                        marker = it,
-                        sound = R.raw.beep
-                    ))
-                },
-                updateIsActive = {
-                    onAction(CurrentOrderScreenAction.UpdateActivityScanner(it))
-                }
-            )
-        },
-        back = {
-            scanner.free()
-            onBackNavigate ()
-        }
-    )
+    val isWorkWithOrder =
+        state.userData?.let { userData ->
+            (userData.userType == UserType.HOTEL
+                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                    && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
+                    ) || (userData.userType == UserType.LAUNDRY
+                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                    && (order.status == StatusOrder.REGISTERED || order.status == StatusOrder.IN_TRANSIT)
+                    ) || (userData.userType == UserType.LAUNDRY
+                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                    && (order.status == StatusOrder.IN_PRODUCTION)
+                    )
+        } ?: false
+    if (isWorkWithOrder) {
+        OnScan(
+            block = {
+                processScan(
+                    rfid = scanner,
+                    isActive = state.isActiveScanner,
+                    block = {
+                        onAction(
+                            CurrentOrderScreenAction.TakeMarker(
+                                marker = it,
+                                sound = R.raw.beep
+                            )
+                        )
+                    },
+                    updateIsActive = {
+                        onAction(CurrentOrderScreenAction.UpdateActivityScanner(it))
+                    }
+                )
+            },
+            back = {
+                scanner.free()
+                onBackNavigate()
+            }
+        )
+    }
 
     CurrentOrderScreenScreen(
         state = state,
         baseState = baseState,
+        isWorkWithOrder = isWorkWithOrder,
         visibleNotApproveDialog = visibleNotApproveDialog,
         onAction = viewModel::onAction,
         updateVisibilityNotApproveDialog = {
@@ -133,6 +153,7 @@ fun CurrentOrderScreenScreen(
     modifier: Modifier = Modifier,
     state: CurrentOrderScreenState,
     baseState: BaseState,
+    isWorkWithOrder: Boolean,
     visibleNotApproveDialog: Boolean,
     onAction: (CurrentOrderScreenAction) -> Unit,
     updateVisibilityNotApproveDialog: (Boolean) -> Unit,
@@ -195,6 +216,19 @@ fun CurrentOrderScreenScreen(
         topBarContent = {
             FundAppBar(
                 title = "${stringResource(R.string.order)} ${state.order?.id}",
+                endContent = {
+                    Text(
+                        modifier = modifier.clickable(
+                            enabled = state.markers.isNotEmpty(),
+                            onClick = {
+                                onAction(CurrentOrderScreenAction.UpdateGrouping)
+                            }
+                        ),
+                        text = stringResource(R.string.kind_upper_case),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                },
                 onBack = onBack
             )
         },
@@ -308,12 +342,19 @@ fun CurrentOrderScreenScreen(
                         thickness = 1.dp
                     )
                     Spacer(modifier = modifier.height(8.dp))
-                    UiRowTitleThreeElements(
-                        title = stringResource(R.string.fund),
-                        firstNumber = order.items.size,
-                        secondNumber = order.items.map { it.rfid }
-                            .filter { it in state.markers }.size
-                    )
+                    if (isWorkWithOrder) {
+                        UiRowTitleThreeElements(
+                            title = stringResource(R.string.fund),
+                            firstNumber = order.items.size,
+                            secondNumber = order.items.map { it.rfid }
+                                .filter { it in state.markers }.size
+                        )
+                    } else  {
+                        UiRowTitleTwoElements(
+                            title = stringResource(R.string.fund),
+                            firstNumber = order.items.size,
+                        )
+                    }
 
                     Spacer(modifier = modifier.height(8.dp))
                     LazyColumn(
@@ -321,16 +362,24 @@ fun CurrentOrderScreenScreen(
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
                         items(state.sortedLinens.keys.toList()) { type ->
-                            val existLinen = state.sortedLinens[type] ?: emptyList()
-                            val fontColor = if (existLinen.map { it.rfid }
-                                    .all { it in state.markers }) colorScheme.primary else colorScheme.error
-                            UiRowThreeElements(
-                                title = type,
-                                fontColor = fontColor,
-                                firstNumber = state.sortedLinens[type]?.size ?: 0,
-                                secondNumber = existLinen.map { it.rfid }
-                                    .filter { it in state.markers }.size
-                            )
+                            if (isWorkWithOrder) {
+                                val existLinen = state.sortedLinens[type] ?: emptyList()
+                                val fontColor = if (existLinen.map { it.rfid }
+                                        .all { it in state.markers }) colorScheme.primary else colorScheme.error
+                                UiRowThreeElements(
+                                    title = type,
+                                    fontColor = fontColor,
+                                    firstNumber = state.sortedLinens[type]?.size ?: 0,
+                                    secondNumber = existLinen.map { it.rfid }
+                                        .filter { it in state.markers }.size
+                                )
+                            } else  {
+                                UiRowTwoElements(
+                                    title = type,
+                                    fontColor = colorScheme.primary,
+                                    firstNumber = state.sortedLinens[type]?.size ?: 0,
+                                )
+                            }
                         }
                     }
                 }
@@ -349,6 +398,7 @@ private fun Preview() {
         CurrentOrderScreenScreen(
             state = CurrentOrderScreenState(),
             baseState = BaseState(),
+            isWorkWithOrder = true,
             visibleNotApproveDialog = false,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
@@ -368,6 +418,7 @@ private fun Preview1() {
             state = CurrentOrderScreenState(),
             baseState = BaseState(),
             visibleNotApproveDialog = true,
+            isWorkWithOrder = true,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
             onBack = {},
@@ -390,6 +441,30 @@ private fun Preview2() {
                 order = order
             ),
             baseState = BaseState(),
+            isWorkWithOrder = true,
+            visibleNotApproveDialog = false,
+            onAction = {},
+            updateVisibilityNotApproveDialog = {},
+            onBack = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview(
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+private fun Preview21() {
+
+    MobileAppAndroidForTerminalTheme {
+        CurrentOrderScreenScreen(
+            state = CurrentOrderScreenState(
+                order = order
+            ),
+            baseState = BaseState(),
+            isWorkWithOrder = false,
             visibleNotApproveDialog = false,
             onAction = {},
             updateVisibilityNotApproveDialog = {},
@@ -417,6 +492,7 @@ private fun Preview3() {
                 order = order,
                 markers = markers
             ),
+            isWorkWithOrder = true,
             baseState = BaseState(),
             visibleNotApproveDialog = true,
             onAction = {},
@@ -446,6 +522,7 @@ private fun Preview4() {
                 order = order,
                 markers = markers
             ),
+            isWorkWithOrder = true,
             baseState = BaseState(),
             visibleNotApproveDialog = true,
             onAction = {},
@@ -475,6 +552,7 @@ private fun Preview5() {
                 order = order1,
                 markers = markers
             ),
+            isWorkWithOrder = true,
             baseState = BaseState(),
             visibleNotApproveDialog = true,
             onAction = {},
@@ -506,6 +584,7 @@ private fun Preview6() {
             ),
             visibleNotApproveDialog = true,
             onAction = {},
+            isWorkWithOrder = true,
             baseState = BaseState(),
             updateVisibilityNotApproveDialog = {},
             onBack = {},

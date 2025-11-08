@@ -9,4 +9,5 @@ sealed interface CurrentOrderScreenAction {
     data object UpdateOrder:CurrentOrderScreenAction
     class UpdateActivityScanner(val isActive: Boolean): CurrentOrderScreenAction
     data object CloseSuccessDialog:CurrentOrderScreenAction
+    data object UpdateGrouping:CurrentOrderScreenAction
 }
