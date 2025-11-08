@@ -24,9 +24,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class SearchScreenViewModel(
-    dataStoreRepository: DataStoreRepository,
+    private val dataStoreRepository: DataStoreRepository,
     localRepository: LocalRepository,
-    jwtRepository: JwtRepository,
+    private val jwtRepository: JwtRepository,
     soundRepository: SoundRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
@@ -40,6 +40,7 @@ class SearchScreenViewModel(
     private val _state = MutableStateFlow(SearchScreenState())
     val state = _state
         .onStart {
+            getUserData()
         }
         .stateIn(
             scope = viewModelScope,
@@ -128,6 +129,13 @@ class SearchScreenViewModel(
                 )
                     .updateState()
             }
+
+            is SearchScreenAction.UpdateCurrentType -> {
+                _state.value.copy(
+                    currentType = action.typeLinen
+                )
+                    .updateState()
+            }
         }
     }
 
@@ -186,6 +194,19 @@ class SearchScreenViewModel(
                         ).updateState()
 
                     }
+                }
+            }
+        }
+    }
+
+    private fun getUserData() {
+        viewModelScope.launch {
+            dataStoreRepository.getBearer().collect { token ->
+                token?.let {
+                    _state.value.copy(
+                        userData = jwtRepository.decodeJwt(token)
+                    )
+                        .updateState()
                 }
             }
         }

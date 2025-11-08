@@ -187,7 +187,7 @@
     <string name="no_module">Модуль сканирования отсутствует</string>
     <string name="individual_found_client">Индивидуальный фонд клиента</string>
     <string name="on_rfid_marker">По RFID коду метки</string>
-    <string name="enter_filter">Введите метку</string>
+    <string name="enter_filter">Введите метку полностью или ее часть</string>
     <string name="objects_success_in_use">Объекты взяты в работу</string>
     <string name="unknown_markers">Неизвестные метки</string>
     <string name="date_time">ДАТА/ВРЕМЯ</string>
@@ -222,4 +222,5 @@
     <string name="have_markers_not_in_stock">Имеется белье в несоответствующем статусе. Исключить его?</string>
     <string name="have_markers_in_balance">На складе уже имеются такие метки. Взять на баланс без них?</string>
     <string name="not_finded_markers">Неподходящие метки</string>
+    <string name="on_type_lineb">По типу белья</string>
 </resources>

@@ -1,5 +1,7 @@
 package by.liscode.search
 
+import by.liscode.domain.model.TypeLinen
+
 sealed interface SearchScreenAction {
     class UpdateActivityScanner(val isActive: Boolean): SearchScreenAction
     class TakeMarker(
@@ -10,4 +12,5 @@ sealed interface SearchScreenAction {
     data object UpdateGroupping:SearchScreenAction
     class UpdateSearchState(val searchState: SearchState):SearchScreenAction
     class UpdateFilterRfid(val rfid: String):SearchScreenAction
+    class UpdateCurrentType(val typeLinen: TypeLinen):SearchScreenAction
 }

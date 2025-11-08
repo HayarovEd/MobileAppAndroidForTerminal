@@ -73,10 +73,12 @@ fun SearchScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(SearchScreenAction.TakeMarker(
-                        marker = it,
-                        sound = R.raw.beep
-                    ))
+                    onAction(
+                        SearchScreenAction.TakeMarker(
+                            marker = it,
+                            sound = R.raw.beep
+                        )
+                    )
                 },
                 updateIsActive = {
                     onAction(SearchScreenAction.UpdateActivityScanner(it))
@@ -85,7 +87,7 @@ fun SearchScreenRoot(
         },
         back = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
     SearchScreenScreen(
@@ -94,7 +96,7 @@ fun SearchScreenRoot(
         onAction = viewModel::onAction,
         onBackNavigate = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
 }
@@ -141,6 +143,7 @@ fun SearchScreenScreen(
                         onBack = onBackNavigate
                     )
                 }
+
                 SearchState.FILTERING -> {
                     FundAppBar(
                         title = stringResource(R.string.filter),
@@ -184,7 +187,7 @@ fun SearchScreenScreen(
                         ) {
                             Text(
                                 modifier = modifier,
-                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
+                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size - state.remoteLinens.size}",
                                 color = colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyMedium,
                             )
@@ -196,32 +199,38 @@ fun SearchScreenScreen(
                             )
                         }
                         Spacer(modifier = modifier.height(10.dp))
-                        when(state.groupLinen) {
+                        when (state.groupLinen) {
                             GroupLinen.NAME -> {
                                 TypeNameScreen(
                                     groupedLinen = state.groupedLinenByClientId,
-                                    outMarkers = state.outMarkers,
                                     clients = state.clients
                                 )
                             }
+
                             GroupLinen.TYPE_LINEN -> {
                                 TypeLinenScreen(
                                     groupedLinen = state.groupedLinenByClientIdAndTypeLinen,
-                                    outMarkers = state.outMarkers,
                                     clients = state.clients
                                 )
                             }
                         }
                     }
+
                     SearchState.FILTERING -> {
                         FilteringScreen(
                             filterRfid = state.filterRfid,
                             filterByType = state.filterByType,
+                            typesLinen = state.typesLinen,
+                            userData = state.userData,
+                            currentTypeLinen = state.currentType,
                             updateFilter = {
                                 onAction(SearchScreenAction.UpdateFilter(it))
                             },
                             updateFilterRfid = {
                                 onAction(SearchScreenAction.UpdateFilterRfid(it))
+                            },
+                            updateCurrentType = {
+                                onAction(SearchScreenAction.UpdateCurrentType(it))
                             }
                         )
                     }

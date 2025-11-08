@@ -25,7 +25,6 @@ import by.liscode.resources.uikit.UiRowTwoElements
 fun TypeLinenScreen(
     modifier: Modifier = Modifier,
     groupedLinen: Map<Int, Map<TypeLinen, List<Linen>>>,
-    outMarkers: List<String>,
     clients: List<Client>,
 ) {
     LazyColumn(
@@ -50,14 +49,14 @@ fun TypeLinenScreen(
                     fontColor = MaterialTheme.colorScheme.onBackground
                 )
             }
-            if (outMarkers.isNotEmpty()) {
+            /*if (outMarkers.isNotEmpty()) {
                 stickyHeader {
                     UiRowTitleTwoElements(
                         title = stringResource(R.string.unknown_markers),
                         firstNumber = outMarkers.size
                     )
                 }
-            }
+            }*/
         }
     }
 }
@@ -112,8 +111,6 @@ private fun Preview1() {
             )
         )
     }
-    val markers = (1..70).map { "Marker N$it" }
-    val outMarkers = markers - linens.map { it.rfid }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -140,7 +137,6 @@ private fun Preview1() {
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers,
             clients = clients
         )
     }
@@ -197,7 +193,6 @@ private fun Preview2() {
             )
         )
     }
-    val markers = (1..70).map { "Marker N$it" }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -218,7 +213,6 @@ private fun Preview2() {
             site = ""
         )
     }
-    val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.filter { it.clientId == clientId }
@@ -226,7 +220,6 @@ private fun Preview2() {
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers,
             clients = clients
         )
     }
@@ -282,8 +275,6 @@ private fun Preview3() {
             )
         )
     }
-    val markers = (1..70).map { "Marker N$it" }
-    val outMarkers = markers - linens.map { it.rfid }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -311,7 +302,6 @@ private fun Preview3() {
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers,
             clients = clients
         )
     }

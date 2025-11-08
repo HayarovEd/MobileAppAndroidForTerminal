@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,7 +23,6 @@ import by.liscode.resources.uikit.UiRowTitleTwoElements
 @Composable
 fun TypeNameScreen(
     modifier: Modifier = Modifier,
-    outMarkers: List<String>,
     clients: List<Client>,
     groupedLinen:  Map<Int, List<Linen>>,
     ) {
@@ -49,7 +46,7 @@ fun TypeNameScreen(
                 )
             }
         }
-        if (outMarkers.isNotEmpty()) {
+        /*if (outMarkers.isNotEmpty()) {
             stickyHeader {
                 UiRowTitleTwoElements(
                     title = stringResource(R.string.unknown_markers),
@@ -64,7 +61,7 @@ fun TypeNameScreen(
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-        }
+        }*/
     }
 }
 
@@ -118,8 +115,6 @@ private fun Preview1() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
 
     val clients = (0..4).map {
         Client(
@@ -144,7 +139,6 @@ private fun Preview1() {
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
             groupedLinen = linens.groupBy {it.clientId  },
-            outMarkers = outMarkers,
             clients = clients
         )
     }
@@ -220,12 +214,9 @@ private fun Preview2() {
             site = ""
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
             groupedLinen = linens.filter { it.clientId == clientId }.groupBy {it.clientId  },
-            outMarkers = outMarkers,
             clients = clients
         )
     }
@@ -280,8 +271,6 @@ private fun Preview3() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -305,7 +294,6 @@ private fun Preview3() {
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
             groupedLinen = linens.filter { it.rfid == "Marker N5" }.groupBy {it.clientId  },
-            outMarkers = outMarkers,
             clients = clients
         )
     }
