@@ -149,7 +149,13 @@ fun ItemOrder(
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(
-                            modifier = modifier,
+                            modifier = modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(3.dp)
+                                )
+                                .padding(2.dp),
                             text = formatWeight(order.items.sumOf { it.weight }),
                             color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.bodyMedium,

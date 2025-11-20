@@ -243,7 +243,6 @@ fun OrderCreateScreenScreen(
                     ) {
                         Text(
                             modifier = modifier.clickable(
-                                enabled = state.markers.isNotEmpty(),
                                 onClick = {
                                     onAction(OrderCreateScreenAction.UpdateGrouping)
                                 }

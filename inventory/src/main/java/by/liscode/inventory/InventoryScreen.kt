@@ -166,7 +166,6 @@ fun InventoryScreenScreen(
                             ) {
                                 Text(
                                     modifier = modifier.clickable(
-                                        enabled = state.markers.isNotEmpty(),
                                         onClick = {
                                             onAction(InventoryScreenAction.UpdateGrouping)
                                         }
