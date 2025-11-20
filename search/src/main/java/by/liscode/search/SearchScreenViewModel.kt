@@ -184,7 +184,7 @@ class SearchScreenViewModel(
                 id = clientId
             )) {
                 is ResultWork.Error -> {
-                    updateMessage(result.error.asUiText())
+                   // updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {

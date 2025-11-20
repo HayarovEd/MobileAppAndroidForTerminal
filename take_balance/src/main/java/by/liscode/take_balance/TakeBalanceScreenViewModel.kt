@@ -237,6 +237,9 @@ class TakeBalanceScreenViewModel(
             }
 
             TakeBalanceScreenAction.SendAndCloseWarning -> {
+                _state.value.copy(
+                    isShowWarning = false
+                ).updateState()
                 loadData(
                     action = { token, url ->
                         acceptInToStock(
