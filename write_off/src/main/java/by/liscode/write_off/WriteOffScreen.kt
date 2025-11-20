@@ -56,6 +56,8 @@ import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.UiRowTitleTwoElements
+import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asReasonText
 import by.liscode.resources.uikit.rememberRfid
@@ -343,21 +345,10 @@ fun WriteOffScreenScreen(
                         }
                     }
                     item {
-                        Row(
-                            modifier = modifier
-                                .clip(shape = RoundedCornerShape(10.dp))
-                                .fillMaxWidth()
-                                .background(colorScheme.secondary)
-                                .padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                modifier = modifier.weight(6f),
-                                text = stringResource(R.string.not_finded_markers),
-                                color = colorScheme.onSecondary,
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                        }
+                        UiRowTitleTwoElements(
+                            title = stringResource(R.string.not_finded_markers),
+                            firstNumber = state.markersNotApprovedForWriteOff.size
+                        )
                     }
                     items(state.markersNotApprovedForWriteOff) { marker ->
                         Column(

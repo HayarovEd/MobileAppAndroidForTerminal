@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,41 +33,51 @@ fun ItemLinen(
     colorType: Color = MaterialTheme.colorScheme.onBackground,
     linen: Linen,
 ) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(3.dp),
-        verticalAlignment = Alignment.Bottom
     ) {
-        Column(
-            modifier = modifier.weight(2f),
+        Row(
+            modifier = modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom
         ) {
-            Text(
-                modifier = modifier,
-                text = linen.printFormat(),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(modifier = modifier.height(10.dp))
-            Text(
-                modifier = modifier,
-                text = "${stringResource(R.string.rfid)}: ${linen.rfid}",
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Column(
+                modifier = modifier.weight(2f),
+            ) {
+                Text(
+                    modifier = modifier,
+                    text = linen.printFormat(),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Spacer(modifier = modifier.height(10.dp))
+                Text(
+                    modifier = modifier,
+                    text = "${stringResource(R.string.rfid)}: ${linen.rfid}",
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            Spacer(modifier = modifier.width(15.dp))
+            Column(
+                modifier = modifier.weight(1f),
+            ) {
+                Text(
+                    modifier = modifier.fillMaxWidth(),
+                    text = linen.status.asStatusLinenText().asString(),
+                    color = colorType,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-        Spacer(modifier = modifier.width(15.dp))
-        Column(
-            modifier = modifier.weight(1f),
-        ) {
-            Text(
-                modifier = modifier.fillMaxWidth(),
-                text = linen.status.asStatusLinenText().asString(),
-                color = colorType,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
-            )
-        }
+        Spacer(modifier = modifier.width(5.dp))
+        HorizontalDivider(
+            modifier = modifier.fillMaxWidth(),
+            thickness = 1.dp
+        )
     }
 }
 

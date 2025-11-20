@@ -254,7 +254,7 @@ fun InventoryScreenScreen(
                             GroupLinen.NAME -> {
                                 TypeNameScreen(
                                     size = state.remoteLinens.size,
-                                    markers = state.markers,
+                                    remoteMarkers = state.markers,
                                     sortedLinen = state.finishSortedLines
                                 )
                             }
@@ -262,7 +262,7 @@ fun InventoryScreenScreen(
                             GroupLinen.TYPE_LINEN -> {
                                 TypeLinenScreen(
                                     size = state.remoteLinens.size,
-                                    markers = state.markers,
+                                    remoteMarkers = state.markers,
                                     sortedGroups = state.finishFilterGroups
                                 )
                             }
