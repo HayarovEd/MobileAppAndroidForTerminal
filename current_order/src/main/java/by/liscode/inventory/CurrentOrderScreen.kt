@@ -98,6 +98,18 @@ fun CurrentOrderScreenRoot(
     }
     val isWorkWithOrder =
         state.userData?.let { userData ->
+            val isStatusDeliveryAndFormed = (userData.userType == UserType.HOTEL
+                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                    && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
+                    )
+            val isStatusRegisteredAndInTransit = (userData.userType == UserType.LAUNDRY
+                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                    && (order.status == StatusOrder.REGISTERED || order.status == StatusOrder.IN_TRANSIT)
+                    )
+            val isStatusInProduction = (userData.userType == UserType.LAUNDRY
+                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                    && (order.status == StatusOrder.IN_PRODUCTION)
+                    )
             (userData.userType == UserType.HOTEL
                     && userData.userRole == UserRole.CLIENT_EMPLOYEE
                     && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
