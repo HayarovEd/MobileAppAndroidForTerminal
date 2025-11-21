@@ -1,5 +1,6 @@
 package by.liscode.inventory
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -98,28 +99,39 @@ fun CurrentOrderScreenRoot(
     }
     val isWorkWithOrder =
         state.userData?.let { userData ->
-            val isStatusDeliveryAndFormed = (userData.userType == UserType.HOTEL
-                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                    && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
-                    )
-            val isStatusRegisteredAndInTransit = (userData.userType == UserType.LAUNDRY
-                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                    && (order.status == StatusOrder.REGISTERED || order.status == StatusOrder.IN_TRANSIT)
-                    )
-            val isStatusInProduction = (userData.userType == UserType.LAUNDRY
-                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                    && (order.status == StatusOrder.IN_PRODUCTION)
-                    )
-            (userData.userType == UserType.HOTEL
-                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                    && (order.status == StatusOrder.IN_DELIVERY || order.status == StatusOrder.FORMED)
-                    ) || (userData.userType == UserType.LAUNDRY
-                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                    && (order.status == StatusOrder.REGISTERED || order.status == StatusOrder.IN_TRANSIT)
-                    ) || (userData.userType == UserType.LAUNDRY
-                    && userData.userRole == UserRole.CLIENT_EMPLOYEE
-                    && (order.status == StatusOrder.IN_PRODUCTION)
-                    )
+          /*  Log.d("TEST WORK SCANNER", "user type ${userData.userType}")
+            Log.d("TEST WORK SCANNER", "user role ${userData.userRole}")
+            Log.d("TEST WORK SCANNER", "order ${state.currentOrder?.id}")*/
+            state.currentOrder?.let { currentOrder->
+
+                /*val isStatusDeliveryAndFormed = (userData.userType == UserType.HOTEL
+                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                        && (currentOrder.status == StatusOrder.IN_DELIVERY || currentOrder.status == StatusOrder.FORMED)
+                        )
+                Log.d("TEST WORK SCANNER", "isStatusDeliveryAndFormed $isStatusDeliveryAndFormed")
+                val isStatusRegisteredAndInTransit = (userData.userType == UserType.LAUNDRY
+                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                        && (currentOrder.status == StatusOrder.REGISTERED || currentOrder.status == StatusOrder.IN_TRANSIT)
+                        )
+                Log.d("TEST WORK SCANNER", "isStatusRegisteredAndInTransit $isStatusRegisteredAndInTransit")
+
+                val isStatusInProduction = (userData.userType == UserType.LAUNDRY
+                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                        && (currentOrder.status == StatusOrder.IN_PRODUCTION)
+                        )
+                Log.d("TEST WORK SCANNER", "isStatusInProduction $isStatusInProduction")
+*/
+                (userData.userType == UserType.HOTEL
+                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                        && (currentOrder.status == StatusOrder.IN_DELIVERY || currentOrder.status == StatusOrder.FORMED)
+                        ) || (userData.userType == UserType.LAUNDRY
+                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                        && (currentOrder.status == StatusOrder.REGISTERED || currentOrder.status == StatusOrder.IN_TRANSIT)
+                        ) || (userData.userType == UserType.LAUNDRY
+                        && userData.userRole == UserRole.CLIENT_EMPLOYEE
+                        && (currentOrder.status == StatusOrder.IN_PRODUCTION)
+                        )
+            }
         } ?: false
     if (isWorkWithOrder) {
         OnScan(
@@ -279,7 +291,7 @@ fun CurrentOrderScreenScreen(
         message = baseState.message,
         topBarContent = {
             FundAppBar(
-                title = "${stringResource(R.string.order)} ${state.order?.id}",
+                title = "${stringResource(R.string.order)} ${state.currentOrder?.id}",
                 endContent = {
                     Text(
                         modifier = modifier.clickable(
@@ -304,7 +316,7 @@ fun CurrentOrderScreenScreen(
                     .background(colorScheme.background)
                     .padding(horizontal = 15.dp),
             ) {
-                state.order?.let { order ->
+                state.currentOrder?.let { order ->
                     state.userData?.let { userData ->
                         val enabled = state.enableUpdate
                         if (userData.userType == UserType.HOTEL
@@ -370,7 +382,7 @@ fun CurrentOrderScreenScreen(
                     .background(colorScheme.background)
                     .padding(15.dp),
             ) {
-                state.order?.let { order ->
+                state.currentOrder?.let { order ->
                     UiRowTwoText(
                         title = "${stringResource(R.string.laundry)}:",
                         value = order.laundry.name,
@@ -427,7 +439,7 @@ fun CurrentOrderScreenScreen(
                     ) {
                         when (state.groupLinen) {
                             GroupLinen.NAME -> {
-                                items(state.order.items) { linen ->
+                                items(state.currentOrder.items) { linen ->
                                     ItemLinen(linen = linen)
                                 }
                             }
@@ -514,7 +526,7 @@ private fun Preview2() {
         CurrentOrderScreenScreen(
             state = CurrentOrderScreenState(
                 markers = markers,
-                order = order
+                currentOrder = order
             ),
             baseState = BaseState(),
             isWorkWithOrder = true,
@@ -538,7 +550,7 @@ private fun Preview21() {
     MobileAppAndroidForTerminalTheme {
         CurrentOrderScreenScreen(
             state = CurrentOrderScreenState(
-                order = order
+                currentOrder = order
             ),
             baseState = BaseState(),
             isWorkWithOrder = false,
@@ -567,7 +579,7 @@ private fun Preview3() {
                     userType = UserType.HOTEL,
                     expired = 0L
                 ),
-                order = order,
+                currentOrder = order,
                 markers = markers
             ),
             isWorkWithOrder = true,
@@ -598,7 +610,7 @@ private fun Preview4() {
                     userType = UserType.HOTEL,
                     expired = 0L
                 ),
-                order = order,
+                currentOrder = order,
                 markers = markers
             ),
             isWorkWithOrder = true,
@@ -629,7 +641,7 @@ private fun Preview5() {
                     userType = UserType.LAUNDRY,
                     expired = 0L
                 ),
-                order = order1,
+                currentOrder = order1,
                 markers = markers
             ),
             isWorkWithOrder = true,
@@ -660,7 +672,7 @@ private fun Preview6() {
                     userType = UserType.LAUNDRY,
                     expired = 0L
                 ),
-                order = order2,
+                currentOrder = order2,
                 markers = markers5_21
             ),
             visibleNotApproveDialog = true,
