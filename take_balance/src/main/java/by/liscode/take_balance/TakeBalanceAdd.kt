@@ -320,7 +320,7 @@ fun TakeBalanceAddScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                items(state.markersInBalance) { marker ->
+                items(state.markersNotBalance) { marker ->
                     Row(
                         modifier = modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -353,7 +353,7 @@ fun TakeBalanceAddScreen(
                         )
                     }
                 }
-                items(state.markersNotBalance) { marker ->
+                items(state.markersInBalance) { marker ->
                     Row(
                         modifier = modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
