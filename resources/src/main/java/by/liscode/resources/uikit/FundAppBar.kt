@@ -6,16 +6,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +37,7 @@ fun FundAppBar(
     ) {
         UiIconButton(
             modifier = modifier,
-            icon = Icons.AutoMirrored.Filled.ArrowBack,
+            icon = ImageVector.vectorResource(R.drawable.arrow_back_24dp),
             color = MaterialTheme.colorScheme.onPrimary,
             onClick = onBack
         )
@@ -67,7 +68,7 @@ private fun FundAppBarView() {
             endContent = {
                 UiIconButton(
                     modifier = Modifier,
-                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                    icon = ImageVector.vectorResource(R.drawable.arrow_back_24dp),
                     color = MaterialTheme.colorScheme.onPrimary,
                     onClick = {}
                 )
