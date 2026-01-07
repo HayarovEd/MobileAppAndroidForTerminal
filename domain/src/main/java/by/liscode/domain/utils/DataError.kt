@@ -8,6 +8,7 @@ sealed interface DataError : RootError {
         BAD_REQUEST,
         NOT_FOUND,
         REQUEST_TIMEOUT,
+        NO_CONNECT_SERVER,
         UNKNOWN
     }
 

@@ -14,18 +14,25 @@ import by.liscode.domain.utils.DataError
 import com.nine.statio.domain.utils.ResultWork
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.serialization.JsonConvertException
+import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.UnknownHostException
 
 class AuthorizeRepositoryImpl(
     private val httpClient: HttpClient
-): AuthorizeRepository {
+) : AuthorizeRepository {
 
 
     override suspend fun authorization(
@@ -34,7 +41,7 @@ class AuthorizeRepositoryImpl(
         baseUrl: String
     ): ResultWork<Auth, DataError> {
         return withContext(Dispatchers.IO) {
-            handleRemoteResponse {
+            try {
                 val response = httpClient.post("$baseUrl/$AUTH_POSTFIX") {
                     contentType(ContentType.Application.Json)
                     setBody(
@@ -42,13 +49,53 @@ class AuthorizeRepositoryImpl(
                             login = login,
                             password = password,
 
-                        )
+                            )
                     )
-                }.call
-                    .body<AuthDto>()
-                Auth(
-                    token = response.token
-                )
+                }
+                when (response.status) {
+                    HttpStatusCode.OK -> {
+                        val body = response.call
+                            .body<AuthDto>()
+                        ResultWork.Success(
+                            Auth(
+                                token = body.token
+                            )
+                        )
+                    }
+
+                    HttpStatusCode.Unauthorized -> {
+                        ResultWork.Error(DataError.Network.UNAUTHORIZED)
+                    }
+
+                    else -> {
+                        ResultWork.Error(DataError.Network.UNKNOWN)
+                    }
+                }
+            } catch (e: ClientRequestException) {
+                when (e.response.status.value) {
+                    400 -> ResultWork.Error(DataError.Network.BAD_REQUEST)
+                    401 -> ResultWork.Error(DataError.Network.UNAUTHORIZED)
+                    404 -> ResultWork.Error(DataError.Network.NOT_FOUND)
+                    else -> ResultWork.Error(DataError.Network.UNKNOWN)
+                }
+            } catch (e: ServerResponseException) {
+                e.printStackTrace()
+                ResultWork.Error(DataError.Network.SERVER_ERROR)
+            } catch (e: HttpRequestTimeoutException) {
+                e.printStackTrace()
+                ResultWork.Error(DataError.Network.REQUEST_TIMEOUT)
+            } catch (e: UnresolvedAddressException) {
+                e.printStackTrace()
+                ResultWork.Error(DataError.Network.NO_INTERNET)
+            } catch (e: UnknownHostException) {
+                e.printStackTrace()
+                ResultWork.Error(DataError.Network.NO_CONNECT_SERVER)
+            } catch (e: JsonConvertException) {
+                e.printStackTrace()
+                ResultWork.Error(DataError.SerializationError.FORMAT_ERROR)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ResultWork.Error(DataError.Network.UNKNOWN)
             }
         }
     }
@@ -64,7 +111,7 @@ class AuthorizeRepositoryImpl(
                     contentType(ContentType.Application.Json)
                 }
                 val result = response.body<ClientsProfileResponse>()
-                result.clients.map {  it.convertToClient()}
+                result.clients.map { it.convertToClient() }
             }
         }
     }

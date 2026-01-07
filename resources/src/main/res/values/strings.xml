@@ -102,6 +102,7 @@
     <string name="bad_request">Неверный запрос</string>
     <string name="incorrect_credintial">Неверный логин или пароль</string>
     <string name="request_timeout">Превышен интервал ожидания</string>
+    <string name="no_connect_server">Нет связи с сервером</string>
     <string name="fund">Фонд</string>
     <string name="orders">Заказы</string>
     <string name="settings">Настройки</string>

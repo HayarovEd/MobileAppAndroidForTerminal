@@ -89,6 +89,10 @@ fun DataError.asUiText(): UiText {
                 R.string.request_timeout
             )
         }
+
+        DataError.Network.NO_CONNECT_SERVER -> StringResource(
+            R.string.no_connect_server
+        )
     }
 }
 
