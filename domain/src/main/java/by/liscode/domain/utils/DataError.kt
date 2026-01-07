@@ -9,6 +9,9 @@ sealed interface DataError : RootError {
         NOT_FOUND,
         REQUEST_TIMEOUT,
         NO_CONNECT_SERVER,
+        FORBIDDEN,
+        TOO_MANY_REQUESTS,
+        SERVICE_UNAVAILABLE,
         UNKNOWN
     }
 

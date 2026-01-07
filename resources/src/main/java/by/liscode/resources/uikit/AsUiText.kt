@@ -93,6 +93,16 @@ fun DataError.asUiText(): UiText {
         DataError.Network.NO_CONNECT_SERVER -> StringResource(
             R.string.no_connect_server
         )
+
+        DataError.Network.FORBIDDEN -> StringResource(
+            R.string.no_access_to_host
+        )
+        DataError.Network.TOO_MANY_REQUESTS -> StringResource(
+            R.string.to_many_requests
+        )
+        DataError.Network.SERVICE_UNAVAILABLE -> StringResource(
+            R.string.no_connect_server
+        )
     }
 }
 

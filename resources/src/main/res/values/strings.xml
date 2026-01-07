@@ -227,4 +227,6 @@
     <string name="weight_kg_unit">кг</string>
     <string name="is_known">Понятно</string>
     <string name="sure_exit_create_order">Выйти из заявки? Информация о считанных метках не будет сохранена в заказе.</string>
+    <string name="no_access_to_host">Нет доступа</string>
+    <string name="to_many_requests">Серевер перегружен запросами</string>
 </resources>
