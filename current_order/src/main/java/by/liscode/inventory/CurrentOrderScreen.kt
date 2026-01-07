@@ -1,6 +1,5 @@
 package by.liscode.inventory
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -259,7 +258,7 @@ fun CurrentOrderScreenScreen(
             confirmButton = {
                 Button(onClick = {
                     onAction(CurrentOrderScreenAction.CloseSuccessDialog)
-                    onBack()
+                    onClickExit()
                 }) {
                     Text(
                         text = stringResource(R.string.ok),
@@ -291,11 +290,11 @@ fun CurrentOrderScreenScreen(
         message = baseState.message,
         topBarContent = {
             FundAppBar(
-                title = "${stringResource(R.string.order)} ${state.currentOrder?.id}",
+                title = "${stringResource(R.string.order)} ${state.currentOrder?.id?:""}",
                 endContent = {
                     Text(
                         modifier = modifier.clickable(
-                            enabled = state.markers.isNotEmpty(),
+                           // enabled = state.markers.isNotEmpty(),
                             onClick = {
                                 onAction(CurrentOrderScreenAction.UpdateGrouping)
                             }
