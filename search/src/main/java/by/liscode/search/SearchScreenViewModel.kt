@@ -41,6 +41,19 @@ class SearchScreenViewModel(
     val state = _state
         .onStart {
             getUserData()
+            loadData(
+                action = { token, url ->
+                    loadTypesLinen(
+                        accessToken = token,
+                        url = url
+                    )
+                },
+                navigate = {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                    }
+                }
+            )
         }
         .stateIn(
             scope = viewModelScope,
@@ -211,6 +224,29 @@ class SearchScreenViewModel(
                 token?.let {
                     _state.value.copy(
                         userData = jwtRepository.decodeJwt(token)
+                    )
+                        .updateState()
+                }
+            }
+        }
+    }
+
+    private fun loadTypesLinen(
+        accessToken: String,
+        url: String
+    ) {
+        viewModelScope.launch {
+            when (val result = remoteRepository.getTypesLinen(
+                token = accessToken,
+                baseUrl = url
+            )) {
+                is ResultWork.Error -> {
+                    updateMessage(result.error.asUiText())
+                }
+
+                is ResultWork.Success -> {
+                    _state.value.copy(
+                        typesLinen = result.data
                     )
                         .updateState()
                 }

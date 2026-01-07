@@ -8,6 +8,7 @@ import by.liscode.domain.model.UserData
 
 data class SearchScreenState(
     val userData: UserData? = null,
+    val typesLinen: List<TypeLinen> = emptyList(),
     val isLoading: Boolean = false,
     val markers: List<String> = emptyList(),
     val remoteLinens: List<Linen> = emptyList(),
@@ -20,7 +21,7 @@ data class SearchScreenState(
     val currentType: TypeLinen? = null,
     val countUnknownMarkers: Int = 0,
 ) {
-    val typesLinen = remoteLinens.map { it.typeLinen }.distinct()
+  //  val typesLinen = remoteLinens.map { it.typeLinen }.distinct()
     val filteredLinen = when (filterByType) {
         FilterByType.All -> remoteLinens
         is FilterByType.FilterByMask -> {
