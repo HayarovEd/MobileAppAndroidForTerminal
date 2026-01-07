@@ -16,7 +16,7 @@ import by.liscode.domain.utils.DataError.Network.UNKNOWN
 import by.liscode.domain.utils.DataError.PasswordError.PASSWORD_BLANK
 import by.liscode.domain.utils.DataError.SerializationError.FORMAT_ERROR
 import by.liscode.domain.utils.InfoMessage
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 
 fun DataError.asUiText(): UiText {
     return when (this) {

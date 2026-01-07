@@ -8,7 +8,7 @@ import by.liscode.domain.repository.RemoteRepository
 import by.liscode.domain.repository.SoundRepository
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

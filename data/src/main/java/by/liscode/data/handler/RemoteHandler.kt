@@ -2,15 +2,24 @@ package by.liscode.data.handler
 
 
 import by.liscode.domain.utils.DataError
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
+import io.ktor.client.HttpClient
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.ServerResponseException
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.JsonConvertException
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.Dispatchers
@@ -86,6 +95,75 @@ suspend fun <T> platformSafeCall(
         ResultWork.Error(DataError.Network.UNKNOWN)
     }
 }
+
+suspend inline fun <reified Response: Any> HttpClient.getSafeCall(
+    route: String,
+    queryParams: Map<String, Any> = mapOf(),
+    crossinline builder: HttpRequestBuilder.() -> Unit = {}
+): ResultWork<Response, DataError> {
+    return safeCall {
+        get {
+            url(route)
+            queryParams.forEach { (key, value) ->
+                parameter(key, value)
+            }
+            builder()
+        }
+    }
+}
+
+suspend inline fun <reified Response: Any> HttpClient.putSafeCall(
+    route: String,
+    queryParams: Map<String, Any> = mapOf(),
+    crossinline builder: HttpRequestBuilder.() -> Unit = {}
+): ResultWork<Response, DataError> {
+    return safeCall {
+        put {
+            url(route)
+            queryParams.forEach { (key, value) ->
+                parameter(key, value)
+            }
+            builder()
+        }
+    }
+}
+
+suspend inline fun <reified Response: Any> HttpClient.deleteSafeCall(
+    route: String,
+    queryParams: Map<String, Any> = mapOf(),
+    crossinline builder: HttpRequestBuilder.() -> Unit = {}
+): ResultWork<Response, DataError> {
+    return safeCall {
+        delete {
+            url(route)
+            queryParams.forEach { (key, value) ->
+                parameter(key, value)
+            }
+            builder()
+        }
+    }
+}
+
+suspend inline fun <reified Request, reified Response: Any> HttpClient.postSafeCall(
+    route: String,
+    body: Request,
+    queryParams: Map<String, Any> = mapOf(),
+    crossinline builder: HttpRequestBuilder.() -> Unit = {}
+): ResultWork<Response, DataError> {
+    return safeCall {
+        post {
+            url(route)
+            queryParams.forEach { (key, value) ->
+                parameter(key, value)
+            }
+            contentType(ContentType.Application.Json)
+            setBody(body)
+            builder()
+        }
+    }
+}
+
+
 
 suspend inline fun <reified T> safeCall(
     noinline execute: suspend () -> HttpResponse
