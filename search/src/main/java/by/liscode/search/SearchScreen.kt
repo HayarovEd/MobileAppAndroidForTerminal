@@ -187,7 +187,7 @@ fun SearchScreenScreen(
                         ) {
                             Text(
                                 modifier = modifier,
-                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size - state.remoteLinens.size}",
+                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size - state.remoteLinens.size - state.countUnknownMarkers}",
                                 color = colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyMedium,
                             )

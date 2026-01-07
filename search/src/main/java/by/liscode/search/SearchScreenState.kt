@@ -18,6 +18,7 @@ data class SearchScreenState(
     val filterRfid: String = "",
     val clients: List<Client> = emptyList(),
     val currentType: TypeLinen? = null,
+    val countUnknownMarkers: Int = 0,
 ) {
     val typesLinen = remoteLinens.map { it.typeLinen }.distinct()
     val filteredLinen = when (filterByType) {

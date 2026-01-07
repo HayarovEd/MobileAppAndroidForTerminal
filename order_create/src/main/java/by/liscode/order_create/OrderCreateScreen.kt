@@ -167,7 +167,7 @@ fun OrderCreateScreenScreen(
             confirmButton = {
                 Button(onClick = {
                     onAction(OrderCreateScreenAction.CloseSuccessDialog)
-                    onBack
+                    onBack()
                 }) {
                     Text(
                         text = stringResource(R.string.is_known),

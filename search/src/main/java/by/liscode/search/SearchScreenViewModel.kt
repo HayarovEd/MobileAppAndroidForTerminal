@@ -92,11 +92,14 @@ class SearchScreenViewModel(
                 if (action.isActive) {
                     _state.value.copy(
                         markers = emptyList(),
-                        remoteLinens = emptyList()
+                        remoteLinens = emptyList(),
+                        countUnknownMarkers = 0
                     ).updateState()
                 }
-                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
-                    InfoMessage.RFIDWork.STOPPED.asText())
+                updateMessage(
+                    if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                        InfoMessage.RFIDWork.STOPPED.asText()
+                )
             }
 
             is SearchScreenAction.UpdateFilter -> {
@@ -152,6 +155,9 @@ class SearchScreenViewModel(
             )) {
                 is ResultWork.Error -> {
                     //updateMessage(result.error.asUiText())
+                    _state.value.copy(
+                        countUnknownMarkers = state.value.countUnknownMarkers + 1
+                    ).updateState()
                 }
 
                 is ResultWork.Success -> {
@@ -184,7 +190,7 @@ class SearchScreenViewModel(
                 id = clientId
             )) {
                 is ResultWork.Error -> {
-                   // updateMessage(result.error.asUiText())
+                    // updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
