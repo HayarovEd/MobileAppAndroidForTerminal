@@ -344,33 +344,36 @@ fun WriteOffScreenScreen(
                             )
                         }
                     }
-                    item {
-                        UiRowTitleTwoElements(
-                            title = stringResource(R.string.not_finded_markers),
-                            firstNumber = state.markersNotApprovedForWriteOff.size
-                        )
-                    }
-                    items(state.markersNotApprovedForWriteOff) { marker ->
-                        Column(
-                            modifier = modifier
-                        ) {
-                            val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
-                            currentLinen?.let { linen ->
+                    if(state.markersNotApprovedForWriteOff.isNotEmpty()) {
+                        item {
+                            UiRowTitleTwoElements(
+                                title = stringResource(R.string.not_finded_markers),
+                                firstNumber = state.markersNotApprovedForWriteOff.size
+                            )
+                        }
+                        items(state.markersNotApprovedForWriteOff) { marker ->
+                            Column(
+                                modifier = modifier
+                            ) {
+                                val currentLinen =
+                                    state.remoteLinens.firstOrNull { it.rfid == marker }
+                                currentLinen?.let { linen ->
+                                    Text(
+                                        modifier = modifier,
+                                        text = linen.printFormat(),
+                                        color = colorScheme.onBackground,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                        ),
+                                    )
+                                }
                                 Text(
                                     modifier = modifier,
-                                    text = linen.printFormat(),
-                                    color = colorScheme.onBackground,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                    ),
+                                    text = marker,
+                                    color = colorScheme.secondary,
+                                    style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
-                            Text(
-                                modifier = modifier,
-                                text = marker,
-                                color = colorScheme.secondary,
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
                         }
                     }
                 }
