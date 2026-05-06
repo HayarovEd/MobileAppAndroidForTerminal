@@ -1,12 +1,12 @@
 package by.liscode.login
 
 
-import by.liscode.resources.uikit.UiText
+import by.liscode.domain.model.Employee
 
 data class LoginScreenState(
-    val login: String = "",
+    val employees: List<Employee> = emptyList(),
+    val selectedEmployee: Employee? = null,
     val password: String = "",
-    val message: UiText? = null,
     val counter: Int = 0,
     val isLoading: Boolean = false,
     val baseUrl: String = "",

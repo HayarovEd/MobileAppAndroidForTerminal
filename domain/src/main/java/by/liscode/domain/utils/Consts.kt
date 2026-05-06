@@ -19,6 +19,10 @@ const val TERMINAL_ORDERS = "terminal/orders"
 const val ACCEPT_IN_PRODUCTION = "accept-into-production"
 const val FORM_AFTER_PRODUCTION = "form-after-production"
 const val ACCEPT_INTO_STOCK = "accept-into-stock"
+const val CLIENT_EMPLOYEES = "client/employees"
+
+
+
 
 const val TERMINAL_INVENTORY = "terminal/inventory"
 const val PREFERENCES = "preferences"

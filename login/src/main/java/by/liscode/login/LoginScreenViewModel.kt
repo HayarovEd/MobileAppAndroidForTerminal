@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.AuthorizeRepository
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
-import by.liscode.resources.uikit.asUiText
 import by.liscode.domain.utils.ResultWork
-import kotlinx.coroutines.flow.MutableSharedFlow
+import by.liscode.resources.uikit.asUiText
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,8 +36,8 @@ class LoginScreenViewModel(
             initialValue = LoginScreenState()
         )
 
-    private val _eventFlow = MutableSharedFlow<UiLoginEvents>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    private val _eventFlow = Channel<UiLoginEvents>()
+    val eventFlow = _eventFlow.receiveAsFlow()
 
     fun onAction(action: LoginScreenAction) {
         when (action) {
@@ -49,9 +49,9 @@ class LoginScreenViewModel(
                 updateConter()
             }
 
-            is LoginScreenAction.UpdateLogin -> {
+            is LoginScreenAction.UpdateSelectedEmployee -> {
                 _state.value.copy(
-                    login = action.login
+                    selectedEmployee = action.employee
                 )
                     .updateState()
             }
@@ -77,7 +77,7 @@ class LoginScreenViewModel(
             )
                 .updateState()
             viewModelScope.launch {
-                _eventFlow.emit(UiLoginEvents.RegisterNavigateEvent)
+                _eventFlow.send(UiLoginEvents.RegisterNavigateEvent)
             }
         }
     }
@@ -99,28 +99,28 @@ class LoginScreenViewModel(
                 isLoading = true
             )
                 .updateState()
-            when (val result = authorizeRepository.authorization(
-                login = state.value.login,
-                password = state.value.password,
-                baseUrl = state.value.baseUrl
-            )) {
-                is ResultWork.Error -> {
-                    _state.value.copy(
-                        isLoading = false,
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
-                }
+            /* when (val result = authorizeRepository.authorization(
+                 login = state.value.login,
+                 password = state.value.password,
+                 baseUrl = state.value.baseUrl
+             )) {
+                 is ResultWork.Error -> {
+                     _state.value.copy(
+                         isLoading = false,
+                         message = result.error.asUiText()
+                     )
+                         .updateState()
+                 }
 
-                is ResultWork.Success -> {
-                    dataStoreRepository.saveBearer(result.data.token)
-                    _state.value.copy(
-                        isLoading = false
-                    )
-                        .updateState()
-                    _eventFlow.emit(UiLoginEvents.FundNavigateEvent)
-                }
-            }
+                 is ResultWork.Success -> {
+                     dataStoreRepository.saveBearer(result.data.token)
+                     _state.value.copy(
+                         isLoading = false
+                     )
+                         .updateState()
+                     _eventFlow.emit(UiLoginEvents.FundNavigateEvent)
+                 }
+             }*/
         }
     }
 
@@ -145,6 +145,7 @@ class LoginScreenViewModel(
                                 typeTerminalBearer = TypeTerminalBearer.OK
                             )
                                 .updateState()
+                            getEmployees(collector)
                         }
                     } ?: {
                         viewModelScope.launch {
@@ -154,6 +155,35 @@ class LoginScreenViewModel(
                                 .updateState()
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun getEmployees(token: String) {
+        viewModelScope.launch {
+            _state.value.copy(
+                isLoading = true
+            )
+                .updateState()
+            when (val result = authorizeRepository.getEmployees(
+                token = token,
+                baseUrl = state.value.baseUrl
+            )) {
+                is ResultWork.Error -> {
+                    _state.value.copy(
+                        isLoading = false,
+                    )
+                        .updateState()
+                    _eventFlow.send(UiLoginEvents.OnMessage(result.error.asUiText()))
+                }
+
+                is ResultWork.Success -> {
+                    _state.value.copy(
+                        isLoading = false,
+                        employees = result.data
+                    )
+                        .updateState()
                 }
             }
         }

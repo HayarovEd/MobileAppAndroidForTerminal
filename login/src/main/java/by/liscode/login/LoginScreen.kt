@@ -5,30 +5,44 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
-import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.ObserveAsEvents
 import by.liscode.resources.uikit.UiButton
 import by.liscode.resources.uikit.UiTextField
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -38,17 +52,30 @@ fun LoginScreenRoot(
     onNavigateToRegisterScreen: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                UiLoginEvents.FundNavigateEvent -> onNavigateToFundScreen()
-                UiLoginEvents.RegisterNavigateEvent -> onNavigateToRegisterScreen()
-            }
+    val snakeBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    var isShowDropDownMenu by retain { mutableStateOf(false) }
+
+
+    ObserveAsEvents(viewModel.eventFlow) { event ->
+        when (event) {
+            UiLoginEvents.FundNavigateEvent -> onNavigateToFundScreen()
+            UiLoginEvents.RegisterNavigateEvent -> onNavigateToRegisterScreen()
+            is UiLoginEvents.OnMessage -> snakeBarHostState.showSnackbar(
+                event.message.asString(
+                    context
+                )
+            )
         }
     }
     LoginScreenScreen(
         state = state,
-        onAction = viewModel::onAction
+        snakeBarHostState = snakeBarHostState,
+        isShowDropDownMenu = isShowDropDownMenu,
+        onAction = viewModel::onAction,
+        updateIsShowDropDownMenu = {
+            isShowDropDownMenu = it
+        }
     )
 }
 
@@ -56,10 +83,13 @@ fun LoginScreenRoot(
 private fun LoginScreenScreen(
     modifier: Modifier = Modifier,
     state: LoginScreenState,
+    isShowDropDownMenu: Boolean,
+    snakeBarHostState: SnackbarHostState,
     onAction: (LoginScreenAction) -> Unit,
+    updateIsShowDropDownMenu: (Boolean) -> Unit,
 ) {
-    UiBaseScaffold(
-        message = state.message
+    Scaffold(
+        snackbarHost = { SnackbarHost(snakeBarHostState) },
     ) { paddingValues ->
         Column(
             modifier = modifier
@@ -78,22 +108,61 @@ private fun LoginScreenScreen(
                 contentDescription = ""
             )
             Spacer(modifier = Modifier.height(25.dp))
-            Text(
-                modifier = modifier.align(Alignment.Start),
-                text = stringResource(id = R.string.login),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(modifier = modifier.height(5.dp))
-            UiTextField(
-                content = state.login,
-                enabled = !state.isLoading,
-                imeAction = ImeAction.Next,
-                singleLine = true,
-                onClickContent = { onAction(LoginScreenAction.UpdateLogin(it)) },
-                placeholder = stringResource(id = R.string.enter_login)
-            )
-            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Text(
+                    text = stringResource(id = R.string.login),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Row(
+                    modifier = Modifier
+                        .clickable {
+                            updateIsShowDropDownMenu(true)
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        modifier = modifier.fillMaxWidth(0.4f),
+                        text = state.selectedEmployee?.name?:"",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.arrow_drop_down_24dp),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    DropdownMenu(
+                        expanded = isShowDropDownMenu,
+                        onDismissRequest = {
+                            updateIsShowDropDownMenu(false)
+                        }
+                    ) {
+                        state.employees.forEach {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = it.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                onClick = {
+                                    updateIsShowDropDownMenu(false)
+                                    onAction(LoginScreenAction.UpdateSelectedEmployee(it))
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(25.dp))
             Text(
                 modifier = modifier.align(Alignment.Start),
                 text = stringResource(id = R.string.password),
@@ -115,7 +184,7 @@ private fun LoginScreenScreen(
             } else {
                 UiButton(
                     title = stringResource(id = R.string.enter),
-                    enabled = state.login.isNotEmpty() && state.password.isNotEmpty() && state.typeTerminalBearer == TypeTerminalBearer.OK,
+                    enabled = state.selectedEmployee != null && state.password.isNotEmpty() && state.typeTerminalBearer == TypeTerminalBearer.OK,
                     onClick = {
                         if (!state.isLoading) {
                             onAction(
@@ -151,9 +220,13 @@ private fun LoginScreenScreen(
 @Composable
 private fun Preview() {
     MobileAppAndroidForTerminalTheme {
+        val snakeBarHostState = remember { SnackbarHostState() }
         LoginScreenScreen(
             state = LoginScreenState(),
-            onAction = {}
+            isShowDropDownMenu = false,
+            snakeBarHostState = snakeBarHostState,
+            onAction = {},
+            updateIsShowDropDownMenu = {}
         )
     }
 }
@@ -162,13 +235,16 @@ private fun Preview() {
 @Composable
 private fun Preview2() {
     MobileAppAndroidForTerminalTheme {
+        val snakeBarHostState = remember { SnackbarHostState() }
         LoginScreenScreen(
             state = LoginScreenState(
-                login = "gggh",
                 typeTerminalBearer = TypeTerminalBearer.EXPIRED,
                 password = "123456"
             ),
-            onAction = {}
+            isShowDropDownMenu = false,
+            snakeBarHostState = snakeBarHostState,
+            onAction = {},
+            updateIsShowDropDownMenu = {}
         )
     }
 }
@@ -177,14 +253,17 @@ private fun Preview2() {
 @Composable
 private fun Preview3() {
     MobileAppAndroidForTerminalTheme {
+        val snakeBarHostState = remember { SnackbarHostState() }
         LoginScreenScreen(
             state = LoginScreenState(
-                login = "gggh",
                 password = "123456",
                 isLoading = true,
                 typeTerminalBearer = TypeTerminalBearer.EMPTY,
             ),
-            onAction = {}
+            isShowDropDownMenu = true,
+            snakeBarHostState = snakeBarHostState,
+            onAction = {},
+            updateIsShowDropDownMenu = {}
         )
     }
 }
