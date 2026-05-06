@@ -11,6 +11,7 @@ data class LoginScreenState(
     val isLoading: Boolean = false,
     val baseUrl: String = "",
     val typeTerminalBearer: TypeTerminalBearer = TypeTerminalBearer.OK,
+    val terminalBearer: String? = null,
 )
 
 enum class TypeTerminalBearer {

@@ -1,6 +1,9 @@
 package by.liscode.domain.utils
 
 sealed interface DataError : RootError {
+
+    class CustomError(val message: String): DataError
+
     enum class Network: DataError {
         NO_INTERNET,
         UNAUTHORIZED,

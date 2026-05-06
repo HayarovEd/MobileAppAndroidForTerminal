@@ -95,32 +95,37 @@ class LoginScreenViewModel(
 
     private fun onLogin() {
         viewModelScope.launch {
-            _state.value.copy(
-                isLoading = true
-            )
-                .updateState()
-            /* when (val result = authorizeRepository.authorization(
-                 login = state.value.login,
-                 password = state.value.password,
-                 baseUrl = state.value.baseUrl
-             )) {
-                 is ResultWork.Error -> {
-                     _state.value.copy(
-                         isLoading = false,
-                         message = result.error.asUiText()
-                     )
-                         .updateState()
-                 }
+            _state.value.selectedEmployee?.let {
+                _state.value.terminalBearer?.let { br->
+                    _state.value.copy(
+                        isLoading = true
+                    )
+                        .updateState()
+                    when (val result = authorizeRepository.authorizationEmployee(
+                        token = br,
+                        pin = state.value.password,
+                        employeeId = it.id,
+                        baseUrl = state.value.baseUrl
+                    )) {
+                        is ResultWork.Error -> {
+                            _state.value.copy(
+                                isLoading = false,
+                            )
+                                .updateState()
+                            _eventFlow.send(UiLoginEvents.OnMessage(result.error.asUiText()))
+                        }
 
-                 is ResultWork.Success -> {
-                     dataStoreRepository.saveBearer(result.data.token)
-                     _state.value.copy(
-                         isLoading = false
-                     )
-                         .updateState()
-                     _eventFlow.emit(UiLoginEvents.FundNavigateEvent)
-                 }
-             }*/
+                        is ResultWork.Success -> {
+                            dataStoreRepository.saveBearer(result.data.token)
+                            _state.value.copy(
+                                isLoading = false
+                            )
+                                .updateState()
+                            _eventFlow.send(UiLoginEvents.FundNavigateEvent)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -142,7 +147,8 @@ class LoginScreenViewModel(
                                 .updateState()
                         } else {
                             _state.value.copy(
-                                typeTerminalBearer = TypeTerminalBearer.OK
+                                typeTerminalBearer = TypeTerminalBearer.OK,
+                                terminalBearer = collector
                             )
                                 .updateState()
                             getEmployees(collector)

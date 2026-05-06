@@ -128,7 +128,7 @@ private fun LoginScreenScreen(
                 ) {
                     Text(
                         modifier = modifier.fillMaxWidth(0.4f),
-                        text = state.selectedEmployee?.name?:"",
+                        text = state.selectedEmployee?.name ?: "",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -182,7 +182,7 @@ private fun LoginScreenScreen(
             } else {
                 UiButton(
                     title = stringResource(id = R.string.enter),
-                    enabled = state.selectedEmployee != null && state.password.isNotEmpty() && state.typeTerminalBearer == TypeTerminalBearer.OK,
+                    enabled = state.selectedEmployee != null && state.password.length == 4 && state.typeTerminalBearer == TypeTerminalBearer.OK,
                     onClick = {
                         if (!state.isLoading) {
                             onAction(

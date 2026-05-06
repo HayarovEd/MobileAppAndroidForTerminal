@@ -103,6 +103,7 @@ fun DataError.asUiText(): UiText {
         DataError.Network.SERVICE_UNAVAILABLE -> StringResource(
             R.string.no_connect_server
         )
+        is DataError.CustomError -> UiText.DynamicString(message)
     }
 }
 

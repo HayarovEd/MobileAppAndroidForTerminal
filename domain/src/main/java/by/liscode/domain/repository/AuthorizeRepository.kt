@@ -15,4 +15,10 @@ interface AuthorizeRepository {
 
     suspend fun getProfile(baseUrl: String, token: String): ResultWork<List<Client>, DataError>
     suspend fun getEmployees(baseUrl: String, token: String): ResultWork<List<Employee>, DataError>
+    suspend fun authorizationEmployee(
+        employeeId: Int,
+        token: String,
+        pin: String,
+        baseUrl: String
+    ): ResultWork<Auth, DataError>
 }
