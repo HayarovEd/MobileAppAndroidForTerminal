@@ -1,16 +1,16 @@
 [versions]
 agp = "8.13.2"
-kotlin = "2.3.20"
+kotlin = "2.3.21"
 coreKtx = "1.18.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
-composeBom = "2026.03.01"
+composeBom = "2026.04.01"
 
-ktorVersion = "3.4.2"
-navigationCompose = "2.9.7"
+ktorVersion = "3.4.3"
+navigationCompose = "2.9.8"
 koinVersion = "4.2.1"
 coil-compose = "2.7.0"
 roomVersion = "2.8.4"
@@ -27,7 +27,6 @@ jvmTarget = "17"
 kotlinCompilerExtensionVersion = "1.5.10"
 appcompat = "1.7.1"
 material = "1.13.0"
-kotlinxDatetime = "0.7.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,11 +55,9 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinVersion" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }

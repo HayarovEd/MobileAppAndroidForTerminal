@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -26,6 +27,7 @@ class SplashScreenViewModel(
     val state = _state
         .onStart {
             loadData()
+            generateUuid()
         }
         .stateIn(
             scope = viewModelScope,
@@ -45,7 +47,7 @@ class SplashScreenViewModel(
         viewModelScope.launch {
             delay(2000)
             dataStoreRepository.getBearer().collect { userToken ->
-                if (userToken!=null) {
+                if (userToken != null) {
                     val expired = jwtRepository.decodeJwt(userToken)?.expired
                     expired?.let { exp ->
                         if (exp < Clock.System.now().epochSeconds) {
@@ -72,15 +74,24 @@ class SplashScreenViewModel(
                                 .updateState()
                         }
                     }
-                } else  {
-                viewModelScope.launch {
-                    _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
-                     }
+                } else {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
+                    }
                     _state.value.copy(
                         isLoading = false
                     )
                         .updateState()
                 }
+            }
+        }
+    }
+
+    private fun generateUuid() {
+        viewModelScope.launch {
+            if (dataStoreRepository.getStateUuid().isNullOrBlank()) {
+                val uuid = UUID.randomUUID().toString()
+                dataStoreRepository.saveUuid(uuid)
             }
         }
     }
