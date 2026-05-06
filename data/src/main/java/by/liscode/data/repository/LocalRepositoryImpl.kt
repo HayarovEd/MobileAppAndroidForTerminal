@@ -7,7 +7,7 @@ import by.liscode.data.local.FilterEntity
 import by.liscode.domain.model.Filter
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.utils.DataError
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

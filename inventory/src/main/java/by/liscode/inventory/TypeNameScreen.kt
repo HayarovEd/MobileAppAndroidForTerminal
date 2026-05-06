@@ -29,7 +29,7 @@ import by.liscode.resources.uikit.UiRowTitleThreeElements
 fun TypeNameScreen(
     modifier: Modifier = Modifier,
     size: Int,
-    markers: List<String>,
+    remoteMarkers: List<String>,
     sortedLinen: Map<Boolean, List<Linen>>,
 
     ) {
@@ -43,9 +43,9 @@ fun TypeNameScreen(
         )
         Spacer(modifier = modifier.height(10.dp))
         UiRowTitleThreeElements(
-            title = "",
+            title = stringResource(R.string.fund),
             firstNumber = size,
-            secondNumber = markers.size,
+            secondNumber = remoteMarkers.size,
         )
         Spacer(modifier = modifier.height(10.dp))
         LazyColumn(
@@ -127,7 +127,7 @@ private fun Preview1() {
 
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
-            markers = markers,
+            remoteMarkers = markers,
             size = linens.size,
             sortedLinen = sortedLinens
         )
@@ -203,7 +203,7 @@ private fun Preview3() {
     }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
-            markers = markers,
+            remoteMarkers = markers,
             size = linens.size,
             sortedLinen = finishSordetLines
         )

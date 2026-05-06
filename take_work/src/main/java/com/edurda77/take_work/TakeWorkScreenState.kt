@@ -11,6 +11,7 @@ data class TakeWorkScreenState(
     val isShowResultDialog: Boolean = false,
     val isShowWarning: Boolean = false,
     val isActiveScanner: Boolean = false,
+    val countUnknownMarkers: Int = 0,
 ) {
     val sortedGroups = remoteLinens.groupBy {
         it.typeLinen

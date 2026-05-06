@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +26,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -131,7 +130,7 @@ fun OrdersScreenScreen(
                     if (userData.userType == UserType.HOTEL && userData.userRole == UserRole.CLIENT_EMPLOYEE)
                         UiIconButton(
                             modifier = modifier,
-                            icon = Icons.Default.Add,
+                            icon = ImageVector.vectorResource(R.drawable.add_24dp),
                             color = colorScheme.onPrimary,
                             onClick = onNavigateToCreateOrderScreen
                         )
@@ -168,7 +167,7 @@ fun OrdersScreenScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = ImageVector.vectorResource(R.drawable.search_24dp),
                         contentDescription = "",
                         tint = colorScheme.onBackground
                     )
@@ -188,6 +187,7 @@ fun OrdersScreenScreen(
                     items(state.resultOrders) { order ->
                         ItemOrder(
                             order = order,
+                            userData = state.userData,
                             onClickOrder = {
                                 onNavigateToOrderScreen(order.id)
                             }

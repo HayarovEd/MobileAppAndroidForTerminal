@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -24,8 +22,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,10 +73,12 @@ fun SearchScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(SearchScreenAction.TakeMarker(
-                        marker = it,
-                        sound = R.raw.beep
-                    ))
+                    onAction(
+                        SearchScreenAction.TakeMarker(
+                            marker = it,
+                            sound = R.raw.beep
+                        )
+                    )
                 },
                 updateIsActive = {
                     onAction(SearchScreenAction.UpdateActivityScanner(it))
@@ -85,7 +87,7 @@ fun SearchScreenRoot(
         },
         back = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
     SearchScreenScreen(
@@ -94,7 +96,7 @@ fun SearchScreenRoot(
         onAction = viewModel::onAction,
         onBackNavigate = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
 }
@@ -130,7 +132,7 @@ fun SearchScreenScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                 )
                                 UiIconButton(
-                                    icon = Icons.Default.MoreVert,
+                                    icon = ImageVector.vectorResource(R.drawable.more_vert_24dp),
                                     color = colorScheme.onPrimary,
                                     onClick = {
                                         onAction(SearchScreenAction.UpdateSearchState(SearchState.FILTERING))
@@ -141,6 +143,7 @@ fun SearchScreenScreen(
                         onBack = onBackNavigate
                     )
                 }
+
                 SearchState.FILTERING -> {
                     FundAppBar(
                         title = stringResource(R.string.filter),
@@ -184,7 +187,7 @@ fun SearchScreenScreen(
                         ) {
                             Text(
                                 modifier = modifier,
-                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
+                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size - state.remoteLinens.size - state.countUnknownMarkers}",
                                 color = colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyMedium,
                             )
@@ -196,7 +199,7 @@ fun SearchScreenScreen(
                             )
                         }
                         Spacer(modifier = modifier.height(10.dp))
-                        when(state.groupLinen) {
+                        when (state.groupLinen) {
                             GroupLinen.NAME -> {
                                 TypeNameScreen(
                                     groupedLinen = state.groupedLinenByClientId,
@@ -204,6 +207,7 @@ fun SearchScreenScreen(
                                     clients = state.clients
                                 )
                             }
+
                             GroupLinen.TYPE_LINEN -> {
                                 TypeLinenScreen(
                                     groupedLinen = state.groupedLinenByClientIdAndTypeLinen,
@@ -213,15 +217,22 @@ fun SearchScreenScreen(
                             }
                         }
                     }
+
                     SearchState.FILTERING -> {
                         FilteringScreen(
                             filterRfid = state.filterRfid,
                             filterByType = state.filterByType,
+                            typesLinen = state.typesLinen,
+                            userData = state.userData,
+                            currentTypeLinen = state.currentType,
                             updateFilter = {
                                 onAction(SearchScreenAction.UpdateFilter(it))
                             },
                             updateFilterRfid = {
                                 onAction(SearchScreenAction.UpdateFilterRfid(it))
+                            },
+                            updateCurrentType = {
+                                onAction(SearchScreenAction.UpdateCurrentType(it))
                             }
                         )
                     }

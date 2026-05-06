@@ -16,7 +16,7 @@ import by.liscode.domain.utils.DataError.Network.UNKNOWN
 import by.liscode.domain.utils.DataError.PasswordError.PASSWORD_BLANK
 import by.liscode.domain.utils.DataError.SerializationError.FORMAT_ERROR
 import by.liscode.domain.utils.InfoMessage
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 
 fun DataError.asUiText(): UiText {
     return when (this) {
@@ -89,6 +89,20 @@ fun DataError.asUiText(): UiText {
                 R.string.request_timeout
             )
         }
+
+        DataError.Network.NO_CONNECT_SERVER -> StringResource(
+            R.string.no_connect_server
+        )
+
+        DataError.Network.FORBIDDEN -> StringResource(
+            R.string.no_access_to_host
+        )
+        DataError.Network.TOO_MANY_REQUESTS -> StringResource(
+            R.string.to_many_requests
+        )
+        DataError.Network.SERVICE_UNAVAILABLE -> StringResource(
+            R.string.no_connect_server
+        )
     }
 }
 

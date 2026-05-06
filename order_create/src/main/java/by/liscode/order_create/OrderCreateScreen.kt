@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -44,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
@@ -51,6 +51,8 @@ import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
+import by.liscode.resources.uikit.FundAppBar
+import by.liscode.resources.uikit.ItemLinen
 import by.liscode.resources.uikit.NotApproveDialogContent
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
@@ -68,7 +70,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OrderCreateScreenRoot(
-    viewModel: OrderCreateScreenViewModel = koinViewModel (),
+    viewModel: OrderCreateScreenViewModel = koinViewModel(),
     onNavigateToLoginScreen: () -> Unit,
     onBackNavigate: () -> Unit,
 ) {
@@ -102,16 +104,18 @@ fun OrderCreateScreenRoot(
                     onAction(OrderCreateScreenAction.UpdateActivityScanner(it))
                 },
                 block = {
-                    onAction(OrderCreateScreenAction.TakeMarker(
-                        marker = it,
-                        sound = R.raw.beep
-                    ))
+                    onAction(
+                        OrderCreateScreenAction.TakeMarker(
+                            marker = it,
+                            sound = R.raw.beep
+                        )
+                    )
                 }
             )
         },
         back = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
     OrderCreateScreenScreen(
@@ -128,7 +132,7 @@ fun OrderCreateScreenRoot(
         },
         onBack = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
 }
@@ -152,18 +156,21 @@ fun OrderCreateScreenScreen(
                 onAction(OrderCreateScreenAction.CloseSuccessDialog)
             },
             title = {
-                Text(
-                    text = stringResource(R.string.order_success_created),
-                    color = colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+                state.order?.let {
+                    Text(
+                        text = stringResource(R.string.order_success_created, state.order.id),
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
             },
             confirmButton = {
                 Button(onClick = {
                     onAction(OrderCreateScreenAction.CloseSuccessDialog)
+                    onBack()
                 }) {
                     Text(
-                        text = stringResource(R.string.ok),
+                        text = stringResource(R.string.is_known),
                         color = colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -228,30 +235,26 @@ fun OrderCreateScreenScreen(
     UiBaseScaffold(
         message = baseState.message,
         topBarContent = {
-            Row(
-                modifier = modifier
-                    .statusBarsPadding()
-                    .fillMaxWidth()
-                    .background(colorScheme.primary)
-                    .padding(15.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = modifier,
-                    text = stringResource(R.string.new_order),
-                    color = colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Spacer(modifier = modifier.weight(1f))
-                Text(
-                    modifier = modifier.clickable(
-                        onClick = onBack
-                    ),
-                    text = stringResource(R.string.back),
-                    color = colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
+            FundAppBar(
+                title = stringResource(R.string.new_order),
+                endContent = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = modifier.clickable(
+                                onClick = {
+                                    onAction(OrderCreateScreenAction.UpdateGrouping)
+                                }
+                            ),
+                            text = stringResource(R.string.kind_upper_case),
+                            color = colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                },
+                onBack = onBack
+            )
         },
         bottomBarContent = {
             Row(
@@ -352,12 +355,12 @@ fun OrderCreateScreenScreen(
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.contact)}:",
-                        value = laundry.contactPersonFullname?:"",
+                        value = laundry.contactPersonFullname ?: "",
                     )
                     Spacer(modifier = modifier.height(10.dp))
                     UiRowTwoText(
                         title = "${stringResource(R.string.phone)}:",
-                        value = laundry.contactPersonPhone?:"",
+                        value = laundry.contactPersonPhone ?: "",
                     )
                 }
                 DividerSpacer()
@@ -375,13 +378,15 @@ fun OrderCreateScreenScreen(
                         textAlign = TextAlign.Center
                     )
                 } else {
-                    UiClickableRow(
-                        title = stringResource(R.string.not_for_order),
-                        value = (state.notApprovedLinens.size + state.unknownMarkers.size).toString(),
-                        onClick = {
-                            updateVisibilityNotApproveDialog(true)
-                        }
-                    )
+                    if ((state.notApprovedLinens.size + state.unknownMarkers.size) != 0) {
+                        UiClickableRow(
+                            title = stringResource(R.string.not_for_order),
+                            value = (state.notApprovedLinens.size + state.unknownMarkers.size).toString(),
+                            onClick = {
+                                updateVisibilityNotApproveDialog(true)
+                            }
+                        )
+                    }
                     DividerSpacer()
                     UiRowTitleTwoElements(
                         title = stringResource(R.string.fund),
@@ -392,12 +397,25 @@ fun OrderCreateScreenScreen(
                         modifier = modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        items(state.gropedApprovedLinensByTipe.keys.toList()) { typeLinen ->
-                            UiRowTwoElements(
-                                title = typeLinen,
-                                firstNumber = state.gropedApprovedLinensByTipe[typeLinen]?.size?:0,
-                                fontColor = colorScheme.primary
-                            )
+                        when (state.groupLinen) {
+                            GroupLinen.NAME -> {
+                                items(state.approvedLinens) { linen ->
+                                    ItemLinen(
+                                        linen = linen
+                                    )
+                                }
+                            }
+
+                            GroupLinen.TYPE_LINEN -> {
+                                items(state.gropedApprovedLinensByType.keys.toList()) { typeLinen ->
+                                    UiRowTwoElements(
+                                        title = typeLinen,
+                                        firstNumber = state.gropedApprovedLinensByType[typeLinen]?.size
+                                            ?: 0,
+                                        fontColor = colorScheme.primary
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -469,7 +487,7 @@ private fun Preview2() {
             entityType = "individual",
             inn = "",
             kpp = "",
-            legalAddress =  "Москва",
+            legalAddress = "Москва",
             ogrnip = "",
             site = ""
         )
@@ -512,7 +530,7 @@ private fun Preview3() {
             entityType = "individual",
             inn = "",
             kpp = "",
-            legalAddress =  "Москва",
+            legalAddress = "Москва",
             ogrnip = "",
             site = ""
         )
@@ -570,6 +588,98 @@ private fun Preview3() {
                 laundries = laundries,
                 remoteLinens = linens,
                 markers = markers
+            ),
+            baseState = BaseState(),
+            visibleLaundryMenu = false,
+            visibleNotApproveDialog = false,
+            onAction = {},
+            onBack = {},
+            updateVisibilityLaundryMenu = {},
+            updateVisibilityNotApproveDialog = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true
+)
+@Composable
+private fun Preview4() {
+    val laundries = (1..5).map {
+        Client(
+            id = it,
+            name = "ООО Ромашка N$it",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "laundry",
+            contactPersonFullname = "Dima",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress = "Москва",
+            ogrnip = "",
+            site = ""
+        )
+    }
+    val typeLinen1 = TypeLinen(
+        id = 1,
+        name = "Пододеяльник",
+        size = "200x220",
+        fabric = "сатин страйп 3х3",
+        composition = "",
+        color = "белый",
+        density = "",
+        sku = "100% хлопок",
+        maxWash = 10,
+    )
+    val typeLinen2 = TypeLinen(
+        id = 2,
+        name = "Полотенце",
+        size = "50x80",
+        fabric = "сатин страйп 3х3",
+        composition = "",
+        color = "белый",
+        density = "",
+        sku = "100% хлопок",
+        maxWash = 10,
+    )
+    val markers = (1..70).map { "Marker N$it" }
+    val linens = (1..50).map {
+        Linen(
+            id = it,
+            clientId = 0,
+            rfid = "Marker N$it",
+            typeId = it + 3,
+            typeLinen = if (it % 2 == 0) typeLinen1 else typeLinen2,
+            discount = "",
+            weight = 135,
+            state = StateLinen.entries.random(),
+            washCount = 9,
+            status = StatusLinen.IN_STOCK,
+            price = "",
+            counterpartyId = 1,
+            counterparty = Counterparty(
+                id = it,
+                name = "name $it",
+                address = "Russia, Moscow, Baumana, $it",
+                inn = "333-333-333-0$it",
+                phone = "+7(555)55-55-222"
+            )
+        )
+    }
+    MobileAppAndroidForTerminalTheme {
+        OrderCreateScreenScreen(
+            state = OrderCreateScreenState(
+                currentLaundry = laundries.first(),
+                laundries = laundries,
+                remoteLinens = linens,
+                markers = markers,
+                groupLinen = GroupLinen.TYPE_LINEN
             ),
             baseState = BaseState(),
             visibleLaundryMenu = false,

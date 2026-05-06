@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,7 +61,7 @@ fun RegistrationScreenScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 UiIconButton(
-                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                    icon = ImageVector.vectorResource(R.drawable.arrow_back_24dp),
                     onClick = onNavigateToLogin,
                     color = MaterialTheme.colorScheme.onPrimary
                 )

@@ -14,7 +14,10 @@ data class WriteOffScreenState(
     val isActiveScanner: Boolean = false,
     val reasons: List<ReasonWriteOff> = ReasonWriteOff.entries,
     val isShowSuccessDialog: Boolean = false,
-)
+) {
+    val markersApprovedForWriteOff = markers.filter { marker -> marker in remoteLinens.map { it.rfid } }
+    val markersNotApprovedForWriteOff = markers.filter { marker -> marker !in remoteLinens.map { it.rfid } }
+}
 
 sealed class UiWriteOffEvents {
     data object LoginNavigationEvent : UiWriteOffEvents()

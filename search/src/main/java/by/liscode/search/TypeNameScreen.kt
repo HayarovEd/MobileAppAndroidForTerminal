@@ -25,8 +25,8 @@ import by.liscode.resources.uikit.UiRowTitleTwoElements
 @Composable
 fun TypeNameScreen(
     modifier: Modifier = Modifier,
-    outMarkers: List<String>,
     clients: List<Client>,
+    outMarkers: List<String>,
     groupedLinen:  Map<Int, List<Linen>>,
     ) {
     LazyColumn(
@@ -118,8 +118,6 @@ private fun Preview1() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
 
     val clients = (0..4).map {
         Client(
@@ -141,11 +139,13 @@ private fun Preview1() {
             site = ""
         )
     }
+    val markers = (1..70).map { "Marker N$it" }
+    val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
             groupedLinen = linens.groupBy {it.clientId  },
-            outMarkers = outMarkers,
-            clients = clients
+            clients = clients,
+            outMarkers = outMarkers
         )
     }
 }
@@ -220,13 +220,13 @@ private fun Preview2() {
             site = ""
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
+    val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
             groupedLinen = linens.filter { it.clientId == clientId }.groupBy {it.clientId  },
-            outMarkers = outMarkers,
-            clients = clients
+            clients = clients,
+            outMarkers = outMarkers
         )
     }
 }
@@ -280,8 +280,6 @@ private fun Preview3() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -305,8 +303,8 @@ private fun Preview3() {
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
             groupedLinen = linens.filter { it.rfid == "Marker N5" }.groupBy {it.clientId  },
-            outMarkers = outMarkers,
-            clients = clients
+            clients = clients,
+            outMarkers = emptyList()
         )
     }
 }

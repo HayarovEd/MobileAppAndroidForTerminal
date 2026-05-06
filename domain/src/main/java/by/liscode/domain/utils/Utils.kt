@@ -122,7 +122,7 @@ fun Linen.printFormat(): String {
 
 fun formateUiDateTime(dateTime: Date): String {
     //return "${dateTime.time.hour}.${dateTime.time.minute}\n${dateTime.date.day}.${dateTime.date.month.number}.${dateTime.date.year}"
-    val format = SimpleDateFormat("HH:MM\ndd.MM.yyyy", Locale.getDefault())
+    val format = SimpleDateFormat("HH:mm\ndd.MM.yyyy", Locale.getDefault())
     return format.format(dateTime)
 }
 

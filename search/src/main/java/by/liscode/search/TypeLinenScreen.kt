@@ -112,8 +112,6 @@ private fun Preview1() {
             )
         )
     }
-    val markers = (1..70).map { "Marker N$it" }
-    val outMarkers = markers - linens.map { it.rfid }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -134,14 +132,16 @@ private fun Preview1() {
             site = ""
         )
     }
+    val markers = (1..70).map { "Marker N$it" }
+    val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
             groupedLinen = linens.groupBy { it.clientId }
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers,
-            clients = clients
+            clients = clients,
+            outMarkers = outMarkers
         )
     }
 }
@@ -197,7 +197,6 @@ private fun Preview2() {
             )
         )
     }
-    val markers = (1..70).map { "Marker N$it" }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -218,6 +217,7 @@ private fun Preview2() {
             site = ""
         )
     }
+    val markers = (1..70).map { "Marker N$it" }
     val outMarkers = markers - linens.map { it.rfid }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
@@ -226,8 +226,8 @@ private fun Preview2() {
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers,
-            clients = clients
+            clients = clients,
+            outMarkers = outMarkers
         )
     }
 }
@@ -282,8 +282,6 @@ private fun Preview3() {
             )
         )
     }
-    val markers = (1..70).map { "Marker N$it" }
-    val outMarkers = markers - linens.map { it.rfid }
     val clients = (0..4).map {
         Client(
             id = it,
@@ -311,8 +309,8 @@ private fun Preview3() {
                 .mapValues { (_, linens) ->
                     linens.groupBy { it.typeLinen }
                 },
-            outMarkers = outMarkers,
-            clients = clients
+            clients = clients,
+            outMarkers = emptyList()
         )
     }
 }

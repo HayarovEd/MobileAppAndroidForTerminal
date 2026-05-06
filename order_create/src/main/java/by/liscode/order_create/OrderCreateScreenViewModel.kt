@@ -1,6 +1,7 @@
 package by.liscode.order_create
 
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
@@ -10,7 +11,7 @@ import by.liscode.domain.utils.InfoMessage
 import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -139,6 +140,16 @@ class OrderCreateScreenViewModel(
                 )
                     .updateState()
             }
+
+            OrderCreateScreenAction.UpdateGrouping -> {
+                _state.value.copy(
+                    groupLinen = when (state.value.groupLinen) {
+                        GroupLinen.NAME -> GroupLinen.TYPE_LINEN
+                        GroupLinen.TYPE_LINEN -> GroupLinen.NAME
+                    }
+                )
+                    .updateState()
+            }
         }
     }
 
@@ -182,7 +193,7 @@ class OrderCreateScreenViewModel(
                 baseUrl = url, token = accessToken, rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                   updateMessage(result.error.asUiText(),)
+                  // updateMessage(result.error.asUiText(),)
                 }
 
                 is ResultWork.Success -> {
@@ -271,6 +282,7 @@ class OrderCreateScreenViewModel(
                         _state.value.copy(
                             isLoading = false,
                             isShowSuccessDialog = true,
+                            order = result.data
                         )
                             .updateState()
                     }

@@ -240,7 +240,7 @@ private fun TakeWorkScreenScreen(
                 )
             } else {
                 UiRowTwoText(
-                    title = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
+                    title = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size - state.countUnknownMarkers}",
                     value = "${stringResource(R.string.scanned)}: ${state.markers.size}",
                 )
                 DividerSpacer()

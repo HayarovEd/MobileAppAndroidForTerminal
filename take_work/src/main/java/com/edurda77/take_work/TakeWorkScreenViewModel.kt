@@ -12,7 +12,7 @@ import by.liscode.domain.utils.InfoMessage
 import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -132,11 +132,14 @@ class TakeWorkScreenViewModel(
                 if (action.isActive) {
                     _state.value.copy(
                         markers = emptyList(),
-                        remoteLinens = emptyList()
+                        remoteLinens = emptyList(),
+                        countUnknownMarkers = 0,
                     ).updateState()
                 }
-                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
-                    InfoMessage.RFIDWork.STOPPED.asText())
+                updateMessage(
+                    if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                        InfoMessage.RFIDWork.STOPPED.asText()
+                )
             }
 
             TakeWorkScreenAction.CloseWarning -> {
@@ -151,7 +154,8 @@ class TakeWorkScreenViewModel(
                         sendLinenInUse(
                             accessToken = token,
                             url = url,
-                            rfids = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }.map { it.rfid }
+                            rfids = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }
+                                .map { it.rfid }
                         )
                     },
                     navigate = {
@@ -180,7 +184,10 @@ class TakeWorkScreenViewModel(
                 rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                   updateMessage(result.error.asUiText(),)
+                    //updateMessage(result.error.asUiText())
+                    _state.value.copy(
+                        countUnknownMarkers = state.value.countUnknownMarkers + 1
+                    ).updateState()
                 }
 
                 is ResultWork.Success -> {
@@ -230,7 +237,7 @@ class TakeWorkScreenViewModel(
                     _state.value.copy(
                         isLoading = false
                     ).updateState()
-                    updateMessage(result.error.asUiText(),)
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
