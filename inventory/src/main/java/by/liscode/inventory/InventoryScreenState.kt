@@ -1,28 +1,20 @@
 package by.liscode.inventory
 
-import by.liscode.domain.model.Filter
 import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
-import by.liscode.domain.model.RfidSetting
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.outFormat
-import by.liscode.resources.uikit.UiText
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.sortedBy
 
 data class InventoryScreenState(
-    val settings: RfidSetting? = null,
-    val message: UiText? = null,
     val isLoading: Boolean = false,
     val markers: List<String> = emptyList(),
     val remoteLinens: List<Linen> = emptyList(),
     val filterByType: FilterByType = FilterByType.ALL,
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val isActiveScanner: Boolean = false,
-    val filterMarkers: List<Filter> = emptyList(),
     val inventoryState: InventoryState = InventoryState.CHECKING,
     val currentTypeLinen: TypeLinen? = null,
+    val isShowSuccessDialog: Boolean = false,
 ) {
     val linenTypes = remoteLinens.map { it.typeLinen }.distinct()
     private val sortedLinens = remoteLinens.groupBy {
@@ -40,21 +32,21 @@ data class InventoryScreenState(
             }.filterValues { it.isNotEmpty() }
         }
     }
-    private val sortedGroups = remoteLinens.groupBy {
+    /*private val sortedGroups = remoteLinens.groupBy {
         it.rfid in markers
     }.toSortedMap(compareBy { it })
         .mapValues { (_, linens) ->
             linens
                 .groupBy { it.typeLinen }
-        }
+        }*/
+    private val sortedGroups = remoteLinens.groupBy { it.typeLinen }
+
     val finishFilterGroups = when (filterByType) {
         FilterByType.ALL -> sortedGroups
         FilterByType.FILTER_BY_TYPE_LINEN -> {
-            sortedGroups.mapValues { (_, innerMap) ->
-                innerMap.filter { (key, _) ->
-                    key == currentTypeLinen
-                }
-            }.filterValues { it.isNotEmpty() }
+            sortedGroups.filterKeys { key->
+                key == currentTypeLinen
+            }
         }
     }
 }

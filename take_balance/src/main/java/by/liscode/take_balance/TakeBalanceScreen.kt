@@ -1,6 +1,5 @@
 package by.liscode.take_balance
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -8,6 +7,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +28,7 @@ import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -40,6 +41,7 @@ fun TakeBalanceScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val  onAction = viewModel::onAction
     var visibleAddDialog by remember { mutableStateOf(false) }
     var isOpenTypeLinenMenu by remember { mutableStateOf(false) }
@@ -54,9 +56,8 @@ fun TakeBalanceScreenRoot(
 
     val context = LocalContext.current
     val scanner =  rememberRfid().apply { init(context) }
-    var isActive by remember { mutableStateOf(false) }
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -65,24 +66,34 @@ fun TakeBalanceScreenRoot(
         block = {
             processScan(
                 rfid = scanner,
-                isActive = isActive,
+                isActive = state.isActiveScanner,
                 block = {
-                    Log.d("REST TERMINAL", "scanned marker $it")
-                    onAction(TakeBalanceScreenAction.TakeMarker(marker = it))
+                    onAction(TakeBalanceScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
-                    isActive = it
+                    onAction(TakeBalanceScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
     TakeBalanceScreenScreen(
         state = state,
+        baseState = baseState,
         visibleAddDialog = visibleAddDialog,
         isOpenTypeLinenMenu = isOpenTypeLinenMenu,
         isOpenedStateLinenMenu = isOpenedStateLinenMenu,
         onAction = onAction,
-        onBackNavigate = onBackNavigate,
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate ()
+        },
         updateVisibilityAddDialog = {
             visibleAddDialog = it
         },
@@ -99,6 +110,7 @@ fun TakeBalanceScreenRoot(
 fun TakeBalanceScreenScreen(
     modifier: Modifier = Modifier,
     state: TakeBalanceScreenState,
+    baseState: BaseState,
     visibleAddDialog: Boolean,
     isOpenTypeLinenMenu: Boolean,
     isOpenedStateLinenMenu: Boolean,
@@ -136,6 +148,44 @@ fun TakeBalanceScreenScreen(
         )
     }
 
+    if (state.isShowWarning) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    text = stringResource(R.string.have_markers_in_balance),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(TakeBalanceScreenAction.SendAndCloseWarning)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        onAction(TakeBalanceScreenAction.CloseWarning)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        )
+    }
+
 
     if (visibleAddDialog) {
         Dialog(
@@ -162,7 +212,7 @@ fun TakeBalanceScreenScreen(
         }
     }
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             when (state.stateScreen) {
                 StateScreen.ADD -> {
@@ -277,6 +327,7 @@ private fun Preview1() {
             state = TakeBalanceScreenState(
                 stateScreen = StateScreen.COUNTERPARTY
             ),
+            baseState = BaseState(),
             visibleAddDialog = false,
             isOpenedStateLinenMenu = false,
             isOpenTypeLinenMenu = true,
@@ -301,6 +352,7 @@ private fun Preview2() {
             state = TakeBalanceScreenState(
                 stateScreen = StateScreen.ADD
             ),
+            baseState = BaseState(),
             visibleAddDialog = false,
             isOpenedStateLinenMenu = false,
             isOpenTypeLinenMenu = true,
@@ -325,6 +377,7 @@ private fun Preview3() {
                 stateScreen = StateScreen.ADD,
                 isShowSuccessDialog = true
             ),
+            baseState = BaseState(),
             visibleAddDialog = false,
             isOpenedStateLinenMenu = false,
             isOpenTypeLinenMenu = true,

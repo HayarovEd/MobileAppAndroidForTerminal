@@ -18,13 +18,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,7 +37,6 @@ import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.TypeLinen
 import by.liscode.resources.R
-import by.liscode.resources.model.ScannerWork
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.FundAppBar
@@ -48,9 +45,10 @@ import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiButton
 import by.liscode.resources.uikit.UiRowTwoText
+import by.liscode.resources.uikit.UiText
 import by.liscode.resources.uikit.rememberRfid
 import by.liscode.resources.utils.applySettings
-import by.liscode.resources.utils.processWorkScan
+import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -61,10 +59,11 @@ fun TakeWorkScreenRoot(
     onBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner =  rememberRfid().apply { init(context) }
-    var scannerWork by remember { mutableStateOf(ScannerWork.CLEAR)}
+
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -74,32 +73,38 @@ fun TakeWorkScreenRoot(
         }
     }
 
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
     OnScan(
         block = {
-            processWorkScan(
+            processScan(
                 rfid = scanner,
-                scannerWork = scannerWork,
-                updateScannerWork = {
-                    scannerWork = it
+                isActive = state.isActiveScanner,
+                updateIsActive = {
+                    onAction(TakeWorkScreenAction.UpdateActivityScanner(it))
                 },
-                blockScan = {
-                    onAction(TakeWorkScreenAction.TakeMarker(it))
-                },
-                blockClear = {
-                    onAction(TakeWorkScreenAction.ClearMarkers)
+                block = {
+                    onAction(TakeWorkScreenAction.TakeMarker(marker = it, sound = R.raw.beep))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBack ()
         }
     )
     TakeWorkScreenScreen(
         state = state,
+        message = baseState.message,
         onAction = onAction,
-        onBack = onBack
+        onBack = {
+            scanner.free()
+            onBack ()
+        }
     )
 }
 
@@ -109,6 +114,7 @@ fun TakeWorkScreenRoot(
 private fun TakeWorkScreenScreen(
     modifier: Modifier = Modifier,
     state: TakeWorkScreenState,
+    message: UiText?,
     onAction: (TakeWorkScreenAction) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -124,7 +130,7 @@ private fun TakeWorkScreenScreen(
                         }
                     ),
                     text = stringResource(R.string.objects_success_in_use),
-                    color = colorScheme.onPrimary,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyLarge,
                 )
             },
@@ -142,8 +148,46 @@ private fun TakeWorkScreenScreen(
     }
 
 
+    if (state.isShowWarning) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(
+                    text = stringResource(R.string.have_markers_not_in_stock),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(TakeWorkScreenAction.SendAndCloseWarning)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = {
+                        onAction(TakeWorkScreenAction.CloseWarning)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        )
+    }
+
     UiBaseScaffold(
-        message = state.message,
+        message = message,
         topBarContent = {
             FundAppBar(
                 title = stringResource(R.string.take_work),
@@ -209,9 +253,7 @@ private fun TakeWorkScreenScreen(
                         ) {
                             items(
                                 items = state.remoteLinens,
-                                key = {
-                                    it.id
-                                }) { linen ->
+                                ) { linen ->
                                 ItemLinen(
                                     linen = linen
                                 )
@@ -248,7 +290,6 @@ private fun Preview() {
                 density = "100%",
                 sku = "хлопок",
                 maxWash = 10,
-                clientId = 1
             ),
             discount = "dsk",
             weight = 135,
@@ -272,6 +313,7 @@ private fun Preview() {
                 markers = (1..25).map { "$it"},
                 remoteLinens = linens
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )
@@ -289,6 +331,7 @@ private fun Preview2() {
                 ),
                 isLoading = true
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )
@@ -308,7 +351,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -320,7 +362,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val linens = (1..50).map {
         Linen(
@@ -354,6 +395,7 @@ private fun Preview3() {
                 remoteLinens = linens,
                 groupLinen = GroupLinen.TYPE_LINEN
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )
@@ -368,6 +410,7 @@ private fun Preview4() {
             state = TakeWorkScreenState(
                 isShowResultDialog = true
             ),
+            message = null,
             onAction = {},
             onBack = {}
         )

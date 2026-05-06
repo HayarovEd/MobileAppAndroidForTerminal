@@ -7,9 +7,13 @@ sealed interface WriteOffScreenAction {
     data object UpdateVisibilityInfo:WriteOffScreenAction
     data object CloseVisibilityDialog:WriteOffScreenAction
     data object RemoveAndCloseVisibilityDialog:WriteOffScreenAction
+    data object CloseSuccessDialog:WriteOffScreenAction
     class UpdateReasonWriteOff(val reasonWriteOff: ReasonWriteOff): WriteOffScreenAction
     class UpdateActWriteOff(val act: String): WriteOffScreenAction
-    class TakeMarker(val marker:String):WriteOffScreenAction
+    class TakeMarker(
+        val marker:String,
+        val sound: Int
+    ):WriteOffScreenAction
     class RemoveMarker(val marker:String):WriteOffScreenAction
     class UpdateActivityScanner(val isActive: Boolean): WriteOffScreenAction
 }

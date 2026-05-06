@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EmployeeResponse(
-    @SerialName("employee")
-    val employee: EmployeeDto
+data class OrderDtoResponse(
+    @SerialName("order")
+    val orderDto: OrderDto
 )

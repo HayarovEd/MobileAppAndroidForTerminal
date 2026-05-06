@@ -18,7 +18,7 @@ import by.liscode.take_balance.TakeBalanceScreenRoot
 import com.edurda77.take_work.TakeWorkScreenRoot
 import by.liscode.inventory.CurrentOrderScreenRoot
 import by.liscode.inventory.InventoryScreenRoot
-import ru.modulmoney.order_create.OrderCreateScreenRoot
+import by.liscode.order_create.OrderCreateScreenRoot
 import by.liscode.write_off.WriteOffScreenRoot
 
 @Composable

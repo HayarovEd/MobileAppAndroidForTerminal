@@ -1,7 +1,10 @@
 package by.liscode.resources.utils
 
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import by.liscode.domain.model.RfidSetting
+import by.liscode.resources.R
 import by.liscode.resources.model.ScannerWork
 import com.rscja.deviceapi.RFIDWithUHFUART
 import com.rscja.deviceapi.entity.InventoryParameter
@@ -9,7 +12,7 @@ import kotlin.math.roundToInt
 
 fun RFIDWithUHFUART.applySettings(
     rfidSetting: RfidSetting,
-):RFIDWithUHFUART {
+): RFIDWithUHFUART {
     return this.apply {
         //TODO - remove logs
         Log.d("REST TERMINAL", "power ${rfidSetting.power}")
@@ -18,10 +21,10 @@ fun RFIDWithUHFUART.applySettings(
         Log.d("REST TERMINAL", "attribute ${rfidSetting.attribute.value}")
         power = (rfidSetting.power).roundToInt()
         frequencyMode = rfidSetting.frequencyMode.value
-      /*  epcAndTIDUserMode = InventoryModeEntity
-            .Builder()
-            .setMode(InventoryModeEntity.MODE_EPC_TID)
-            .build()*/
+        /*  epcAndTIDUserMode = InventoryModeEntity
+              .Builder()
+              .setMode(InventoryModeEntity.MODE_EPC_TID)
+              .build()*/
         protocol = 0x00//rfidSetting.protocol.value
         setFilter(rfidSetting.attribute.value, 0, 0, "")
         Log.d("REST TERMINAL", "get power $power")
@@ -59,7 +62,6 @@ fun processWorkScan(
     scannerWork: ScannerWork,
     rfid: RFIDWithUHFUART,
     blockScan: (String) -> Unit,
-    blockClear: () -> Unit,
     updateScannerWork: (ScannerWork) -> Unit,
 ) {
     when (scannerWork) {
@@ -73,14 +75,24 @@ fun processWorkScan(
             }
             updateScannerWork(ScannerWork.SCANNER)
         }
+
         ScannerWork.SCANNER -> {
             rfid.stopInventory()
             //rfid.free()
             updateScannerWork(ScannerWork.STOP)
         }
+
         ScannerWork.STOP -> {
-            blockClear()
             updateScannerWork(ScannerWork.CLEAR)
         }
     }
+}
+
+@Composable
+fun formatWeight(weight: Int): String {
+    return if (weight < 1000) "$weight ${stringResource(R.string.weight_unit)}" else "${
+        "%.2f".format(
+            weight / 1000.0
+        )
+    } ${stringResource(R.string.weight_kg_unit)}"
 }

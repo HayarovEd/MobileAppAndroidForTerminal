@@ -6,6 +6,9 @@ import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.repository.SoundRepository
+import by.liscode.domain.utils.InfoMessage
+import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
@@ -17,22 +20,27 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class SearchScreenViewModel(
     private val dataStoreRepository: DataStoreRepository,
-    private val localRepository: LocalRepository,
-    jwtRepository: JwtRepository,
+    localRepository: LocalRepository,
+    private val jwtRepository: JwtRepository,
+    soundRepository: SoundRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository,
+    soundRepository = soundRepository,
 ) {
 
-
+    private val mutex = Mutex()
     private val _state = MutableStateFlow(SearchScreenState())
     val state = _state
         .onStart {
-            getLocalData()
+            getUserData()
         }
         .stateIn(
             scope = viewModelScope,
@@ -45,56 +53,50 @@ class SearchScreenViewModel(
     fun onAction(action: SearchScreenAction) {
         when (action) {
             is SearchScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.isEmpty()) {
-                    if (!state.value.markers.contains(action.marker)) {
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                viewModelScope.launch {
+                    mutex.withLock {
+                        takeMarker(
+                            marker = action.marker,
+                            sound = action.sound,
+                            isUpdate = !state.value.markers.contains(action.marker),
+                            actionAddMarker = {
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                                }
-                            }
-                        )
-                    }
-                } else {
-                    if (state.value.filterMarkers.any {
-                            action.marker.contains(
-                                it.query,
-                                ignoreCase = true
-                            )
-                        } && !state.value.markers.contains(action.marker)) {
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker,
+                                            accessToken = token,
+                                            url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                                        }
+                                    }
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                                }
                             }
                         )
                     }
                 }
+
             }
 
             is SearchScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
-                    isActiveScanner = action.isActive
+                    isActiveScanner = action.isActive,
                 ).updateState()
+                if (action.isActive) {
+                    _state.value.copy(
+                        markers = emptyList(),
+                        remoteLinens = emptyList()
+                    ).updateState()
+                }
+                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                    InfoMessage.RFIDWork.STOPPED.asText())
             }
 
             is SearchScreenAction.UpdateFilter -> {
@@ -127,84 +129,84 @@ class SearchScreenViewModel(
                 )
                     .updateState()
             }
-        }
-    }
 
-    /*@OptIn(ExperimentalTime::class)
-    private fun loadData(action: (String, String) -> Unit) {
-        viewModelScope.launch {
-            dataStoreRepository.getBearer().collect { token ->
-                if (token!=null) {
-                    val expired = jwtRepository.decodeJwt(token)?.expired
-                    expired?.let { exp ->
-                        if (exp < Clock.System.now().epochSeconds) {
-                            dataStoreRepository.removeBearer()
-                            _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                        } else {
-                            dataStoreRepository.getUrl().collect { url ->
-                                if (url.isNotBlank()) {
-                                    action(token, url)
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    viewModelScope.launch {
-                        _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
-                    }
-                }
-            }
-        }
-    }*/
-
-    private fun getLocalData() {
-        viewModelScope.launch {
-            localRepository.getAllFilters().collect {
-                when (it) {
-                    is ResultWork.Error -> {
-                        _state.value.copy(
-                            message = it.error.asUiText()
-                        )
-                            .updateState()
-                    }
-
-                    is ResultWork.Success -> {
-                        _state.value.copy(
-                            filterMarkers = it.data
-                        )
-                            .updateState()
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            dataStoreRepository.getRfidSettings().collect {
+            is SearchScreenAction.UpdateCurrentType -> {
                 _state.value.copy(
-                    settings = it
+                    currentType = action.typeLinen
                 )
                     .updateState()
             }
         }
     }
 
-
     private fun getLinenById(
-        rfid: String, accessToken: String, url: String
+        rfid: String,
+        accessToken: String,
+        url: String
     ) {
         viewModelScope.launch {
             when (val result = remoteRepository.getLinenByRfid(
-                baseUrl = url, token = accessToken, rfid = rfid
+                baseUrl = url,
+                token = accessToken,
+                rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    ).updateState()
+                    //updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
+                    if (result.data !in state.value.remoteLinens) {
+                        _state.value.copy(
+                            remoteLinens = state.value.remoteLinens + result.data
+                        ).updateState()
+                        if (state.value.clients.isEmpty() || result.data.clientId !in state.value.clients.map { it.id }) {
+                            getClientById(
+                                url = url,
+                                accessToken = accessToken,
+                                clientId = result.data.clientId
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getClientById(
+        accessToken: String,
+        url: String,
+        clientId: Int
+    ) {
+        viewModelScope.launch {
+            when (val result = remoteRepository.getClientById(
+                baseUrl = url,
+                token = accessToken,
+                id = clientId
+            )) {
+                is ResultWork.Error -> {
+                    updateMessage(result.error.asUiText())
+                }
+
+                is ResultWork.Success -> {
+                    if (result.data !in state.value.clients) {
+                        _state.value.copy(
+                            clients = state.value.clients + result.data
+                        ).updateState()
+
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getUserData() {
+        viewModelScope.launch {
+            dataStoreRepository.getBearer().collect { token ->
+                token?.let {
                     _state.value.copy(
-                        remoteLinens = state.value.remoteLinens + result.data
-                    ).updateState()
+                        userData = jwtRepository.decodeJwt(token)
+                    )
+                        .updateState()
                 }
             }
         }

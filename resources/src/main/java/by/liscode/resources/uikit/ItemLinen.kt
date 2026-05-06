@@ -51,7 +51,7 @@ fun ItemLinen(
             Text(
                 modifier = modifier,
                 text = "${stringResource(R.string.rfid)}: ${linen.rfid}",
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -91,7 +91,6 @@ private fun ItemLinenView() {
                     density = "100%",
                     sku = "хлопок",
                     maxWash = 10,
-                    clientId = 1
                 ),
                 discount = "dsk",
                 weight = 135,

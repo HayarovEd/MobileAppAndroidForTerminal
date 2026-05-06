@@ -1,11 +1,14 @@
 package by.liscode.take_balance
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.StateLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.repository.SoundRepository
+import by.liscode.domain.utils.InfoMessage
+import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
@@ -18,22 +21,27 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.collections.plus
 
 class TakeBalanceScreenViewModel(
-    private val dataStoreRepository: DataStoreRepository,
-    private val localRepository: LocalRepository,
+    dataStoreRepository: DataStoreRepository,
+    localRepository: LocalRepository,
     jwtRepository: JwtRepository,
+    soundRepository: SoundRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository,
+    soundRepository = soundRepository,
 ) {
 
-
+    private val mutex = Mutex()
     private val _state = MutableStateFlow(TakeBalanceScreenState())
     val state = _state
         .onStart {
-            getLocalData()
             loadData(
                 action = { token, url ->
                     getRemoteData(
@@ -57,35 +65,6 @@ class TakeBalanceScreenViewModel(
     private val _eventFlow = MutableSharedFlow<UiTakeBalanceEvents>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private fun getLocalData() {
-        viewModelScope.launch {
-            localRepository.getAllFilters().collect {
-                when (it) {
-                    is ResultWork.Error -> {
-                        _state.value.copy(
-                            message = it.error.asUiText()
-                        )
-                            .updateState()
-                    }
-
-                    is ResultWork.Success -> {
-                        _state.value.copy(
-                            filterMarkers = it.data
-                        )
-                            .updateState()
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            dataStoreRepository.getRfidSettings().collect {
-                _state.value.copy(
-                    settings = it
-                )
-                    .updateState()
-            }
-        }
-    }
 
     fun onAction(action: TakeBalanceScreenAction) {
         when (action) {
@@ -133,7 +112,7 @@ class TakeBalanceScreenViewModel(
             TakeBalanceScreenAction.Send -> {
                 loadData(
                     action = { token, url ->
-                        acceptInToStock(
+                        checkInToUse(
                             accessToken = token,
                             url = url
                         )
@@ -189,28 +168,36 @@ class TakeBalanceScreenViewModel(
             }
 
             is TakeBalanceScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.isEmpty()) {
-                    if (!state.value.markers.contains(action.marker)) {
-                        Log.d("REST TERMINAL", "saved marker no filter ${action.marker}")
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
+                viewModelScope.launch {
+                    mutex.withLock {
+                        takeMarker(
+                            marker = action.marker,
+                            sound = action.sound,
+                            isUpdate = !state.value.markers.contains(action.marker),
+                            actionAddMarker = {
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
+                                )
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker,
+                                            accessToken = token,
+                                            url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
+                                        }
+                                    }
+                                )
+                            }
                         )
-                            .updateState()
-                    }
-                } else {
-                    if (state.value.filterMarkers.any {
-                            action.marker.contains(
-                                it.query,
-                                ignoreCase = true
-                            )
-                        } && !state.value.markers.contains(action.marker)) {
-                        Log.d("REST TERMINAL", "saved marker with filter ${action.marker}")
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
                     }
                 }
+
             }
 
             is TakeBalanceScreenAction.RemoveMarker -> {
@@ -225,6 +212,47 @@ class TakeBalanceScreenViewModel(
                     isShowSuccessDialog = false
                 )
                     .updateState()
+            }
+
+            is TakeBalanceScreenAction.UpdateActivityScanner -> {
+                _state.value.copy(
+                    isActiveScanner = action.isActive,
+                ).updateState()
+                if (action.isActive) {
+                    _state.value.copy(
+                        markers = emptyList(),
+                        remoteLinens = emptyList()
+                    ).updateState()
+                }
+                updateMessage(
+                    if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                        InfoMessage.RFIDWork.STOPPED.asText()
+                )
+            }
+
+            TakeBalanceScreenAction.CloseWarning -> {
+                _state.value.copy(
+                    isShowWarning = false
+                ).updateState()
+            }
+
+            TakeBalanceScreenAction.SendAndCloseWarning -> {
+                loadData(
+                    action = { token, url ->
+                        acceptInToStock(
+                            accessToken = token,
+                            url = url,
+                            rfids = state.value.markers.filter {
+                                !state.value.remoteLinens.map { rf -> rf.rfid }.contains(it)
+                            }
+                        )
+                    },
+                    navigate = {
+                        viewModelScope.launch {
+                            _eventFlow.emit(UiTakeBalanceEvents.LoginNavigationEvent)
+                        }
+                    }
+                )
             }
         }
     }
@@ -258,10 +286,7 @@ class TakeBalanceScreenViewModel(
             }
             when (val result = counterpartiesResultDiff.await()) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -273,10 +298,7 @@ class TakeBalanceScreenViewModel(
             }
             when (val result = statesLinenResultDiff.await()) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -288,10 +310,7 @@ class TakeBalanceScreenViewModel(
             }
             when (val result = typesLinenDiff.await()) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    )
-                        .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -332,9 +351,9 @@ class TakeBalanceScreenViewModel(
                 is ResultWork.Error -> {
                     _state.value.copy(
                         isLoading = false,
-                        message = result.error.asUiText()
                     )
                         .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -349,10 +368,13 @@ class TakeBalanceScreenViewModel(
     }
 
     private fun acceptInToStock(
+        rfids: List<String>,
         accessToken: String,
         url: String,
     ) {
-        if (state.value.currentTypeLinen != null && state.value.currentCounterparty != null) {
+        if (state.value.currentTypeLinen != null
+            && state.value.currentCounterparty != null
+            &&rfids.isNotEmpty()) {
             state.value.weight.toIntOrNull()?.let { weight ->
                 viewModelScope.launch {
                     _state.value.copy(
@@ -362,7 +384,7 @@ class TakeBalanceScreenViewModel(
                     when (val result = remoteRepository.acceptToLinensInToStock(
                         baseUrl = url,
                         token = accessToken,
-                        rfids = state.value.markers,
+                        rfids = rfids,
                         typeId = state.value.currentTypeLinen!!.id,
                         nomenclature = state.value.articleNumber,
                         weight = weight,
@@ -372,21 +394,71 @@ class TakeBalanceScreenViewModel(
                         is ResultWork.Error -> {
                             _state.value.copy(
                                 isLoading = false,
-                                message = result.error.asUiText()
                             )
                                 .updateState()
+                            updateMessage(result.error.asUiText())
                         }
 
                         is ResultWork.Success -> {
                             _state.value.copy(
                                 isLoading = false,
-                                isShowSuccessDialog = true
+                                isShowSuccessDialog = true,
+                                markers = emptyList(),
+                                currentTypeLinen = null,
+                                articleNumber = "",
+                                currentStateLinen = StateLinen.NEW,
+                                weight = "",
+                                billLading = "",
+                                currentCounterparty = null,
                             )
                                 .updateState()
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun getLinenById(
+        rfid: String,
+        accessToken: String,
+        url: String
+    ) {
+        viewModelScope.launch {
+            when (val result = remoteRepository.getLinenByRfid(
+                baseUrl = url,
+                token = accessToken,
+                rfid = rfid
+            )) {
+                is ResultWork.Error -> {
+                    //updateMessage(result.error.asUiText())
+                }
+
+                is ResultWork.Success -> {
+                    if (result.data !in state.value.remoteLinens) {
+                        _state.value.copy(
+                            remoteLinens = state.value.remoteLinens + result.data
+                        ).updateState()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkInToUse(
+        accessToken: String,
+        url: String,
+    ) {
+        if (state.value.remoteLinens.isEmpty()) {
+            acceptInToStock(
+                accessToken = accessToken,
+                url = url,
+                rfids = state.value.markers
+            )
+        } else {
+            _state.value.copy(
+                isShowWarning = true
+            ).updateState()
         }
     }
 

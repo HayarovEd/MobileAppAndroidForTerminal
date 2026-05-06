@@ -1,30 +1,33 @@
 package by.liscode.data.repository
 
+import android.util.Log
 import by.liscode.data.handler.handleRemoteResponse
 import by.liscode.data.mapper.convertToClient
-import by.liscode.data.mapper.convertToEmployee
 import by.liscode.data.mapper.convertToLinen
+import by.liscode.data.mapper.convertToOrder
 import by.liscode.data.mapper.convertToTypeLinen
+import by.liscode.data.mapper.convertToinventory
 import by.liscode.data.remote.request.CounterpartyPost
+import by.liscode.data.remote.request.CreateOrderRequest
 import by.liscode.data.remote.request.LinenInToStockRequest
+import by.liscode.data.remote.request.LinenWtiteOffRequest
 import by.liscode.data.remote.request.RfidInToUseRequest
+import by.liscode.data.remote.request.UpdateOrderRequest
 import by.liscode.data.remote.response.ClientItemsResponse
 import by.liscode.data.remote.response.ClientProfileResponse
 import by.liscode.data.remote.response.ClientsProfileResponse
 import by.liscode.data.remote.response.CounterPartyResponse
 import by.liscode.data.remote.response.CounterPartyResponseFromPost
-import by.liscode.data.remote.response.EmployeeResponse
-import by.liscode.data.remote.response.EmployeesResponse
+import by.liscode.data.remote.response.InventoryResponse
 import by.liscode.data.remote.response.LinenDtoMultiResponse
 import by.liscode.data.remote.response.LinenDtoSingleResponse
-import by.liscode.data.remote.response.ReasonWriteOffResponse
-import by.liscode.data.remote.response.StateLinenResponse
-import by.liscode.data.remote.response.StatusLinenResponse
-import by.liscode.data.remote.response.StatusOrderResponse
+import by.liscode.data.remote.response.OrderDtoResponse
+import by.liscode.data.remote.response.OrdersResponse
+import by.liscode.data.remote.response.SingleOrderResponse
 import by.liscode.data.remote.response.TypesLinenResponse
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
+import by.liscode.domain.model.Inventory
 import by.liscode.domain.model.Linen
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.ReasonWriteOff
@@ -33,20 +36,26 @@ import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.utils.ACCEPT_INTO_STOCK
+import by.liscode.domain.utils.ACCEPT_IN_PRODUCTION
 import by.liscode.domain.utils.DataError
+import by.liscode.domain.utils.FORM_AFTER_PRODUCTION
 import by.liscode.domain.utils.TERMINAL_CLIENTS
 import by.liscode.domain.utils.TERMINAL_COUNTERPARTY
-import by.liscode.domain.utils.TERMINAL_EMPLOYEES
+import by.liscode.domain.utils.TERMINAL_INVENTORY
 import by.liscode.domain.utils.TERMINAL_ITEMS
 import by.liscode.domain.utils.TERMINAL_ITEMS_BY_RFID
 import by.liscode.domain.utils.TERMINAL_ITEMS_INTO_USE
 import by.liscode.domain.utils.TERMINAL_ITEMS_IN_STOCK
+import by.liscode.domain.utils.TERMINAL_ITEMS_WRITE_OFF
 import by.liscode.domain.utils.TERMINAL_LINEN_STATE
 import by.liscode.domain.utils.TERMINAL_LINEN_STATUS
 import by.liscode.domain.utils.TERMINAL_LINEN_TIPES
+import by.liscode.domain.utils.TERMINAL_ORDERS
 import by.liscode.domain.utils.TERMINAL_ORDER_STATUSES
 import by.liscode.domain.utils.TERMINAL_WRITE_OFF_REASONS
 import by.liscode.domain.utils.convertToReasonWriteOff
+import by.liscode.domain.utils.convertToReasonWriteOffString
 import by.liscode.domain.utils.convertToStateLinen
 import by.liscode.domain.utils.convertToStatusLinen
 import by.liscode.domain.utils.convertToStatusOrder
@@ -57,10 +66,14 @@ import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 
 class RemoteRepositoryImpl(
     private val httpClient: HttpClient
@@ -99,14 +112,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<StateLinenResponse>().itemStateLinenDto
-                listOf(
-                    convertToStateLinen(result.excellent),
-                    convertToStateLinen(result.good),
-                    convertToStateLinen(result.new),
-                    convertToStateLinen(result.satisfactory),
-                    convertToStateLinen(result.writtenOff)
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "item_states"
                 )
+                result.map {
+                    convertToStateLinen(it.key)
+                }
             }
         }
     }
@@ -121,15 +133,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<StatusLinenResponse>().itemStatusesLinenDto
-                listOf(
-                    convertToStatusLinen(result.inStock),
-                    convertToStatusLinen(result.inUse),
-                    convertToStatusLinen(result.inOrder),
-                    convertToStatusLinen(result.inTransit),
-                    convertToStatusLinen(result.inProduction),
-                    convertToStatusLinen(result.writtenOff),
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "item_statuses"
                 )
+                result.map {
+                    convertToStatusLinen(it.key)
+                }
             }
         }
     }
@@ -144,14 +154,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<StatusOrderResponse>().orderStatusesDto
-                listOf(
-                    convertToStatusOrder(result.registered),
-                    convertToStatusOrder(result.inTransit),
-                    convertToStatusOrder(result.inProduction),
-                    convertToStatusOrder(result.formed),
-                    convertToStatusOrder(result.completed),
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "order_statuses"
                 )
+                result.map {
+                    convertToStatusOrder(it.key)
+                }
             }
         }
     }
@@ -166,11 +175,13 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
-                val result = response.body<ReasonWriteOffResponse>().writeOffReasonsDto
-                listOf(
-                    convertToReasonWriteOff(result.damaged),
-                    convertToReasonWriteOff(result.wornOut),
+                val result = parseManually(
+                    response = response,
+                    keyResponse = "write_off_reasons"
                 )
+                result.map {
+                    convertToReasonWriteOff(it.key)
+                }
             }
         }
     }
@@ -269,6 +280,7 @@ class RemoteRepositoryImpl(
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
                 }
+                Log.d("TEST RFID TERMINAL", "by rfid - ${response.bodyAsText()}")
                 val result = response.body<LinenDtoSingleResponse>()
                 result.item.convertToLinen()
             }
@@ -291,39 +303,32 @@ class RemoteRepositoryImpl(
         }
     }
 
-
-    override suspend fun getEmployees(
+    override suspend fun writeOffLinens(
         baseUrl: String,
         token: String,
-    ): ResultWork<List<Employee>, DataError> {
+        rfids: List<String>,
+        reason: ReasonWriteOff,
+        comment: String,
+    ): ResultWork<List<Linen>, DataError> {
         return withContext(Dispatchers.IO) {
             handleRemoteResponse {
-                val response = httpClient.get("$baseUrl/$TERMINAL_EMPLOYEES") {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ITEMS_WRITE_OFF") {
                     bearerAuth(token)
                     contentType(ContentType.Application.Json)
+                    setBody(
+                        LinenWtiteOffRequest(
+                            comment = comment,
+                            reason = convertToReasonWriteOffString(reason),
+                            rfids = rfids
+                        )
+                    )
                 }
-                val result = response.body<EmployeesResponse>()
-                result.employees.map { it.convertToEmployee() }
+                val result = response.body<LinenDtoMultiResponse>()
+                result.items.map { it.convertToLinen() }
             }
         }
     }
 
-    override suspend fun getEmployeeById(
-        baseUrl: String,
-        token: String,
-        id: Int,
-    ): ResultWork<Employee, DataError> {
-        return withContext(Dispatchers.IO) {
-            handleRemoteResponse {
-                val response = httpClient.get("$baseUrl/$TERMINAL_EMPLOYEES/$id") {
-                    bearerAuth(token)
-                    contentType(ContentType.Application.Json)
-                }
-                val result = response.body<EmployeeResponse>()
-                result.employee.convertToEmployee()
-            }
-        }
-    }
 
     override suspend fun getClients(
         baseUrl: String,
@@ -386,8 +391,14 @@ class RemoteRepositoryImpl(
     ): ResultWork<List<Order>, DataError> {
         return withContext(Dispatchers.IO) {
             handleRemoteResponse {
-                //TODO
-                emptyList()
+                val response = httpClient.get("$baseUrl/$TERMINAL_ORDERS") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                }
+                val textRes = response.bodyAsText()
+                Log.d("TEST TERMINAL DATE", "response $response")
+                val result = response.body<OrdersResponse>().orderDtos
+                result.map { it.convertToOrder() }
             }
         }
     }
@@ -395,38 +406,154 @@ class RemoteRepositoryImpl(
     override suspend fun getOrderById(
         baseUrl: String,
         token: String,
-        id: String
+        id: Int
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.get("$baseUrl/$TERMINAL_ORDERS/$id") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                }
+                val result = response.body<SingleOrderResponse>().orderDtoShort
+                result.convertToOrder()
+            }
+        }
     }
 
-    override suspend fun createOrder(baseUrl: String, token: String): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+    override suspend fun createOrder(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>,
+        laundryId: Int,
+        address: String,
+        sendAct: Boolean,
+    ): ResultWork<Order, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        CreateOrderRequest(
+                            address = address,
+                            laundryId = laundryId,
+                            rfids = rfids,
+                            sendAct = sendAct
+                        )
+                    )
+                }
+                val result = response.body<OrderDtoResponse>()
+                result.orderDto.convertToOrder()
+            }
+        }
     }
 
     override suspend fun acceptOrderInUse(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean,
+        rfids: List<String>,
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS/$orderId/$ACCEPT_IN_PRODUCTION") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        UpdateOrderRequest(
+                            rfids = rfids,
+                            ignoreMissing = ignoreMissing
+                        )
+                    )
+                }
+
+                val result = response.body<SingleOrderResponse>()
+                result.orderDtoShort.convertToOrder()
+            }
+        }
     }
 
     override suspend fun formOrderAfterProduction(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean,
+        rfids: List<String>,
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS/$orderId/$FORM_AFTER_PRODUCTION") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        UpdateOrderRequest(
+                            rfids = rfids,
+                            ignoreMissing = ignoreMissing
+                        )
+                    )
+                }
+                Log.d("REST TERMINAL", response.bodyAsText())
+                val result = response.body<SingleOrderResponse>()
+                result.orderDtoShort.convertToOrder()
+            }
+        }
     }
 
     override suspend fun acceptOrderInToStock(
         baseUrl: String,
         token: String,
-        order: Order
+        orderId: Int,
+        ignoreMissing: Boolean,
+        rfids: List<String>,
     ): ResultWork<Order, DataError> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_ORDERS/$orderId/$ACCEPT_INTO_STOCK") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        UpdateOrderRequest(
+                            rfids = rfids,
+                            ignoreMissing = ignoreMissing
+                        )
+                    )
+                }
+                val result = response.body<SingleOrderResponse>()
+                result.orderDtoShort.convertToOrder()
+            }
+        }
     }
 
 
+    override suspend fun sendResultInventory(
+        baseUrl: String,
+        token: String,
+        rfids: List<String>,
+    ): ResultWork<List<Inventory>, DataError> {
+        return withContext(Dispatchers.IO) {
+            handleRemoteResponse {
+                val response = httpClient.post("$baseUrl/$TERMINAL_INVENTORY") {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        RfidInToUseRequest(
+                            rfids = rfids,
+                        )
+                    )
+                }
+                val result = response.body<InventoryResponse>()
+                result.inventoryDto.map { it.convertToinventory() }
+            }
+        }
+    }
+
+    private suspend fun parseManually(
+        response: HttpResponse,
+        keyResponse: String
+    ): Map<String, String> {
+        val jsonObject = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val writeOffReasonsObject = jsonObject[keyResponse]!!.jsonObject
+        return writeOffReasonsObject.mapValues { it.value.toString().removeSurrounding("\"") }
+    }
 }

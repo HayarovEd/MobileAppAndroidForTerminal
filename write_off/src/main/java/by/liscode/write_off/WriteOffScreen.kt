@@ -16,11 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,11 +34,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,10 +56,10 @@ import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
-import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asReasonText
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -70,6 +72,7 @@ fun WriteOffScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     var isOpenTypeReasonMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -82,8 +85,8 @@ fun WriteOffScreenRoot(
             }
         }
     }
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -93,20 +96,31 @@ fun WriteOffScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(WriteOffScreenAction.TakeMarker(marker = it))
+                    onAction(WriteOffScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
                     onAction(WriteOffScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
 
     WriteOffScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = onAction,
         isOpenTypeReasonMenu = isOpenTypeReasonMenu,
-        onBackNavigate = onBackNavigate,
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate ()
+        },
         updateVisibilityTypeReasonMenu = {
             isOpenTypeReasonMenu = it
         }
@@ -117,11 +131,39 @@ fun WriteOffScreenRoot(
 fun WriteOffScreenScreen(
     modifier: Modifier = Modifier,
     state: WriteOffScreenState,
+    baseState: BaseState,
     isOpenTypeReasonMenu: Boolean,
     onAction: (WriteOffScreenAction) -> Unit,
     onBackNavigate: () -> Unit,
     updateVisibilityTypeReasonMenu: (Boolean) -> Unit
 ) {
+    if (state.isShowSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onAction(WriteOffScreenAction.CloseSuccessDialog)
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.linen_success_write_off),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(WriteOffScreenAction.CloseSuccessDialog)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+        )
+    }
+
     if (state.isShowDialog) {
         Dialog(
             onDismissRequest = {}
@@ -138,7 +180,7 @@ fun WriteOffScreenScreen(
     }
 
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             FundAppBar(
                 title = stringResource(R.string.write_off_linen),
@@ -151,7 +193,7 @@ fun WriteOffScreenScreen(
                             }
                         ),
                         text = stringResource(R.string.send),
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleMedium,
                     )
                 },
@@ -164,7 +206,7 @@ fun WriteOffScreenScreen(
                 modifier = modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(colorScheme.background)
                     .padding(15.dp),
             ) {
                 CircularProgressIndicator(
@@ -178,14 +220,14 @@ fun WriteOffScreenScreen(
                 modifier = modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(colorScheme.background)
                     .padding(15.dp),
             ) {
                 OutlinedButton(
                     modifier = modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(5.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (state.isShowInfo) Color.Transparent else MaterialTheme.colorScheme.onPrimaryContainer
+                        containerColor = if (state.isShowInfo) Color.Transparent else colorScheme.onPrimaryContainer
                     ),
                     onClick = {
                         onAction(WriteOffScreenAction.UpdateVisibilityInfo)
@@ -196,7 +238,7 @@ fun WriteOffScreenScreen(
                         text = if (state.isShowInfo) stringResource(R.string.hide_info) else stringResource(
                             R.string.show_info
                         ),
-                        color = if (state.isShowInfo) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primaryContainer,
+                        color = if (state.isShowInfo) colorScheme.onPrimaryContainer else colorScheme.primaryContainer,
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
@@ -204,7 +246,7 @@ fun WriteOffScreenScreen(
                 Text(
                     modifier = modifier,
                     text = "${stringResource(R.string.reason_write_off)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(modifier = modifier.height(8.dp))
@@ -216,7 +258,7 @@ fun WriteOffScreenScreen(
                             }
                         ),
                         text = state.reasonWriteOff.asReasonText().asString(),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline
@@ -234,7 +276,7 @@ fun WriteOffScreenScreen(
                                     Text(
                                         modifier = modifier,
                                         text = it.asReasonText().asString(),
-                                        color = MaterialTheme.colorScheme.onBackground,
+                                        color = colorScheme.onBackground,
                                         style = MaterialTheme.typography.bodyMedium,
                                     )
                                 },
@@ -250,7 +292,7 @@ fun WriteOffScreenScreen(
                 Text(
                     modifier = modifier,
                     text = "${stringResource(R.string.ark_write_off)}:",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 UiTextField(
@@ -264,7 +306,7 @@ fun WriteOffScreenScreen(
                 Text(
                     modifier = modifier,
                     text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
                     ),
@@ -274,33 +316,66 @@ fun WriteOffScreenScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(15.dp)
                     ) {
-                        items(state.markers) { marker ->
-                            Row(
-                                modifier = modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    modifier = modifier.weight(1f),
-                                    text = marker,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                    ),
-                                )
+                        items(state.markersApprovedForWriteOff) { marker ->
+                            Column (
+                                modifier = modifier
+                            ){
                                 val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
                                 currentLinen?.let { linen->
                                     Text(
-                                        modifier = modifier.weight(2f),
+                                        modifier = modifier,
                                         text = linen.printFormat(),
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = colorScheme.onBackground,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                        ),
                                     )
                                 }
-                                UiIconButton(
-                                    icon = ImageVector.vectorResource(R.drawable.outline_delete_24),
-                                    onClick = {
-                                        onAction(WriteOffScreenAction.RemoveMarker(marker))
-                                    }
+                                Text(
+                                    modifier = modifier,
+                                    text = marker,
+                                    color = colorScheme.secondary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+                        item {
+                            Row(
+                                modifier = modifier
+                                    .clip(shape = RoundedCornerShape(10.dp))
+                                    .fillMaxWidth()
+                                    .background(colorScheme.secondary)
+                                    .padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    modifier = modifier.weight(6f),
+                                    text = stringResource(R.string.not_finded_markers),
+                                    color = colorScheme.onSecondary,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                        }
+                        items(state.markersNotApprovedForWriteOff) { marker ->
+                            Column (
+                                modifier = modifier
+                            ){
+                                val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
+                                currentLinen?.let { linen->
+                                    Text(
+                                        modifier = modifier,
+                                        text = linen.printFormat(),
+                                        color = colorScheme.onBackground,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                        ),
+                                    )
+                                }
+                                Text(
+                                    modifier = modifier,
+                                    text = marker,
+                                    color = colorScheme.secondary,
+                                    style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
                         }
@@ -322,6 +397,7 @@ private fun Preview() {
             state = WriteOffScreenState(
                 isShowDialog = true
             ),
+            baseState = BaseState(),
             isOpenTypeReasonMenu = false,
             updateVisibilityTypeReasonMenu = {},
             onAction = {},
@@ -347,10 +423,9 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (1..10).map { "Marker N$it" }
-    val linens = (3..7).map {
+    val linens = (3..5).map {
         Linen(
             id = it,
             clientId = 0,
@@ -380,6 +455,7 @@ private fun Preview1() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             isOpenTypeReasonMenu = false,
             updateVisibilityTypeReasonMenu = {},
             onAction = {},
@@ -404,7 +480,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (1..10).map { "Marker N$it" }
     val linens = (3..7).map {
@@ -438,6 +513,7 @@ private fun Preview2() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             isOpenTypeReasonMenu = true,
             updateVisibilityTypeReasonMenu = {},
             onAction = {},

@@ -37,6 +37,7 @@ import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -49,6 +50,7 @@ fun SearchScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner = rememberRfid().apply { init(context) }
@@ -60,8 +62,8 @@ fun SearchScreenRoot(
             }
         }
     }
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -71,18 +73,31 @@ fun SearchScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(SearchScreenAction.TakeMarker(marker = it))
+                    onAction(
+                        SearchScreenAction.TakeMarker(
+                            marker = it,
+                            sound = R.raw.beep
+                        )
+                    )
                 },
                 updateIsActive = {
                     onAction(SearchScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate()
         }
     )
     SearchScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = viewModel::onAction,
-        onBackNavigate = onBackNavigate
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate()
+        }
     )
 }
 
@@ -90,11 +105,12 @@ fun SearchScreenRoot(
 fun SearchScreenScreen(
     modifier: Modifier = Modifier,
     state: SearchScreenState,
+    baseState: BaseState,
     onAction: (SearchScreenAction) -> Unit,
     onBackNavigate: () -> Unit
 ) {
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             when (state.searchState) {
                 SearchState.SEARCH -> {
@@ -127,6 +143,7 @@ fun SearchScreenScreen(
                         onBack = onBackNavigate
                     )
                 }
+
                 SearchState.FILTERING -> {
                     FundAppBar(
                         title = stringResource(R.string.filter),
@@ -170,7 +187,7 @@ fun SearchScreenScreen(
                         ) {
                             Text(
                                 modifier = modifier,
-                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size-state.remoteLinens.size}",
+                                text = "${stringResource(R.string.remain_download)}: ${state.markers.size - state.remoteLinens.size}",
                                 color = colorScheme.onBackground,
                                 style = MaterialTheme.typography.bodyMedium,
                             )
@@ -182,32 +199,38 @@ fun SearchScreenScreen(
                             )
                         }
                         Spacer(modifier = modifier.height(10.dp))
-                        when(state.groupLinen) {
+                        when (state.groupLinen) {
                             GroupLinen.NAME -> {
                                 TypeNameScreen(
                                     groupedLinen = state.groupedLinenByClientId,
-                                    outMarkers = state.outMarkers,
                                     clients = state.clients
                                 )
                             }
+
                             GroupLinen.TYPE_LINEN -> {
                                 TypeLinenScreen(
                                     groupedLinen = state.groupedLinenByClientIdAndTypeLinen,
-                                    outMarkers = state.outMarkers,
                                     clients = state.clients
                                 )
                             }
                         }
                     }
+
                     SearchState.FILTERING -> {
                         FilteringScreen(
                             filterRfid = state.filterRfid,
                             filterByType = state.filterByType,
+                            typesLinen = state.typesLinen,
+                            userData = state.userData,
+                            currentTypeLinen = state.currentType,
                             updateFilter = {
                                 onAction(SearchScreenAction.UpdateFilter(it))
                             },
                             updateFilterRfid = {
                                 onAction(SearchScreenAction.UpdateFilterRfid(it))
+                            },
+                            updateCurrentType = {
+                                onAction(SearchScreenAction.UpdateCurrentType(it))
                             }
                         )
                     }
@@ -223,6 +246,7 @@ private fun Preview1() {
     MobileAppAndroidForTerminalTheme {
         SearchScreenScreen(
             state = SearchScreenState(),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -237,6 +261,7 @@ private fun Preview2() {
             state = SearchScreenState(
                 searchState = SearchState.FILTERING
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )

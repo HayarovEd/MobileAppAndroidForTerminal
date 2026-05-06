@@ -1,29 +1,28 @@
-package ru.modulmoney.order_create
+package by.liscode.order_create
 
-import by.liscode.domain.model.Employee
-import by.liscode.domain.model.Filter
+import by.liscode.domain.model.Client
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.model.Linen
-import by.liscode.domain.model.RfidSetting
+import by.liscode.domain.model.Order
 import by.liscode.domain.model.StatusLinen
-import by.liscode.resources.model.ScannerWork
-import by.liscode.resources.uikit.UiText
 
 data class OrderCreateScreenState(
-    val settings: RfidSetting? = null,
-    val message: UiText? = null,
-    val filterMarkers: List<Filter> = emptyList(),
     val isLoading: Boolean = false,
+    val order: Order? = null,
     val markers: List<String> = emptyList(),
-    val scannerWork: ScannerWork = ScannerWork.CLEAR,
-    val laundries: List<Employee>  = emptyList(),
+    val isActiveScanner: Boolean = false,
+    val laundries: List<Client>  = emptyList(),
     val remoteLinens: List<Linen> = emptyList(),
     val isShowWarning: Boolean = false,
-    val currentLaundry: Employee? = null,
+    val currentLaundry: Client? = null,
+    val isShowSuccessDialog: Boolean = false,
+    val groupLinen: GroupLinen = GroupLinen.NAME,
 ) {
     val approvedLinens = remoteLinens.filter { it.status == StatusLinen.IN_STOCK || it.status == StatusLinen.IN_USE}
-    val notApprovedLinens = remoteLinens - approvedLinens
-    val unknownMarkers = markers - remoteLinens.map { it.rfid }
-    val gropedApprovedLinensByTipe = approvedLinens.groupBy { it.typeLinen }
+    val notApprovedLinens = remoteLinens - approvedLinens.toSet()
+    val unknownMarkers = markers - remoteLinens.map { it.rfid }.toSet()
+
+    val gropedApprovedLinensByType = approvedLinens.groupBy { it.typeLinen }
 }
 
 

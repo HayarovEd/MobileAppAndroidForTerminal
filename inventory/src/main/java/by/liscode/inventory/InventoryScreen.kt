@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +55,7 @@ import by.liscode.resources.uikit.UiBaseScaffold
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiOutlandedButton
 import by.liscode.resources.uikit.rememberRfid
+import by.liscode.resources.utils.BaseState
 import by.liscode.resources.utils.applySettings
 import by.liscode.resources.utils.processScan
 import kotlinx.coroutines.flow.collectLatest
@@ -65,6 +68,7 @@ fun InventoryScreenRoot(
     onBackNavigate: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val baseState by viewModel.baseState.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
     val context = LocalContext.current
     val scanner = rememberRfid().apply { init(context) }
@@ -77,8 +81,8 @@ fun InventoryScreenRoot(
         }
     }
     Log.d("TEST WORK SCANNER APP", "filterByType ${state.filterByType} ")
-    LaunchedEffect(state.settings) {
-        state.settings?.let {
+    LaunchedEffect(baseState.settings) {
+        baseState.settings?.let {
             scanner.applySettings(it)
         }
     }
@@ -88,18 +92,29 @@ fun InventoryScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(InventoryScreenAction.TakeMarker(marker = it))
+                    onAction(InventoryScreenAction.TakeMarker(
+                        marker = it,
+                        sound = R.raw.beep
+                    ))
                 },
                 updateIsActive = {
                     onAction(InventoryScreenAction.UpdateActivityScanner(it))
                 }
             )
+        },
+        back = {
+            scanner.free()
+            onBackNavigate ()
         }
     )
     InventoryScreenScreen(
         state = state,
+        baseState = baseState,
         onAction = onAction,
-        onBackNavigate = onBackNavigate
+        onBackNavigate = {
+            scanner.free()
+            onBackNavigate ()
+        }
     )
 }
 
@@ -107,11 +122,39 @@ fun InventoryScreenRoot(
 fun InventoryScreenScreen(
     modifier: Modifier = Modifier,
     state: InventoryScreenState,
+    baseState: BaseState,
     onAction: (InventoryScreenAction) -> Unit,
     onBackNavigate: () -> Unit
 ) {
+
+    if (state.isShowSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                onAction(InventoryScreenAction.CloseSuccessDialog)
+            },
+            title = {
+                Text(
+                    text = stringResource(R.string.data_inventory_sended),
+                    color = colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            },
+            confirmButton = {
+                Button(onClick = {
+                    onAction(InventoryScreenAction.CloseSuccessDialog)
+                }) {
+                    Text(
+                        text = stringResource(R.string.ok),
+                        color = colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+
+            },
+        )
+    }
     UiBaseScaffold(
-        message = state.message,
+        message = baseState.message,
         topBarContent = {
             when (state.inventoryState) {
                 InventoryState.CHECKING -> {
@@ -329,7 +372,8 @@ fun InventoryScreenScreen(
                                                         InventoryScreenAction.UpdateCurrentType(
                                                             linenType
                                                         )
-                                                    )}
+                                                    )
+                                                }
                                             ),
                                         text = linenType.outFormat(),
                                         color = if (state.currentTypeLinen == linenType) colorScheme.primary else colorScheme.onBackground,
@@ -363,7 +407,6 @@ private fun Preview() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -375,7 +418,6 @@ private fun Preview() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (15..45).map { "Marker N$it" }
     val linens = (1..50).map {
@@ -407,6 +449,7 @@ private fun Preview() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -429,7 +472,6 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -441,7 +483,6 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (15..45).map { "Marker N$it" }
     val linens = (1..50).map {
@@ -474,6 +515,7 @@ private fun Preview1() {
                 markers = markers,
                 remoteLinens = linens
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -496,7 +538,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -508,7 +549,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (15..45).map { "Marker N$it" }
     val linens = (1..50).map {
@@ -542,6 +582,7 @@ private fun Preview2() {
                 filterByType = FilterByType.FILTER_BY_TYPE_LINEN,
                 currentTypeLinen = typeLinen1
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -564,7 +605,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -576,7 +616,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val markers = (15..45).map { "Marker N$it" }
     val linens = (1..50).map {
@@ -611,6 +650,7 @@ private fun Preview3() {
                 currentTypeLinen = typeLinen1,
                 groupLinen = GroupLinen.TYPE_LINEN
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -633,7 +673,6 @@ private fun Preview4() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -645,7 +684,6 @@ private fun Preview4() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val linens = (1..50).map {
         Linen(
@@ -678,6 +716,7 @@ private fun Preview4() {
                 currentTypeLinen = typeLinen1,
                 inventoryState = InventoryState.FILTERING
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )
@@ -700,7 +739,6 @@ private fun Preview5() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -712,7 +750,6 @@ private fun Preview5() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val linens = (1..50).map {
         Linen(
@@ -744,6 +781,7 @@ private fun Preview5() {
                 filterByType = FilterByType.ALL,
                 inventoryState = InventoryState.FILTERING
             ),
+            baseState = BaseState(),
             onAction = {},
             onBackNavigate = {}
         )

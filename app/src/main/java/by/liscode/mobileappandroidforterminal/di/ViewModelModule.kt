@@ -14,7 +14,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import by.liscode.inventory.CurrentOrderScreenViewModel
 import by.liscode.inventory.InventoryScreenViewModel
-import ru.modulmoney.order_create.OrderCreateScreenViewModel
+import by.liscode.order_create.OrderCreateScreenViewModel
 import by.liscode.write_off.WriteOffScreenViewModel
 
 val viewModelModule = module {

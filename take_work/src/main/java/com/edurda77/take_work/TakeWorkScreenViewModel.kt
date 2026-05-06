@@ -7,6 +7,9 @@ import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
+import by.liscode.domain.repository.SoundRepository
+import by.liscode.domain.utils.InfoMessage
+import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
@@ -18,23 +21,26 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class TakeWorkScreenViewModel(
-    private val dataStoreRepository: DataStoreRepository,
-    private val localRepository: LocalRepository,
+    dataStoreRepository: DataStoreRepository,
+    localRepository: LocalRepository,
     jwtRepository: JwtRepository,
+    soundRepository: SoundRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository,
+    soundRepository = soundRepository
 ) {
 
-
+    private val mutex = Mutex()
     private val _state = MutableStateFlow(TakeWorkScreenState())
     val state = _state
-        .onStart {
-            getLocalData()
-        }
+        .onStart {}
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
@@ -45,50 +51,31 @@ class TakeWorkScreenViewModel(
     fun onAction(action: TakeWorkScreenAction) {
         when (action) {
             is TakeWorkScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.isEmpty()) {
-                    if (!state.value.markers.contains(action.marker)) {
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker,
-                                    accessToken = token,
-                                    url = url
+                viewModelScope.launch {
+                    mutex.withLock {
+                        takeMarker(
+                            marker = action.marker,
+                            sound = action.sound,
+                            isUpdate = !state.value.markers.contains(action.marker),
+                            actionAddMarker = {
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
-                                }
-                            }
-                        )
-                    }
-                } else {
-                    if (state.value.filterMarkers.any {
-                            action.marker.contains(
-                                it.query,
-                                ignoreCase = true
-                            )
-                        } && !state.value.markers.contains(action.marker)) {
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker,
-                                    accessToken = token,
-                                    url = url
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker,
+                                            accessToken = token,
+                                            url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
+                                        }
+                                    }
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
-                                }
                             }
                         )
                     }
@@ -98,7 +85,7 @@ class TakeWorkScreenViewModel(
             TakeWorkScreenAction.UpdateStatusToWork -> {
                 loadData(
                     action = { token, url ->
-                        sendLinenInUse(
+                        checkInToUse(
                             accessToken = token,
                             url = url
                         )
@@ -110,14 +97,6 @@ class TakeWorkScreenViewModel(
                     }
                 )
 
-            }
-
-            TakeWorkScreenAction.ClearMarkers -> {
-                _state.value.copy(
-                    markers = emptyList(),
-                    remoteLinens = emptyList()
-                )
-                    .updateState()
             }
 
             TakeWorkScreenAction.UpdateGrouping -> {
@@ -144,33 +123,45 @@ class TakeWorkScreenViewModel(
                 )
                     .updateState()
             }
-        }
-    }
 
-    private fun getLocalData() {
-        viewModelScope.launch {
-            localRepository.getAllFilters().collect {
-                when (it) {
-                    is ResultWork.Error -> {
-                        _state.value.copy(
-                            message = it.error.asUiText()
-                        )
-                            .updateState()
-                    }
-
-                    is ResultWork.Success -> {
-                        _state.value.copy(
-                            filterMarkers = it.data
-                        )
-                            .updateState()
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            dataStoreRepository.getRfidSettings().collect {
+            is TakeWorkScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
-                    settings = it
+                    isActiveScanner = action.isActive,
+                )
+                    .updateState()
+                if (action.isActive) {
+                    _state.value.copy(
+                        markers = emptyList(),
+                        remoteLinens = emptyList()
+                    ).updateState()
+                }
+                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                    InfoMessage.RFIDWork.STOPPED.asText())
+            }
+
+            TakeWorkScreenAction.CloseWarning -> {
+                _state.value.copy(
+                    isShowWarning = false
+                ).updateState()
+            }
+
+            TakeWorkScreenAction.SendAndCloseWarning -> {
+                loadData(
+                    action = { token, url ->
+                        sendLinenInUse(
+                            accessToken = token,
+                            url = url,
+                            rfids = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }.map { it.rfid }
+                        )
+                    },
+                    navigate = {
+                        viewModelScope.launch {
+                            _eventFlow.emit(UiTakeWorkEvents.LoginNavigationEvent)
+                        }
+                    }
+                )
+                _state.value.copy(
+                    isShowWarning = false
                 )
                     .updateState()
             }
@@ -189,23 +180,42 @@ class TakeWorkScreenViewModel(
                 rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    ).updateState()
+                   //updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
-                    _state.value.copy(
-                        remoteLinens = state.value.remoteLinens + result.data
-                    ).updateState()
+                    if (result.data !in state.value.remoteLinens) {
+                        _state.value.copy(
+                            remoteLinens = state.value.remoteLinens + result.data
+                        ).updateState()
+                    }
                 }
             }
         }
     }
 
+    private fun checkInToUse(
+        accessToken: String,
+        url: String,
+    ) {
+        if (state.value.remoteLinens.all { it.status == StatusLinen.IN_STOCK }) {
+            sendLinenInUse(
+                accessToken = accessToken,
+                url = url,
+                rfids = state.value.remoteLinens.map { it.rfid }
+            )
+        } else {
+            _state.value.copy(
+                isShowWarning = true
+            ).updateState()
+        }
+    }
+
+
     private fun sendLinenInUse(
         accessToken: String,
-        url: String
+        url: String,
+        rfids: List<String>
     ) {
         _state.value.copy(
             isLoading = true
@@ -214,13 +224,13 @@ class TakeWorkScreenViewModel(
             when (val result = remoteRepository.sendLinenInToUse(
                 baseUrl = url,
                 token = accessToken,
-                rfids = state.value.remoteLinens.filter { it.status == StatusLinen.IN_STOCK }.map { it.rfid }
+                rfids = rfids
             )) {
                 is ResultWork.Error -> {
                     _state.value.copy(
-                        message = result.error.asUiText(),
                         isLoading = false
                     ).updateState()
+                    updateMessage(result.error.asUiText(),)
                 }
 
                 is ResultWork.Success -> {
@@ -230,7 +240,8 @@ class TakeWorkScreenViewModel(
                     _state.value.copy(
                         isLoading = false,
                         isShowResultDialog = true,
-                        remoteLinens = updatedLinens
+                        remoteLinens = emptyList(),
+                        markers = emptyList()
                     ).updateState()
                 }
             }

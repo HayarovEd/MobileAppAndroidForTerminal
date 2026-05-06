@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,26 +22,28 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Counterparty
 import by.liscode.domain.model.StateLinen
 import by.liscode.domain.model.TypeLinen
+import by.liscode.domain.utils.outFormat
 import by.liscode.resources.R
+import by.liscode.resources.mock.linens2
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.DividerSpacer
-import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asStateLinenText
 
@@ -68,7 +71,7 @@ fun TakeBalanceAddScreen(
             modifier = modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colorScheme.background)
                 .padding(15.dp),
         ) {
             CircularProgressIndicator(
@@ -82,14 +85,14 @@ fun TakeBalanceAddScreen(
             modifier = modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colorScheme.background)
                 .padding(15.dp),
         ) {
             OutlinedButton(
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (state.isOpenInfo) Color.Transparent else MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = if (state.isOpenInfo) Color.Transparent else colorScheme.onPrimaryContainer
                 ),
                 onClick = updateVisibleInfo
             ) {
@@ -98,7 +101,7 @@ fun TakeBalanceAddScreen(
                     text = if (state.isOpenInfo) stringResource(R.string.hide_info) else stringResource(
                         R.string.show_info
                     ),
-                    color = if (state.isOpenInfo) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primaryContainer,
+                    color = if (state.isOpenInfo) colorScheme.onPrimaryContainer else colorScheme.primaryContainer,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
@@ -112,9 +115,10 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.type)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                    Spacer(modifier = modifier.width(5.dp))
                     Box {
                         Text(
                             modifier = modifier.clickable(
@@ -122,8 +126,8 @@ fun TakeBalanceAddScreen(
                                     updateVisibleTypeLinenMenu(true)
                                 }
                             ),
-                            text = if (state.currentTypeLinen == null) stringResource(R.string.choose) else state.currentTypeLinen.name,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            text = if (state.currentTypeLinen == null) stringResource(R.string.choose) else state.currentTypeLinen.outFormat(),
+                            color = colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 textDecoration = TextDecoration.Underline
@@ -140,8 +144,8 @@ fun TakeBalanceAddScreen(
                                     text = {
                                         Text(
                                             modifier = modifier,
-                                            text = it.name,
-                                            color = MaterialTheme.colorScheme.onBackground,
+                                            text = it.outFormat(),
+                                            color = colorScheme.onBackground,
                                             style = MaterialTheme.typography.bodyMedium,
                                         )
                                     },
@@ -162,12 +166,13 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.article)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     UiTextField(
                         content = state.articleNumber,
                         placeholder = "",
+                        imeAction = ImeAction.Next,
                         onClickContent = {
                             updateArticleNumber(it)
                         }
@@ -182,7 +187,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.state_linen)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Box {
@@ -193,7 +198,7 @@ fun TakeBalanceAddScreen(
                                 }
                             ),
                             text = state.currentStateLinen.asStateLinenText().asString(),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 textDecoration = TextDecoration.Underline
@@ -211,7 +216,7 @@ fun TakeBalanceAddScreen(
                                         Text(
                                             modifier = modifier,
                                             text = it.asStateLinenText().asString(),
-                                            color = MaterialTheme.colorScheme.onBackground,
+                                            color = colorScheme.onBackground,
                                             style = MaterialTheme.typography.bodyMedium,
                                         )
                                     },
@@ -233,7 +238,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.weight_one)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     UiTextField(
@@ -241,6 +246,7 @@ fun TakeBalanceAddScreen(
                         content = state.weight,
                         placeholder = "",
                         isOnlyDigit = true,
+                        imeAction = ImeAction.Next,
                         onClickContent = {
                             updateWeight(it)
                         }
@@ -248,7 +254,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.weight_unit)}.",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -261,12 +267,13 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.bill_lading)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     UiTextField(
                         modifier = modifier.weight(1f),
                         content = state.billLading,
+                        imeAction = ImeAction.Done,
                         placeholder = stringResource(R.string.bill_lading_label),
                         onClickContent = {
                             updateBillLading(it)
@@ -282,7 +289,7 @@ fun TakeBalanceAddScreen(
                     Text(
                         modifier = modifier,
                         text = "${stringResource(R.string.counterparty)}:",
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
@@ -292,7 +299,7 @@ fun TakeBalanceAddScreen(
                             }
                         ),
                         text = if (state.currentCounterparty == null) stringResource(R.string.choose) else state.currentCounterparty.name,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline
@@ -304,7 +311,7 @@ fun TakeBalanceAddScreen(
             Text(
                 modifier = modifier,
                 text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",
-                color = MaterialTheme.colorScheme.onBackground,
+                color = colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = FontWeight.Bold,
                 ),
@@ -313,7 +320,7 @@ fun TakeBalanceAddScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                items(state.markers) { marker ->
+                items(state.markersInBalance) { marker ->
                     Row(
                         modifier = modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -322,16 +329,43 @@ fun TakeBalanceAddScreen(
                         Text(
                             modifier = modifier,
                             text = marker,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = colorScheme.onPrimaryContainer,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Bold,
                             ),
                         )
-                        UiIconButton(
-                            icon = ImageVector.vectorResource(R.drawable.outline_delete_24),
-                            onClick = {
-                                deleteMarker(marker)
-                            }
+                    }
+                }
+                item {
+                    Row(
+                        modifier = modifier
+                            .clip(shape = RoundedCornerShape(10.dp))
+                            .fillMaxWidth()
+                            .background(colorScheme.secondary)
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            modifier = modifier.weight(6f),
+                            text = stringResource(R.string.not_finded_markers),
+                            color = colorScheme.onSecondary,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                }
+                items(state.markersNotBalance) { marker ->
+                    Row(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            modifier = modifier,
+                            text = marker,
+                            color = colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                            ),
                         )
                     }
                 }
@@ -361,6 +395,8 @@ private fun Preview() {
                 statesLinen = StateLinen.entries,
                 counterparties = counterParties,
                 markers = markers,
+                remoteLinens = linens2,
+
             ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = true,
@@ -402,7 +438,6 @@ private fun Preview3() {
             density = "100",
             sku = "",
             maxWash = 10,
-            clientId = 2
         )
     }
     val markers = (1..10).map {
@@ -415,6 +450,7 @@ private fun Preview3() {
                 counterparties = counterParties,
                 typesLinen = typesLinen,
                 markers = markers,
+                remoteLinens = linens2,
             ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,
@@ -455,6 +491,7 @@ private fun Preview2() {
                 counterparties = counterParties,
                 isOpenInfo = false,
                 markers = markers,
+                remoteLinens = linens2,
             ),
             isOpenTypeLinenMenu = false,
             isOpenedStateLinenMenu = false,

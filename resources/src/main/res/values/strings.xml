@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MobileAppAndroidForTerminal</string>
+    <string name="app_name">CloudLaundry</string>
 
     //settings
     <string name="etsi_standard">Стандрат ETSI (865~868MHz)</string>
@@ -169,7 +169,7 @@
     <string name="cancel">Отмена</string>
     <string name="ok">Ок</string>
     <string name="remain_download">Осталось загрузить</string>
-    <string name="warning_send_write_off">Имеются новые/неизвестные метки. Удалить их?</string>
+    <string name="warning_send_write_off">Присутствуют неизвестные метки. Такие метки будут удалены из списка</string>
     <string name="not">Нет</string>
     <string name="yes">Да</string>
     <string name="write_off_linen">Списать бельё</string>
@@ -187,7 +187,7 @@
     <string name="no_module">Модуль сканирования отсутствует</string>
     <string name="individual_found_client">Индивидуальный фонд клиента</string>
     <string name="on_rfid_marker">По RFID коду метки</string>
-    <string name="enter_filter">Введите метку</string>
+    <string name="enter_filter">Введите метку полностью или ее часть</string>
     <string name="objects_success_in_use">Объекты взяты в работу</string>
     <string name="unknown_markers">Неизвестные метки</string>
     <string name="date_time">ДАТА/ВРЕМЯ</string>
@@ -211,4 +211,19 @@
     <string name="complete_order">Завершить заказ</string>
     <string name="complete_work">Завершить работу</string>
     <string name="linen_success_stock">Бельё успешно добавлено на склад</string>
+    <string name="linen_success_write_off">Бельё успешно списано со склада</string>
+    <string name="order_success_created">Заказ успешно № %1$d создан</string>
+    <string name="order_comleted">Заказ завершен</string>
+    <string name="order_after_use">Заказ готов к отправке клиенту</string>
+    <string name="order_into_use">Заказ взят в работу</string>
+    <string name="data_inventory_sended">Результаты инвенторизации успешно отправлены</string>
+    <string name="scan_stopped">Сканирование остановлено</string>
+    <string name="scan_started">Сканирование начато</string>
+    <string name="have_markers_not_in_stock">Имеется белье в несоответствующем статусе. Исключить его?</string>
+    <string name="have_markers_in_balance">На складе уже имеются такие метки. Взять на баланс без них?</string>
+    <string name="not_finded_markers">Неподходящие метки</string>
+    <string name="on_type_lineb">По типу белья</string>
+    <string name="weight_kg_unit">кг</string>
+    <string name="is_known">Понятно</string>
+    <string name="sure_exit_create_order">Выйти из заявки? Информация о считанных метках не будет сохранена в заказе.</string>
 </resources>

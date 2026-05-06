@@ -38,6 +38,7 @@ fun RfidWork(
                     isActive = it
                 }
             )
-        }
+        },
+        back = {}
     )
 }

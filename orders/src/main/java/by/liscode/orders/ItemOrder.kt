@@ -23,20 +23,23 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import by.liscode.domain.model.Client
-import by.liscode.domain.model.Employee
 import by.liscode.domain.model.Order
 import by.liscode.domain.model.StatusOrder
+import by.liscode.domain.model.UserData
+import by.liscode.domain.model.UserRole
+import by.liscode.domain.model.UserType
 import by.liscode.domain.utils.formateUiDateTime
+import by.liscode.resources.mock.linens
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.asStatusOrderText
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
+import by.liscode.resources.utils.formatWeight
+import java.util.Date
 import kotlin.time.ExperimentalTime
 
 @Composable
 fun ItemOrder(
     modifier: Modifier = Modifier,
+    userData: UserData?,
     order: Order,
     onClickOrder: () -> Unit,
 ) {
@@ -66,7 +69,7 @@ fun ItemOrder(
                             color = MaterialTheme.colorScheme.primary,
                         )
                         .padding(horizontal = 20.dp),
-                    text = "N ${order.id}",
+                    text = "${order.id}",
                     color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -80,49 +83,79 @@ fun ItemOrder(
                 )
             }
             Spacer(modifier = modifier.width(5.dp))
-            Column(
-                modifier = modifier.weight(2f),
-            ) {
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+            userData?.let { user ->
+                Column(
+                    modifier = modifier.weight(2f),
                 ) {
+                    Row(
+                        modifier = modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = modifier.weight(1f),
+                            text = when (user.userType) {
+                                UserType.HOTEL -> order.laundry.name
+                                UserType.LAUNDRY -> order.hotel.name
+                                UserType.UNKNOWN_TYPE, null -> ""
+                            },
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Spacer(modifier = modifier.width(5.dp))
+                        Text(
+                            modifier = modifier
+                                //   .weight(1f)
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(3.dp)
+                                )
+                                .padding(horizontal = 10.dp),
+                            text = order.status.asStatusOrderText().asString(),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+                    Spacer(modifier = modifier.height(5.dp))
                     Text(
-                        modifier = modifier.weight(1f),
-                        text = order.client.name,
+                        modifier = modifier,
+                        text = when (user.userType) {
+                            UserType.HOTEL -> order.laundry.location
+                            UserType.LAUNDRY -> order.hotel.location
+                            UserType.UNKNOWN_TYPE, null -> ""
+                        },
                         color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium,
+                        textDecoration = TextDecoration.Underline
                     )
-                    Spacer(modifier = modifier.width(5.dp))
-                    Text(
+                    Spacer(modifier = modifier.height(5.dp))
+                    Row(
                         modifier = modifier
-                         //   .weight(1f)
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(3.dp))
-                            .padding(horizontal = 10.dp),
-                        text = order.status.asStatusOrderText().asString(),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = modifier.weight(1f),
+                            text = when (user.userType) {
+                                UserType.HOTEL -> {
+                                    "${order.laundry.contactPersonFullname}, ${order.laundry.contactPersonPhone}"
+                                }
+
+                                UserType.LAUNDRY -> "${order.hotel.contactPersonFullname}, ${order.hotel.contactPersonPhone}"
+                                UserType.UNKNOWN_TYPE, null -> ""
+                            },
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            modifier = modifier,
+                            text = formatWeight(order.items.sumOf { it.weight }),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
-                Spacer(modifier = modifier.height(5.dp))
-                Text(
-                    modifier = modifier,
-                    text = order.address,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textDecoration = TextDecoration.Underline
-                )
-                Spacer(modifier = modifier.height(5.dp))
-                Text(
-                    modifier = modifier,
-                    text = order.employee.phone,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
             }
         }
     }
@@ -135,35 +168,133 @@ private fun ItemOrderView() {
     MobileAppAndroidForTerminalTheme {
         ItemOrder(
             order = Order(
-                id = "1",
-                createdAt = Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()),
-                updatedAt = Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()),
-                hotelId = "1",
-                linenId = "2",
-                creatorId = "User",
+                id = 1,
+                createdAt = Date(),
+                /*Clock.System.now()
+                                    .toLocalDateTime(TimeZone.currentSystemDefault())*/
+                hotelId = 1,
                 address = "Moscow",
                 comment = "",
-                status = StatusOrder.REGISTERED,
-                commentStatus = "",
+                status = StatusOrder.FORMED,
                 actFilePath = "",
-                client = Client(
-                    id = 1,
-                    email = "",
-                    name = "Тринадцатый Климент Романович",
-                    location = "Москва",
-                    phone = "7894561236",
-                    clientType = ""
-                ),
-                employee = Employee(
+                laundry = Client(
                     id = 1,
                     name = "ООО Ромашка",
-                    position = "Москва",
+                    location = "Москва",
                     phone = "7894561237",
-                    login = ""
+                    about = "",
+                    avatar = "",
+                    clientType = "laundry",
+                    contactPersonFullname = "Dima",
+                    contactPersonPhone = "7894561237",
+                    email = "",
+                    entityType = "individual",
+                    inn = "",
+                    kpp = "",
+                    legalAddress = "Москва",
+                    ogrnip = "",
+                    site = ""
                 ),
-                linens = emptyList()
+                items = linens,
+                creatorId = 3,
+                hotel = Client(
+                    id = 1,
+                    name = "Hotel",
+                    location = "Москва",
+                    phone = "7894561237",
+                    about = "",
+                    avatar = "",
+                    clientType = "hotel",
+                    contactPersonFullname = "Ivan",
+                    contactPersonPhone = "7894561237",
+                    email = "",
+                    entityType = "individual",
+                    inn = "",
+                    kpp = "",
+                    legalAddress = "Москва",
+                    ogrnip = "",
+                    site = ""
+                ),
+                laundryId = 1,
+                statusComment = "",
+                updatedAt = Date(),
+            ),
+            userData = UserData(
+                userId = 1,
+                login = "rm",
+                userRole = UserRole.CLIENT_EMPLOYEE,
+                userType = UserType.HOTEL,
+                expired = 0L
+            ),
+            onClickOrder = {}
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+private fun ItemOrderView2() {
+    MobileAppAndroidForTerminalTheme {
+        ItemOrder(
+            order = Order(
+                id = 1,
+                createdAt = Date(),
+                /*Clock.System.now()
+                                    .toLocalDateTime(TimeZone.currentSystemDefault())*/
+                hotelId = 1,
+                address = "Moscow",
+                comment = "",
+                status = StatusOrder.FORMED,
+                actFilePath = "",
+                laundry = Client(
+                    id = 1,
+                    name = "ООО Ромашка",
+                    location = "Москва",
+                    phone = "7894561237",
+                    about = "",
+                    avatar = "",
+                    clientType = "laundry",
+                    contactPersonFullname = "Dima",
+                    contactPersonPhone = "7894561237",
+                    email = "",
+                    entityType = "individual",
+                    inn = "",
+                    kpp = "",
+                    legalAddress = "Москва",
+                    ogrnip = "",
+                    site = ""
+                ),
+                items = linens,
+                creatorId = 3,
+                hotel = Client(
+                    id = 1,
+                    name = "Hotel",
+                    location = "St.Peterburg",
+                    phone = "444444",
+                    about = "",
+                    avatar = "",
+                    clientType = "hotel",
+                    contactPersonFullname = "Ivan",
+                    contactPersonPhone = "4444444",
+                    email = "",
+                    entityType = "individual",
+                    inn = "",
+                    kpp = "",
+                    legalAddress = "Москва",
+                    ogrnip = "",
+                    site = ""
+                ),
+                laundryId = 1,
+                statusComment = "",
+                updatedAt = Date(),
+            ),
+            userData = UserData(
+                userId = 1,
+                login = "rm",
+                userRole = UserRole.CLIENT_EMPLOYEE,
+                userType = UserType.LAUNDRY,
+                expired = 0L
             ),
             onClickOrder = {}
         )

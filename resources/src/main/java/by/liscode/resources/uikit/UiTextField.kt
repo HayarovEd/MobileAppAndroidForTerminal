@@ -33,7 +33,7 @@ fun UiTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isOnlyDigit: Boolean = false,
     isOnlyLetter: Boolean = false,
-    singleLine: Boolean = false,
+    singleLine: Boolean = true,
     disabledBorderColor: Color = Color.Unspecified,
     isError: Boolean = false,
     maxLines: Int = 1,
@@ -59,7 +59,7 @@ fun UiTextField(
         enabled = enabled,
         readOnly = readOnly,
         isError = isError,
-        textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+        textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
         visualTransformation = visualTransformation,
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType,

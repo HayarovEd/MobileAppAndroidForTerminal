@@ -51,6 +51,7 @@ fun UiRowTitleThreeElements(
             text = firstNumber.toString(),
             color = colorScheme.onSecondary,
             style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
         )
         Spacer(modifier = modifier.width(5.dp))
         Text(
@@ -58,6 +59,7 @@ fun UiRowTitleThreeElements(
             text = secondNumber.toString(),
             color = colorScheme.onSecondary,
             style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -89,6 +91,7 @@ fun UiRowTitleTwoElements(
             text = firstNumber.toString(),
             color = colorScheme.onSecondary,
             style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
         )
     }
 }

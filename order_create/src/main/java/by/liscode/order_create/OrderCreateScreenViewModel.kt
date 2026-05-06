@@ -1,11 +1,14 @@
-package ru.modulmoney.order_create
+package by.liscode.order_create
 
 import androidx.lifecycle.viewModelScope
+import by.liscode.domain.model.GroupLinen
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.repository.LocalRepository
 import by.liscode.domain.repository.RemoteRepository
-import by.liscode.resources.model.ScannerWork
+import by.liscode.domain.repository.SoundRepository
+import by.liscode.domain.utils.InfoMessage
+import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
 import com.nine.statio.domain.utils.ResultWork
@@ -17,22 +20,26 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class OrderCreateScreenViewModel(
-    private val dataStoreRepository: DataStoreRepository,
-    private val localRepository: LocalRepository,
+    dataStoreRepository: DataStoreRepository,
+    localRepository: LocalRepository,
     jwtRepository: JwtRepository,
+    soundRepository: SoundRepository,
     private val remoteRepository: RemoteRepository,
 ) : BaseViewModel(
     dataStoreRepository = dataStoreRepository,
-    jwtRepository = jwtRepository
+    jwtRepository = jwtRepository,
+    localRepository = localRepository,
+    soundRepository = soundRepository,
 ) {
 
-
+    private val mutex = Mutex()
     private val _state = MutableStateFlow(OrderCreateScreenState())
     val state = _state
         .onStart {
-            getLocalData()
             loadData(
                 action = { token, url ->
                     getRemoteData(
@@ -63,64 +70,51 @@ class OrderCreateScreenViewModel(
             }
 
             is OrderCreateScreenAction.TakeMarker -> {
-                if (state.value.filterMarkers.isEmpty()) {
-                    if (!state.value.markers.contains(action.marker)) {
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                viewModelScope.launch {
+                    mutex.withLock {
+                        takeMarker(
+                            marker = action.marker,
+                            sound = action.sound,
+                            isUpdate = !state.value.markers.contains(action.marker),
+                            actionAddMarker = {
+                                _state.value.copy(
+                                    markers = state.value.markers + action.marker
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiOrderCreateEvents.LoginNavigationEvent)
-                                }
-                            }
-                        )
-                    }
-                } else {
-                    if (state.value.filterMarkers.any {
-                            action.marker.contains(
-                                it.query,
-                                ignoreCase = true
-                            )
-                        } && !state.value.markers.contains(action.marker)) {
-                        _state.value.copy(
-                            markers = state.value.markers + action.marker
-                        )
-                            .updateState()
-                        loadData(
-                            action = { token, url ->
-                                getLinenById(
-                                    rfid = action.marker, accessToken = token, url = url
+                                    .updateState()
+                                loadData(
+                                    action = { token, url ->
+                                        getLinenById(
+                                            rfid = action.marker,
+                                            accessToken = token,
+                                            url = url
+                                        )
+                                    },
+                                    navigate = {
+                                        viewModelScope.launch {
+                                            _eventFlow.emit(UiOrderCreateEvents.LoginNavigationEvent)
+                                        }
+                                    }
                                 )
-                            },
-                            navigate = {
-                                viewModelScope.launch {
-                                    _eventFlow.emit(UiOrderCreateEvents.LoginNavigationEvent)
-                                }
                             }
                         )
                     }
                 }
+
             }
 
             is OrderCreateScreenAction.UpdateActivityScanner -> {
                 _state.value.copy(
-                    scannerWork = action.scannerWork
+                    isActiveScanner = action.isActive,
                 )
                     .updateState()
-                if (action.scannerWork == ScannerWork.CLEAR) {
+                if (action.isActive) {
                     _state.value.copy(
                         markers = emptyList(),
                         remoteLinens = emptyList()
-                    )
-                        .updateState()
+                    ).updateState()
                 }
+                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                    InfoMessage.RFIDWork.STOPPED.asText())
             }
 
             is OrderCreateScreenAction.UpdateLaundry -> {
@@ -139,33 +133,20 @@ class OrderCreateScreenViewModel(
                     isShowWarning = false
                 ).updateState()
             }
-        }
-    }
 
-    private fun getLocalData() {
-        viewModelScope.launch {
-            localRepository.getAllFilters().collect {
-                when (it) {
-                    is ResultWork.Error -> {
-                        _state.value.copy(
-                            message = it.error.asUiText()
-                        )
-                            .updateState()
-                    }
-
-                    is ResultWork.Success -> {
-                        _state.value.copy(
-                            filterMarkers = it.data
-                        )
-                            .updateState()
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            dataStoreRepository.getRfidSettings().collect {
+            OrderCreateScreenAction.CloseSuccessDialog -> {
                 _state.value.copy(
-                    settings = it
+                    isShowSuccessDialog = false
+                )
+                    .updateState()
+            }
+
+            OrderCreateScreenAction.UpdateGrouping -> {
+                _state.value.copy(
+                    groupLinen = when (state.value.groupLinen) {
+                        GroupLinen.NAME -> GroupLinen.TYPE_LINEN
+                        GroupLinen.TYPE_LINEN -> GroupLinen.NAME
+                    }
                 )
                     .updateState()
             }
@@ -181,16 +162,16 @@ class OrderCreateScreenViewModel(
         )
             .updateState()
         viewModelScope.launch {
-            when (val result = remoteRepository.getEmployees(
+            when (val result = remoteRepository.getClients(
                 baseUrl = url,
                 token = accessToken
             )) {
                 is ResultWork.Error -> {
                     _state.value.copy(
-                        message = result.error.asUiText(),
                         isLoading = false
                     )
                         .updateState()
+                    updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -212,15 +193,15 @@ class OrderCreateScreenViewModel(
                 baseUrl = url, token = accessToken, rfid = rfid
             )) {
                 is ResultWork.Error -> {
-                    _state.value.copy(
-                        message = result.error.asUiText()
-                    ).updateState()
+                  // updateMessage(result.error.asUiText(),)
                 }
 
                 is ResultWork.Success -> {
-                    _state.value.copy(
-                        remoteLinens = state.value.remoteLinens + result.data
-                    ).updateState()
+                    if (result.data !in state.value.remoteLinens) {
+                        _state.value.copy(
+                            remoteLinens = state.value.remoteLinens + result.data
+                        ).updateState()
+                    }
                 }
             }
         }
@@ -228,37 +209,85 @@ class OrderCreateScreenViewModel(
 
 
     private fun createOrder() {
-        _state.value.copy(
-            isLoading = true
-        )
-            .updateState()
-        viewModelScope.launch {
-            if (state.value.notApprovedLinens.isEmpty()) {
-                //TODO - send state.value.approvedLines
-                _state.value.copy(
-                    isLoading = false
-                )
-                    .updateState()
-            } else {
-                _state.value.copy(
-                    isShowWarning = true
-                ).updateState()
-            }
+        if (state.value.notApprovedLinens.isEmpty()) {
+            loadData(
+                action = { token, url ->
+                    createNewOrder(
+                        accessToken = token,
+                        url = url,
+                        rfids = state.value.approvedLinens.map { it.rfid }
+                    )
+                },
+                navigate = {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiOrderCreateEvents.LoginNavigationEvent)
+                    }
+                }
+            )
+        } else {
+            _state.value.copy(
+                isShowWarning = true
+            ).updateState()
         }
     }
 
     private fun createOrderWithAllLinens() {
         _state.value.copy(
-            isLoading = true,
             isShowWarning = false
         )
             .updateState()
+        loadData(
+            action = { token, url ->
+                createNewOrder(
+                    accessToken = token,
+                    url = url,
+                    rfids = state.value.markers
+                )
+            },
+            navigate = {
+                viewModelScope.launch {
+                    _eventFlow.emit(UiOrderCreateEvents.LoginNavigationEvent)
+                }
+            }
+        )
+    }
+
+    private fun createNewOrder(
+        accessToken: String,
+        url: String,
+        rfids: List<String>,
+    ) {
         viewModelScope.launch {
-            //TODO - send state.value.remoteLines
-            _state.value.copy(
-                isLoading = false
-            )
-                .updateState()
+            state.value.currentLaundry?.let { currentLaundry ->
+                _state.value.copy(
+                    isLoading = true
+                )
+                    .updateState()
+                when (val result = remoteRepository.createOrder(
+                    baseUrl = url,
+                    token = accessToken,
+                    rfids = rfids,
+                    laundryId = currentLaundry.id,
+                    address = currentLaundry.location
+                )) {
+                    is ResultWork.Error -> {
+                        _state.value.copy(
+                            isLoading = false,
+                        )
+                            .updateState()
+                        updateMessage(result.error.asUiText(),)
+                    }
+
+                    is ResultWork.Success -> {
+                        _state.value.copy(
+                            isLoading = false,
+                            isShowSuccessDialog = true,
+                            order = result.data
+                        )
+                            .updateState()
+                    }
+                }
+            }
         }
     }
 

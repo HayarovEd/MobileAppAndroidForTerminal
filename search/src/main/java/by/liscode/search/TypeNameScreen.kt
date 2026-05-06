@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,18 +23,20 @@ import by.liscode.resources.uikit.UiRowTitleTwoElements
 @Composable
 fun TypeNameScreen(
     modifier: Modifier = Modifier,
-    outMarkers: List<String>,
+    clients: List<Client>,
     groupedLinen:  Map<Int, List<Linen>>,
-    clients: List<Client>
     ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         groupedLinen.keys.sortedBy { it }.forEach { clientId->
+            val client = clients.firstOrNull{
+                it.id == clientId
+            }
             stickyHeader {
                 UiRowTitleTwoElements(
-                    title = clients.firstOrNull { it.id==clientId }?.name?:clientId.toString(),
+                    title = client?.name?:stringResource(R.string.fund),
                     firstNumber = groupedLinen[clientId]?.size?:0
                 )
             }
@@ -46,20 +46,22 @@ fun TypeNameScreen(
                 )
             }
         }
-        stickyHeader {
-            UiRowTitleTwoElements(
-                title = stringResource(R.string.unknown_markers),
-                firstNumber = outMarkers.size
-            )
-        }
-        items(outMarkers) { marker->
-            Text(
-                modifier = modifier,
-                text = "${stringResource(R.string.rfid)}: $marker",
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
+        /*if (outMarkers.isNotEmpty()) {
+            stickyHeader {
+                UiRowTitleTwoElements(
+                    title = stringResource(R.string.unknown_markers),
+                    firstNumber = outMarkers.size
+                )
+            }
+            items(outMarkers) { marker ->
+                Text(
+                    modifier = modifier,
+                    text = "${stringResource(R.string.rfid)}: $marker",
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }*/
     }
 }
 
@@ -78,7 +80,6 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -90,7 +91,6 @@ private fun Preview1() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 2
     )
     val linens = (1..49).map {
         Linen(
@@ -115,21 +115,30 @@ private fun Preview1() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
-    val clients = (1..10).map {
+
+    val clients = (0..4).map {
         Client(
-            id=it,
-            email = "email",
-            name = "Client N$it",
-            location = "location",
-            phone = "12345678",
-            clientType = ""
-        ) }
+            id = it,
+            name = "ООО Ромашка",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "hotel",
+            contactPersonFullname = "Ivan",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
-            groupedLinen = linens.groupBy {it.typeLinen.clientId  },
-            outMarkers = outMarkers,
+            groupedLinen = linens.groupBy {it.clientId  },
             clients = clients
         )
     }
@@ -149,7 +158,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -161,7 +169,6 @@ private fun Preview2() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 2
     )
     val clientId = 2
     val linens = (1..49).map {
@@ -187,21 +194,29 @@ private fun Preview2() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
-    val clients = (1..10).map {
+    val clients = (0..4).map {
         Client(
-            id=it,
-            email = "email",
-            name = "Client N$it",
-            location = "location",
-            phone = "12345678",
-            clientType = ""
-        ) }
+            id = it,
+            name = "ООО Ромашка",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "hotel",
+            contactPersonFullname = "Ivan",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
-            groupedLinen = linens.filter { it.typeLinen.clientId == clientId }.groupBy {it.typeLinen.clientId  },
-            outMarkers = outMarkers,
+            groupedLinen = linens.filter { it.clientId == clientId }.groupBy {it.clientId  },
             clients = clients
         )
     }
@@ -221,7 +236,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 1
     )
     val typeLinen2 = TypeLinen(
         id = 2,
@@ -233,7 +247,6 @@ private fun Preview3() {
         density = "",
         sku = "100% хлопок",
         maxWash = 10,
-        clientId = 2
     )
     val linens = (1..49).map {
         Linen(
@@ -258,21 +271,29 @@ private fun Preview3() {
             )
         )
     }
-    val markers = (1..70).map {"Marker N$it"}
-    val outMarkers = markers - linens.map { it.rfid }
-    val clients = (1..10).map {
+    val clients = (0..4).map {
         Client(
-            id=it,
-            email = "email",
-            name = "Client N$it",
-            location = "location",
-            phone = "12345678",
-            clientType = ""
-        ) }
+            id = it,
+            name = "ООО Ромашка",
+            location = "Москва",
+            phone = "7894561237",
+            about = "",
+            avatar = "",
+            clientType = "hotel",
+            contactPersonFullname = "Ivan",
+            contactPersonPhone = "7894561237",
+            email = "",
+            entityType = "individual",
+            inn = "",
+            kpp = "",
+            legalAddress =  "Москва",
+            ogrnip = "",
+            site = ""
+        )
+    }
     MobileAppAndroidForTerminalTheme {
         TypeNameScreen(
-            groupedLinen = linens.filter { it.rfid == "Marker N5" }.groupBy {it.typeLinen.clientId  },
-            outMarkers = outMarkers,
+            groupedLinen = linens.filter { it.rfid == "Marker N5" }.groupBy {it.clientId  },
             clients = clients
         )
     }

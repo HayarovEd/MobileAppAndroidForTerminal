@@ -1,22 +1,21 @@
 package by.liscode.data.mapper
 
-import by.liscode.data.remote.request.CounterpartyRequest
-import by.liscode.data.remote.request.LinenDtoRequest
-import by.liscode.data.remote.request.TypeLinenRequest
-import by.liscode.data.remote.response.CounterpartyDto
-import by.liscode.data.remote.response.LinenDto
 import by.liscode.data.remote.response.ClientDto
-import by.liscode.data.remote.response.EmployeeDto
+import by.liscode.data.remote.response.CounterpartyDto
+import by.liscode.data.remote.response.InventoryDto
+import by.liscode.data.remote.response.LinenDto
+import by.liscode.data.remote.response.OrderDto
 import by.liscode.data.remote.response.TypeLinenDto
 import by.liscode.domain.model.Client
 import by.liscode.domain.model.Counterparty
-import by.liscode.domain.model.Employee
+import by.liscode.domain.model.Inventory
 import by.liscode.domain.model.Linen
+import by.liscode.domain.model.Order
 import by.liscode.domain.model.TypeLinen
+import by.liscode.domain.utils.convertStringDateToLocalDateTime
 import by.liscode.domain.utils.convertToStateLinen
-import by.liscode.domain.utils.convertToStateLinenString
 import by.liscode.domain.utils.convertToStatusLinen
-import by.liscode.domain.utils.convertToStatusLinenString
+import by.liscode.domain.utils.convertToStatusOrder
 
 fun TypeLinenDto.convertToTypeLinen(): TypeLinen {
     return TypeLinen(
@@ -32,34 +31,10 @@ fun TypeLinenDto.convertToTypeLinen(): TypeLinen {
     )
 }
 
-fun TypeLinen.convertToTypeLinenRequest(): TypeLinenRequest {
-    return TypeLinenRequest(
-        id = this.id,
-        name = this.name,
-        size = this.size,
-        fabric = this.fabric,
-        composition = this.composition,
-        color = this.color,
-        density = this.density,
-        sku = this.sku,
-        maxWash = this.maxWash,
-        clientId = clientId
-    )
-}
 
 
 fun CounterpartyDto.convertToCounterparty(): Counterparty {
     return Counterparty(
-        id = id,
-        name = name,
-        address = address,
-        inn = inn,
-        phone = phone
-    )
-}
-
-fun Counterparty.convertToCounterpartyRequest(): CounterpartyRequest {
-    return CounterpartyRequest(
         id = id,
         name = name,
         address = address,
@@ -88,40 +63,52 @@ fun LinenDto.convertToLinen(): Linen {
 }
 
 
-fun Linen.convertToLinenDtoRequest(): LinenDtoRequest {
-    return LinenDtoRequest(
-        id = id,
-        rfid = rfid,
-        typeId = typeId,
-        typeLinen = typeLinen.convertToTypeLinenRequest(),
-        discount = discount,
-        weight = weight,
-        state = convertToStateLinenString(state),
-        washCount = washCount,
-        status = convertToStatusLinenString(status),
-        price = price,
-        counterpartyId = counterpartyId,
-        counterparty = counterparty.convertToCounterpartyRequest()
-    )
-}
-
 fun ClientDto.convertToClient(): Client {
     return Client(
         id = id,
-        email = email,
         name = name,
         location = location,
         phone = phone,
-        clientType = clientType
+        about = about,
+        avatar = avatar,
+        clientType = clientType,
+        contactPersonPhone = contactPersonPhone,
+        contactPersonFullname = contactPersonFullname,
+        email = email,
+        entityType = entityType,
+        inn = inn,
+        kpp = kpp,
+        legalAddress = legalAddress,
+        ogrnip = ogrnip,
+        site = site
     )
 }
 
-fun EmployeeDto.convertToEmployee(): Employee {
-    return Employee(
+fun OrderDto.convertToOrder(): Order {
+    return Order(
+        actFilePath = actFilePath,
+        address = address,
+        comment = comment,
+        createdAt = convertStringDateToLocalDateTime(createdAt),
+        creatorId = creatorId,
+        hotel = hotelDto.convertToClient(),
+        hotelId = hotelId,
         id = id,
-        name = name,
-        position = position,
-        phone = phone,
-        login = login
+        items = items.map { it.convertToLinen() },
+        laundry = laundryDto.convertToClient(),
+        laundryId = laundryId,
+        status = convertToStatusOrder(status),
+        statusComment = statusComment,
+        updatedAt = convertStringDateToLocalDateTime(updatedAt)
     )
 }
+
+fun InventoryDto.convertToinventory(): Inventory {
+    return Inventory(
+        inStock = inStock,
+        submitted = submitted,
+        type = type.convertToTypeLinen()
+    )
+}
+
+
