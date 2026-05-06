@@ -29,10 +29,9 @@ import by.liscode.resources.uikit.UiRowTitleThreeElements
 fun TypeLinenScreen(
     modifier: Modifier = Modifier,
     size: Int,
-    markers: List<String>,
+    remoteMarkers: List<String>,
     sortedGroups: Map<TypeLinen, List<Linen>>,
-
-) {
+    ) {
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -45,7 +44,7 @@ fun TypeLinenScreen(
         UiRowTitleThreeElements(
             title = stringResource(R.string.fund),
             firstNumber =  size,
-            secondNumber = markers.size,
+            secondNumber = remoteMarkers.size,
         )
         Spacer(modifier = modifier.height(10.dp))
         LazyColumn(
@@ -54,13 +53,13 @@ fun TypeLinenScreen(
         ) {
             items(sortedGroups.keys.toList()) { group->
                 val linensByType = sortedGroups[group]
-                val status = linensByType?.size == linensByType?.count { markers.contains(it.rfid) }
+                val status = linensByType?.size == linensByType?.count { remoteMarkers.contains(it.rfid) }
                 if (!linensByType.isNullOrEmpty()) {
                     val fontColor = if (status) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                     UiRowThreeElements(
                         title = group,
                         firstNumber = linensByType.size,
-                        secondNumber = linensByType.count { markers.contains(it.rfid) },
+                        secondNumber = linensByType.count { remoteMarkers.contains(it.rfid) },
                         fontColor = fontColor
                     )
                 }
@@ -77,7 +76,7 @@ private fun Preview1() {
 
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            markers = markers,
+            remoteMarkers = markers,
             size = linens.size,
             sortedGroups = linens3.groupBy { it.typeLinen }
         )
@@ -102,7 +101,7 @@ private fun Preview3() {
     }
     MobileAppAndroidForTerminalTheme {
         TypeLinenScreen(
-            markers = markers,
+            remoteMarkers = markers,
             size = linens.size,
             sortedGroups =finishFilterGroups
         )

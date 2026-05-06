@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.AuthorizeRepository
 import by.liscode.domain.repository.DataStoreRepository
 import by.liscode.resources.uikit.asUiText
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

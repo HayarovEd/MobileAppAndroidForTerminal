@@ -320,7 +320,7 @@ fun TakeBalanceAddScreen(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                items(state.markersInBalance) { marker ->
+                items(state.markersNotBalance) { marker ->
                     Row(
                         modifier = modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -336,37 +336,39 @@ fun TakeBalanceAddScreen(
                         )
                     }
                 }
-                item {
-                    Row(
-                        modifier = modifier
-                            .clip(shape = RoundedCornerShape(10.dp))
-                            .fillMaxWidth()
-                            .background(colorScheme.secondary)
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            modifier = modifier.weight(6f),
-                            text = stringResource(R.string.not_finded_markers),
-                            color = colorScheme.onSecondary,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
+                if (state.markersInBalance.isNotEmpty()) {
+                    item {
+                        Row(
+                            modifier = modifier
+                                .clip(shape = RoundedCornerShape(10.dp))
+                                .fillMaxWidth()
+                                .background(colorScheme.secondary)
+                                .padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                modifier = modifier.weight(6f),
+                                text = stringResource(R.string.not_finded_markers),
+                                color = colorScheme.onSecondary,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        }
                     }
-                }
-                items(state.markersNotBalance) { marker ->
-                    Row(
-                        modifier = modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = modifier,
-                            text = marker,
-                            color = colorScheme.error,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                            ),
-                        )
+                    items(state.markersInBalance) { marker ->
+                        Row(
+                            modifier = modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = modifier,
+                                text = marker,
+                                color = colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                ),
+                            )
+                        }
                     }
                 }
             }

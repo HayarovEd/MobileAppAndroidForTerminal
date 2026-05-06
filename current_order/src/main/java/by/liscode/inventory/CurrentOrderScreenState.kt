@@ -6,7 +6,7 @@ import by.liscode.domain.model.UserData
 import by.liscode.domain.utils.outFormat
 
 data class CurrentOrderScreenState(
-    val order: Order? = null,
+    val currentOrder: Order? = null,
     val userData: UserData? = null,
     val isLoading: Boolean = false,
     val markers: List<String> = emptyList(),
@@ -15,17 +15,17 @@ data class CurrentOrderScreenState(
     val groupLinen: GroupLinen = GroupLinen.NAME,
     val isShowExitDialog: Boolean = false,
 ) {
-    val unknownMarkers = (order?.let {
-        markers.filter { it !in order.items.map { linen -> linen.rfid } }
+    val unknownMarkers = (currentOrder?.let {
+        markers.filter { it !in currentOrder.items.map { linen -> linen.rfid } }
     } ?: markers)
 
-    val sortedLinens = order?.let {
+    val sortedLinens = currentOrder?.let {
         it.items.groupBy { it.typeLinen }
             .mapValues { (_, linens) ->
                 linens.sortedBy { it.typeLinen.outFormat() }
             }
     } ?: emptyMap()
-    val enableUpdate = order?.let {
+    val enableUpdate = currentOrder?.let {
         it.items.map {item ->  item.rfid }.all { rf-> rf in markers }
     }?:false
 }

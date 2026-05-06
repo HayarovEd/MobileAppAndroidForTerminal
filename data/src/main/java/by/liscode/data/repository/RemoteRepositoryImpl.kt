@@ -59,7 +59,7 @@ import by.liscode.domain.utils.convertToReasonWriteOffString
 import by.liscode.domain.utils.convertToStateLinen
 import by.liscode.domain.utils.convertToStatusLinen
 import by.liscode.domain.utils.convertToStatusOrder
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth

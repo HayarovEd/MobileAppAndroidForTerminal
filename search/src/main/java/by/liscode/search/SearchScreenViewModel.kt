@@ -11,7 +11,7 @@ import by.liscode.domain.utils.InfoMessage
 import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +41,19 @@ class SearchScreenViewModel(
     val state = _state
         .onStart {
             getUserData()
+            loadData(
+                action = { token, url ->
+                    loadTypesLinen(
+                        accessToken = token,
+                        url = url
+                    )
+                },
+                navigate = {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiSearchEvents.LoginNavigationEvent)
+                    }
+                }
+            )
         }
         .stateIn(
             scope = viewModelScope,
@@ -92,11 +105,14 @@ class SearchScreenViewModel(
                 if (action.isActive) {
                     _state.value.copy(
                         markers = emptyList(),
-                        remoteLinens = emptyList()
+                        remoteLinens = emptyList(),
+                        countUnknownMarkers = 0
                     ).updateState()
                 }
-                updateMessage(if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
-                    InfoMessage.RFIDWork.STOPPED.asText())
+                updateMessage(
+                    if (action.isActive) InfoMessage.RFIDWork.STARTED.asText() else
+                        InfoMessage.RFIDWork.STOPPED.asText()
+                )
             }
 
             is SearchScreenAction.UpdateFilter -> {
@@ -152,6 +168,9 @@ class SearchScreenViewModel(
             )) {
                 is ResultWork.Error -> {
                     //updateMessage(result.error.asUiText())
+                    _state.value.copy(
+                        countUnknownMarkers = state.value.countUnknownMarkers + 1
+                    ).updateState()
                 }
 
                 is ResultWork.Success -> {
@@ -184,7 +203,7 @@ class SearchScreenViewModel(
                 id = clientId
             )) {
                 is ResultWork.Error -> {
-                    updateMessage(result.error.asUiText())
+                    // updateMessage(result.error.asUiText())
                 }
 
                 is ResultWork.Success -> {
@@ -205,6 +224,29 @@ class SearchScreenViewModel(
                 token?.let {
                     _state.value.copy(
                         userData = jwtRepository.decodeJwt(token)
+                    )
+                        .updateState()
+                }
+            }
+        }
+    }
+
+    private fun loadTypesLinen(
+        accessToken: String,
+        url: String
+    ) {
+        viewModelScope.launch {
+            when (val result = remoteRepository.getTypesLinen(
+                token = accessToken,
+                baseUrl = url
+            )) {
+                is ResultWork.Error -> {
+                    updateMessage(result.error.asUiText())
+                }
+
+                is ResultWork.Success -> {
+                    _state.value.copy(
+                        typesLinen = result.data
                     )
                         .updateState()
                 }

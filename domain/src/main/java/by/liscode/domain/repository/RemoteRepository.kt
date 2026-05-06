@@ -11,7 +11,7 @@ import by.liscode.domain.model.StatusLinen
 import by.liscode.domain.model.StatusOrder
 import by.liscode.domain.model.TypeLinen
 import by.liscode.domain.utils.DataError
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 
 interface RemoteRepository {
     suspend fun getCounterparties(

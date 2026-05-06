@@ -15,7 +15,7 @@ import by.liscode.resources.model.NavigationRoute
 import by.liscode.resources.uikit.asText
 import by.liscode.resources.uikit.asUiText
 import by.liscode.resources.utils.BaseViewModel
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -107,7 +107,7 @@ class CurrentOrderScreenViewModel(
             }
 
             is CurrentOrderScreenAction.UpdateOrder -> {
-                state.value.order?.let {
+                state.value.currentOrder?.let {
                     when (it.status) {
                         StatusOrder.REGISTERED, StatusOrder.IN_TRANSIT -> {
                             loadData(
@@ -226,7 +226,7 @@ class CurrentOrderScreenViewModel(
                 is ResultWork.Success -> {
                     _state.value.copy(
                         isLoading = false,
-                        order = result.data
+                        currentOrder = result.data
                     )
                         .updateState()
                 }
@@ -238,7 +238,7 @@ class CurrentOrderScreenViewModel(
         url: String,
         token: String,
     ) {
-        state.value.order?.let { order ->
+        state.value.currentOrder?.let { order ->
             _state.value.copy(
                 isLoading = true
             )
@@ -261,7 +261,7 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Success -> {
                         _state.value.copy(
                             isLoading = false,
-                            order = result.data,
+                            currentOrder = result.data,
                             visibilitySuccessDialog = VisibilitySuccessDialog.SUCCESS_INTO_USE
                         )
                             .updateState()
@@ -275,7 +275,7 @@ class CurrentOrderScreenViewModel(
         url: String,
         token: String,
     ) {
-        state.value.order?.let { order ->
+        state.value.currentOrder?.let { order ->
             _state.value.copy(
                 isLoading = true
             )
@@ -298,7 +298,7 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Success -> {
                         _state.value.copy(
                             isLoading = false,
-                            order = result.data,
+                            currentOrder = result.data,
                             visibilitySuccessDialog = VisibilitySuccessDialog.SUCCESS_AFTER_USE
                         )
                             .updateState()
@@ -312,7 +312,7 @@ class CurrentOrderScreenViewModel(
         url: String,
         token: String,
     ) {
-        state.value.order?.let { order ->
+        state.value.currentOrder?.let { order ->
             _state.value.copy(
                 isLoading = true
             )
@@ -335,7 +335,7 @@ class CurrentOrderScreenViewModel(
                     is ResultWork.Success -> {
                         _state.value.copy(
                             isLoading = false,
-                            order = result.data,
+                            currentOrder = result.data,
                             visibilitySuccessDialog = VisibilitySuccessDialog.SUCCESS_INTO_STOCK
                         )
                             .updateState()

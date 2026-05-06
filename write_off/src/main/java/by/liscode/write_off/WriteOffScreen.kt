@@ -56,6 +56,8 @@ import by.liscode.resources.uikit.DividerSpacer
 import by.liscode.resources.uikit.FundAppBar
 import by.liscode.resources.uikit.OnScan
 import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.UiRowTitleTwoElements
+import by.liscode.resources.uikit.UiRowTwoText
 import by.liscode.resources.uikit.UiTextField
 import by.liscode.resources.uikit.asReasonText
 import by.liscode.resources.uikit.rememberRfid
@@ -96,10 +98,12 @@ fun WriteOffScreenRoot(
                 rfid = scanner,
                 isActive = state.isActiveScanner,
                 block = {
-                    onAction(WriteOffScreenAction.TakeMarker(
-                        marker = it,
-                        sound = R.raw.beep
-                    ))
+                    onAction(
+                        WriteOffScreenAction.TakeMarker(
+                            marker = it,
+                            sound = R.raw.beep
+                        )
+                    )
                 },
                 updateIsActive = {
                     onAction(WriteOffScreenAction.UpdateActivityScanner(it))
@@ -108,7 +112,7 @@ fun WriteOffScreenRoot(
         },
         back = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         }
     )
 
@@ -119,7 +123,7 @@ fun WriteOffScreenRoot(
         isOpenTypeReasonMenu = isOpenTypeReasonMenu,
         onBackNavigate = {
             scanner.free()
-            onBackNavigate ()
+            onBackNavigate()
         },
         updateVisibilityTypeReasonMenu = {
             isOpenTypeReasonMenu = it
@@ -242,67 +246,69 @@ fun WriteOffScreenScreen(
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
-                Spacer(modifier = modifier.height(10.dp))
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.reason_write_off)}:",
-                    color = colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Spacer(modifier = modifier.height(8.dp))
-                Box {
+                if (state.isShowInfo) {
+                    Spacer(modifier = modifier.height(10.dp))
                     Text(
-                        modifier = modifier.clickable(
-                            onClick = {
-                                updateVisibilityTypeReasonMenu(true)
-                            }
-                        ),
-                        text = state.reasonWriteOff.asReasonText().asString(),
-                        color = colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            textDecoration = TextDecoration.Underline
-                        ),
+                        modifier = modifier,
+                        text = "${stringResource(R.string.reason_write_off)}:",
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
                     )
-                    DropdownMenu(
-                        expanded = isOpenTypeReasonMenu,
-                        onDismissRequest = {
-                            updateVisibilityTypeReasonMenu(false)
-                        }
-                    ) {
-                        state.reasons.forEach {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        modifier = modifier,
-                                        text = it.asReasonText().asString(),
-                                        color = colorScheme.onBackground,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                },
+                    Spacer(modifier = modifier.height(8.dp))
+                    Box {
+                        Text(
+                            modifier = modifier.clickable(
                                 onClick = {
-                                    onAction(WriteOffScreenAction.UpdateReasonWriteOff(it))
-                                    updateVisibilityTypeReasonMenu(false)
+                                    updateVisibilityTypeReasonMenu(true)
                                 }
-                            )
+                            ),
+                            text = state.reasonWriteOff.asReasonText().asString(),
+                            color = colorScheme.onPrimaryContainer,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                textDecoration = TextDecoration.Underline
+                            ),
+                        )
+                        DropdownMenu(
+                            expanded = isOpenTypeReasonMenu,
+                            onDismissRequest = {
+                                updateVisibilityTypeReasonMenu(false)
+                            }
+                        ) {
+                            state.reasons.forEach {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            modifier = modifier,
+                                            text = it.asReasonText().asString(),
+                                            color = colorScheme.onBackground,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                        )
+                                    },
+                                    onClick = {
+                                        onAction(WriteOffScreenAction.UpdateReasonWriteOff(it))
+                                        updateVisibilityTypeReasonMenu(false)
+                                    }
+                                )
+                            }
                         }
                     }
+                    DividerSpacer()
+                    Text(
+                        modifier = modifier,
+                        text = "${stringResource(R.string.ark_write_off)}:",
+                        color = colorScheme.onBackground,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    UiTextField(
+                        content = state.actWriteOff,
+                        placeholder = stringResource(R.string.number_act),
+                        onClickContent = {
+                            onAction(WriteOffScreenAction.UpdateActWriteOff(it))
+                        }
+                    )
                 }
                 DividerSpacer()
-                Text(
-                    modifier = modifier,
-                    text = "${stringResource(R.string.ark_write_off)}:",
-                    color = colorScheme.onBackground,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                UiTextField(
-                    content = state.actWriteOff,
-                    placeholder = stringResource(R.string.number_act),
-                    onClickContent = {
-                        onAction(WriteOffScreenAction.UpdateActWriteOff(it))
-                    }
-                )
-               DividerSpacer()
                 Text(
                     modifier = modifier,
                     text = "${stringResource(R.string.all_reader_markers)} - ${state.markers.size}",
@@ -311,57 +317,47 @@ fun WriteOffScreenScreen(
                         fontWeight = FontWeight.Bold,
                     ),
                 )
-                if (state.isShowInfo) {
-                    Spacer(modifier = modifier.height(10.dp))
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                        items(state.markersApprovedForWriteOff) { marker ->
-                            Column (
-                                modifier = modifier
-                            ){
-                                val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
-                                currentLinen?.let { linen->
-                                    Text(
-                                        modifier = modifier,
-                                        text = linen.printFormat(),
-                                        color = colorScheme.onBackground,
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontWeight = FontWeight.Bold,
-                                        ),
-                                    )
-                                }
+                Spacer(modifier = modifier.height(10.dp))
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(15.dp)
+                ) {
+                    items(state.markersApprovedForWriteOff) { marker ->
+                        Column(
+                            modifier = modifier
+                        ) {
+                            val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
+                            currentLinen?.let { linen ->
                                 Text(
                                     modifier = modifier,
-                                    text = marker,
-                                    color = colorScheme.secondary,
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = linen.printFormat(),
+                                    color = colorScheme.onBackground,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                    ),
                                 )
                             }
+                            Text(
+                                modifier = modifier,
+                                text = marker,
+                                color = colorScheme.secondary,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
                         }
+                    }
+                    if(state.markersNotApprovedForWriteOff.isNotEmpty()) {
                         item {
-                            Row(
-                                modifier = modifier
-                                    .clip(shape = RoundedCornerShape(10.dp))
-                                    .fillMaxWidth()
-                                    .background(colorScheme.secondary)
-                                    .padding(10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    modifier = modifier.weight(6f),
-                                    text = stringResource(R.string.not_finded_markers),
-                                    color = colorScheme.onSecondary,
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                            }
+                            UiRowTitleTwoElements(
+                                title = stringResource(R.string.not_finded_markers),
+                                firstNumber = state.markersNotApprovedForWriteOff.size
+                            )
                         }
                         items(state.markersNotApprovedForWriteOff) { marker ->
-                            Column (
+                            Column(
                                 modifier = modifier
-                            ){
-                                val currentLinen = state.remoteLinens.firstOrNull { it.rfid == marker }
-                                currentLinen?.let { linen->
+                            ) {
+                                val currentLinen =
+                                    state.remoteLinens.firstOrNull { it.rfid == marker }
+                                currentLinen?.let { linen ->
                                     Text(
                                         modifier = modifier,
                                         text = linen.printFormat(),

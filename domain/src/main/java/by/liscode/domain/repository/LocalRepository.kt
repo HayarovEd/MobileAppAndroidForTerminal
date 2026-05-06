@@ -2,7 +2,7 @@ package by.liscode.domain.repository
 
 import by.liscode.domain.model.Filter
 import by.liscode.domain.utils.DataError
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.Flow
 
 interface LocalRepository {

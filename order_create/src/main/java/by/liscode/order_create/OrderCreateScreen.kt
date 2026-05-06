@@ -167,7 +167,7 @@ fun OrderCreateScreenScreen(
             confirmButton = {
                 Button(onClick = {
                     onAction(OrderCreateScreenAction.CloseSuccessDialog)
-                    onBack
+                    onBack()
                 }) {
                     Text(
                         text = stringResource(R.string.is_known),
@@ -243,7 +243,6 @@ fun OrderCreateScreenScreen(
                     ) {
                         Text(
                             modifier = modifier.clickable(
-                                enabled = state.markers.isNotEmpty(),
                                 onClick = {
                                     onAction(OrderCreateScreenAction.UpdateGrouping)
                                 }
@@ -379,7 +378,7 @@ fun OrderCreateScreenScreen(
                         textAlign = TextAlign.Center
                     )
                 } else {
-                    if ((state.notApprovedLinens.size + state.unknownMarkers.size) == 0) {
+                    if ((state.notApprovedLinens.size + state.unknownMarkers.size) != 0) {
                         UiClickableRow(
                             title = stringResource(R.string.not_for_order),
                             value = (state.notApprovedLinens.size + state.unknownMarkers.size).toString(),

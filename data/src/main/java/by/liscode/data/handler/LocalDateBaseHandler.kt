@@ -1,7 +1,7 @@
 package by.liscode.data.handler
 
 import by.liscode.domain.utils.DataError
-import com.nine.statio.domain.utils.ResultWork
+import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
