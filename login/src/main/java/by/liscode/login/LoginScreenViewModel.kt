@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.AuthorizeRepository
 import by.liscode.domain.repository.DataStoreRepository
+import by.liscode.domain.repository.JwtRepository
 import by.liscode.resources.uikit.asUiText
 import by.liscode.domain.utils.ResultWork
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,10 +15,12 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
 class LoginScreenViewModel(
     private val authorizeRepository: AuthorizeRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val jwtRepository: JwtRepository
 ) : ViewModel() {
 
 
@@ -25,6 +28,7 @@ class LoginScreenViewModel(
     val state = _state
         .onStart {
             getBaseUrl()
+            getTerminalBearer()
         }
         .stateIn(
             scope = viewModelScope,
@@ -40,6 +44,7 @@ class LoginScreenViewModel(
             LoginScreenAction.OnLogin -> {
                 onLogin()
             }
+
             LoginScreenAction.UpdateCounter -> {
                 updateConter()
             }
@@ -106,6 +111,7 @@ class LoginScreenViewModel(
                     )
                         .updateState()
                 }
+
                 is ResultWork.Success -> {
                     dataStoreRepository.saveBearer(result.data.token)
                     _state.value.copy(
@@ -113,6 +119,41 @@ class LoginScreenViewModel(
                     )
                         .updateState()
                     _eventFlow.emit(UiLoginEvents.FundNavigateEvent)
+                }
+            }
+        }
+    }
+
+    private fun getTerminalBearer() {
+        viewModelScope.launch {
+            dataStoreRepository.getTermianlBearer().collect { collector ->
+                if (collector.isNullOrBlank()) {
+                    _state.value.copy(
+                        typeTerminalBearer = TypeTerminalBearer.EMPTY
+                    )
+                        .updateState()
+                } else {
+                    val expiredTerminal = jwtRepository.decodeJwt(collector)?.expired
+                    expiredTerminal?.let { expT ->
+                        if (expT < Clock.System.now().epochSeconds) {
+                            _state.value.copy(
+                                typeTerminalBearer = TypeTerminalBearer.EXPIRED
+                            )
+                                .updateState()
+                        } else {
+                            _state.value.copy(
+                                typeTerminalBearer = TypeTerminalBearer.OK
+                            )
+                                .updateState()
+                        }
+                    } ?: {
+                        viewModelScope.launch {
+                            _state.value.copy(
+                                typeTerminalBearer = TypeTerminalBearer.EMPTY
+                            )
+                                .updateState()
+                        }
+                    }
                 }
             }
         }

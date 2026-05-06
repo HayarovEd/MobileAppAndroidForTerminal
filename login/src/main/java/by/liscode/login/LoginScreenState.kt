@@ -9,5 +9,12 @@ data class LoginScreenState(
     val message: UiText? = null,
     val counter: Int = 0,
     val isLoading: Boolean = false,
-    val baseUrl: String = ""
+    val baseUrl: String = "",
+    val typeTerminalBearer: TypeTerminalBearer = TypeTerminalBearer.OK,
 )
+
+enum class TypeTerminalBearer {
+    OK,
+    EMPTY,
+    EXPIRED
+}

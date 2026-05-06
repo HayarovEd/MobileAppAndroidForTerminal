@@ -115,7 +115,7 @@ private fun LoginScreenScreen(
             } else {
                 UiButton(
                     title = stringResource(id = R.string.enter),
-                    enabled = state.login.isNotEmpty() && state.password.isNotEmpty(),
+                    enabled = state.login.isNotEmpty() && state.password.isNotEmpty() && state.typeTerminalBearer == TypeTerminalBearer.OK,
                     onClick = {
                         if (!state.isLoading) {
                             onAction(
@@ -123,6 +123,24 @@ private fun LoginScreenScreen(
                             )
                         }
                     },
+                )
+            }
+            if (state.typeTerminalBearer == TypeTerminalBearer.EMPTY) {
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    modifier = modifier.align(Alignment.CenterHorizontally),
+                    text = stringResource(id = R.string.terminal_token_empty),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            if (state.typeTerminalBearer == TypeTerminalBearer.EXPIRED) {
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    modifier = modifier.align(Alignment.CenterHorizontally),
+                    text = stringResource(id = R.string.terminal_token_expired),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
@@ -147,6 +165,7 @@ private fun Preview2() {
         LoginScreenScreen(
             state = LoginScreenState(
                 login = "gggh",
+                typeTerminalBearer = TypeTerminalBearer.EXPIRED,
                 password = "123456"
             ),
             onAction = {}
@@ -163,6 +182,7 @@ private fun Preview3() {
                 login = "gggh",
                 password = "123456",
                 isLoading = true,
+                typeTerminalBearer = TypeTerminalBearer.EMPTY,
             ),
             onAction = {}
         )
