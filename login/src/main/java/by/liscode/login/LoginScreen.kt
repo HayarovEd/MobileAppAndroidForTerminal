@@ -34,15 +34,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.ObserveAsEvents
+import by.liscode.resources.uikit.OtpInputField
 import by.liscode.resources.uikit.UiButton
-import by.liscode.resources.uikit.UiTextField
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -170,13 +169,12 @@ private fun LoginScreenScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = modifier.height(5.dp))
-            UiTextField(
-                content = state.password,
-                enabled = !state.isLoading,
-                imeAction = ImeAction.Done,
-                singleLine = true,
-                onClickContent = { onAction(LoginScreenAction.UpdatePassword(it)) },
-                placeholder = stringResource(id = R.string.enter_password)
+            OtpInputField(
+                otp = state.password,
+                count = 4,
+                onUpdateOtp = {
+                    onAction(LoginScreenAction.UpdatePassword(it))
+                }
             )
             Spacer(modifier = Modifier.height(25.dp))
             if (state.isLoading) {
