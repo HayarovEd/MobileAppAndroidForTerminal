@@ -9,10 +9,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -26,6 +28,7 @@ class SplashScreenViewModel(
     val state = _state
         .onStart {
             loadData()
+            generateUuid()
         }
         .stateIn(
             scope = viewModelScope,
@@ -38,15 +41,17 @@ class SplashScreenViewModel(
 
     @OptIn(ExperimentalTime::class)
     private fun loadData() {
-        _state.value.copy(
-            isLoading = true
-        )
-            .updateState()
         viewModelScope.launch {
+            _state.value.copy(
+                isLoading = true
+            )
+                .updateState()
             delay(2000)
-            dataStoreRepository.getBearer().collect { userToken ->
-                if (userToken!=null) {
-                    val expired = jwtRepository.decodeJwt(userToken)?.expired
+            combine(dataStoreRepository.getBearer(), dataStoreRepository.getTermianlBearer()) {bearer, terminalBearer->
+                Pair(bearer, terminalBearer)
+            }.collect { collector->
+                if (!collector.first.isNullOrBlank()) {
+                    val expired = jwtRepository.decodeJwt(collector.first!!)?.expired
                     expired?.let { exp ->
                         if (exp < Clock.System.now().epochSeconds) {
                             dataStoreRepository.removeBearer()
@@ -56,11 +61,38 @@ class SplashScreenViewModel(
                             )
                                 .updateState()
                         } else {
-                            _eventFlow.emit(UiSplashEvents.FundNavigateEvent)
-                            _state.value.copy(
-                                isLoading = false
-                            )
-                                .updateState()
+                            if (collector.second.isNullOrBlank()) {
+                                _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
+                                _state.value.copy(
+                                    isLoading = false
+                                )
+                                    .updateState()
+                            } else {
+                                val expiredTerminal = jwtRepository.decodeJwt(collector.second!!)?.expired
+                                expiredTerminal?.let { expT->
+                                    if (expT < Clock.System.now().epochSeconds) {
+                                        _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
+                                        _state.value.copy(
+                                            isLoading = false
+                                        )
+                                            .updateState()
+                                    } else {
+                                        _eventFlow.emit(UiSplashEvents.FundNavigateEvent)
+                                        _state.value.copy(
+                                            isLoading = false
+                                        )
+                                            .updateState()
+                                    }
+                                } ?: {
+                                    viewModelScope.launch {
+                                        _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
+                                        _state.value.copy(
+                                            isLoading = false
+                                        )
+                                            .updateState()
+                                    }
+                                }
+                            }
                         }
                     } ?: {
                         viewModelScope.launch {
@@ -72,15 +104,27 @@ class SplashScreenViewModel(
                                 .updateState()
                         }
                     }
-                } else  {
-                viewModelScope.launch {
-                    _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
-                     }
+                } else {
+                    viewModelScope.launch {
+                        _eventFlow.emit(UiSplashEvents.LoginNavigateEvent)
+                    }
                     _state.value.copy(
                         isLoading = false
                     )
                         .updateState()
                 }
+            }
+            /*dataStoreRepository.getBearer().collect { userToken ->
+
+            }*/
+        }
+    }
+
+    private fun generateUuid() {
+        viewModelScope.launch {
+            if (dataStoreRepository.getStateUuid().isNullOrBlank()) {
+                val uuid = UUID.randomUUID().toString()
+                dataStoreRepository.saveUuid(uuid)
             }
         }
     }

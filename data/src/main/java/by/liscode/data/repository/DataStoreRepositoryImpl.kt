@@ -17,13 +17,16 @@ import by.liscode.domain.utils.LABEL_BEARER
 import by.liscode.domain.utils.LABEL_FREQ_MODE
 import by.liscode.domain.utils.LABEL_POWER
 import by.liscode.domain.utils.LABEL_PROTOCOL
+import by.liscode.domain.utils.LABEL_TERMINAL_BEARER
 import by.liscode.domain.utils.LABEL_URL
+import by.liscode.domain.utils.LABEL_UUID
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class DataStoreRepositoryImpl(
     private val dataStore: DataStore<Preferences>
-): DataStoreRepository {
+) : DataStoreRepository {
 
     override suspend fun saveRfidSettings(
         rfidSetting: RfidSetting
@@ -48,26 +51,26 @@ class DataStoreRepositoryImpl(
 
 
     override suspend fun getRfidSettings(): Flow<RfidSetting> {
-       return dataStore.data.map { preferences ->
-           RfidSetting(
-               protocol = when (preferences[FIELD_LABEL_PROTOCOL]) {
-                   0x00 -> RfidProtocol.ISO180006C
-                  // 3 -> RfidProtocol.ISO180006D
-                   else -> RfidProtocol.ISO180006C
-               },
-               attribute = when (preferences[FIELD_LABEL_ATTRIBUTE]) {
-                   1 -> RfidAttribute.EPC
-                   2 -> RfidAttribute.TID
-                   else -> RfidAttribute.EPC
-               },
-               power = preferences[FIELD_LABEL_POWER]?:15f,
-               frequencyMode = when (preferences[FIELD_LABEL_FREQ_MODE]) {
-                   0x04 -> FrequencyMode.ETSI
-                   0x37 -> FrequencyMode.RUSSIA
-                   else -> FrequencyMode.ETSI
-               }
-           )
-       }
+        return dataStore.data.map { preferences ->
+            RfidSetting(
+                protocol = when (preferences[FIELD_LABEL_PROTOCOL]) {
+                    0x00 -> RfidProtocol.ISO180006C
+                    // 3 -> RfidProtocol.ISO180006D
+                    else -> RfidProtocol.ISO180006C
+                },
+                attribute = when (preferences[FIELD_LABEL_ATTRIBUTE]) {
+                    1 -> RfidAttribute.EPC
+                    2 -> RfidAttribute.TID
+                    else -> RfidAttribute.EPC
+                },
+                power = preferences[FIELD_LABEL_POWER] ?: 15f,
+                frequencyMode = when (preferences[FIELD_LABEL_FREQ_MODE]) {
+                    0x04 -> FrequencyMode.ETSI
+                    0x37 -> FrequencyMode.RUSSIA
+                    else -> FrequencyMode.ETSI
+                }
+            )
+        }
     }
 
     override suspend fun saveBearer(
@@ -91,6 +94,21 @@ class DataStoreRepositoryImpl(
         }
     }
 
+    override suspend fun saveTerminalBearer(
+        bearer: String
+    ) {
+        dataStore.edit { preferences ->
+            preferences[FIELD_LABEL_TERMINAL_BEARER] = bearer
+        }
+    }
+
+
+    override suspend fun getTermianlBearer(): Flow<String?> {
+        return dataStore.data.map { preferences ->
+            preferences[FIELD_LABEL_TERMINAL_BEARER]
+        }
+    }
+
     override suspend fun saveUrl(
         url: String
     ) {
@@ -102,8 +120,21 @@ class DataStoreRepositoryImpl(
 
     override suspend fun getUrl(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[FIELD_LABEL_LABEL_URL]?: BASE_URL
+            preferences[FIELD_LABEL_LABEL_URL] ?: BASE_URL
         }
+    }
+
+    override suspend fun saveUuid(
+        uuid: String
+    ) {
+        dataStore.edit { preferences ->
+            preferences[FIELD_LABEL_UUID] = uuid
+        }
+    }
+
+
+    override suspend fun getStateUuid(): String? {
+        return dataStore.data.first()[FIELD_LABEL_UUID]
     }
 
     companion object {
@@ -113,5 +144,7 @@ class DataStoreRepositoryImpl(
         val FIELD_LABEL_FREQ_MODE = intPreferencesKey(LABEL_FREQ_MODE)
         val FIELD_LABEL_BEARER = stringPreferencesKey(LABEL_BEARER)
         val FIELD_LABEL_LABEL_URL = stringPreferencesKey(LABEL_URL)
+        val FIELD_LABEL_UUID = stringPreferencesKey(LABEL_UUID)
+        val FIELD_LABEL_TERMINAL_BEARER = stringPreferencesKey(LABEL_TERMINAL_BEARER)
     }
 }

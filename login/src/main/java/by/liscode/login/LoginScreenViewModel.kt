@@ -4,20 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.liscode.domain.repository.AuthorizeRepository
 import by.liscode.domain.repository.DataStoreRepository
-import by.liscode.resources.uikit.asUiText
+import by.liscode.domain.repository.JwtRepository
 import by.liscode.domain.utils.ResultWork
-import kotlinx.coroutines.flow.MutableSharedFlow
+import by.liscode.resources.uikit.asUiText
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 
 class LoginScreenViewModel(
     private val authorizeRepository: AuthorizeRepository,
-    private val dataStoreRepository: DataStoreRepository
+    private val dataStoreRepository: DataStoreRepository,
+    private val jwtRepository: JwtRepository
 ) : ViewModel() {
 
 
@@ -25,6 +28,7 @@ class LoginScreenViewModel(
     val state = _state
         .onStart {
             getBaseUrl()
+            getTerminalBearer()
         }
         .stateIn(
             scope = viewModelScope,
@@ -32,21 +36,22 @@ class LoginScreenViewModel(
             initialValue = LoginScreenState()
         )
 
-    private val _eventFlow = MutableSharedFlow<UiLoginEvents>()
-    val eventFlow = _eventFlow.asSharedFlow()
+    private val _eventFlow = Channel<UiLoginEvents>()
+    val eventFlow = _eventFlow.receiveAsFlow()
 
     fun onAction(action: LoginScreenAction) {
         when (action) {
             LoginScreenAction.OnLogin -> {
                 onLogin()
             }
+
             LoginScreenAction.UpdateCounter -> {
                 updateConter()
             }
 
-            is LoginScreenAction.UpdateLogin -> {
+            is LoginScreenAction.UpdateSelectedEmployee -> {
                 _state.value.copy(
-                    login = action.login
+                    selectedEmployee = action.employee
                 )
                     .updateState()
             }
@@ -72,7 +77,7 @@ class LoginScreenViewModel(
             )
                 .updateState()
             viewModelScope.launch {
-                _eventFlow.emit(UiLoginEvents.RegisterNavigateEvent)
+                _eventFlow.send(UiLoginEvents.RegisterNavigateEvent)
             }
         }
     }
@@ -90,29 +95,101 @@ class LoginScreenViewModel(
 
     private fun onLogin() {
         viewModelScope.launch {
+            _state.value.selectedEmployee?.let {
+                _state.value.terminalBearer?.let { br->
+                    _state.value.copy(
+                        isLoading = true
+                    )
+                        .updateState()
+                    when (val result = authorizeRepository.authorizationEmployee(
+                        token = br,
+                        pin = state.value.password,
+                        employeeId = it.id,
+                        baseUrl = state.value.baseUrl
+                    )) {
+                        is ResultWork.Error -> {
+                            _state.value.copy(
+                                isLoading = false,
+                            )
+                                .updateState()
+                            _eventFlow.send(UiLoginEvents.OnMessage(result.error.asUiText()))
+                        }
+
+                        is ResultWork.Success -> {
+                            dataStoreRepository.saveBearer(result.data.token)
+                            _state.value.copy(
+                                isLoading = false
+                            )
+                                .updateState()
+                            _eventFlow.send(UiLoginEvents.FundNavigateEvent)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getTerminalBearer() {
+        viewModelScope.launch {
+            dataStoreRepository.getTermianlBearer().collect { collector ->
+                if (collector.isNullOrBlank()) {
+                    _state.value.copy(
+                        typeTerminalBearer = TypeTerminalBearer.EMPTY
+                    )
+                        .updateState()
+                } else {
+                    val expiredTerminal = jwtRepository.decodeJwt(collector)?.expired
+                    expiredTerminal?.let { expT ->
+                        if (expT < Clock.System.now().epochSeconds) {
+                            _state.value.copy(
+                                typeTerminalBearer = TypeTerminalBearer.EXPIRED
+                            )
+                                .updateState()
+                        } else {
+                            _state.value.copy(
+                                typeTerminalBearer = TypeTerminalBearer.OK,
+                                terminalBearer = collector
+                            )
+                                .updateState()
+                            getEmployees(collector)
+                        }
+                    } ?: {
+                        viewModelScope.launch {
+                            _state.value.copy(
+                                typeTerminalBearer = TypeTerminalBearer.EMPTY
+                            )
+                                .updateState()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getEmployees(token: String) {
+        viewModelScope.launch {
             _state.value.copy(
                 isLoading = true
             )
                 .updateState()
-            when (val result = authorizeRepository.authorization(
-                login = state.value.login,
-                password = state.value.password,
+            when (val result = authorizeRepository.getEmployees(
+                token = token,
                 baseUrl = state.value.baseUrl
             )) {
                 is ResultWork.Error -> {
                     _state.value.copy(
                         isLoading = false,
-                        message = result.error.asUiText()
                     )
                         .updateState()
+                    _eventFlow.send(UiLoginEvents.OnMessage(result.error.asUiText()))
                 }
+
                 is ResultWork.Success -> {
-                    dataStoreRepository.saveBearer(result.data.token)
                     _state.value.copy(
-                        isLoading = false
+                        isLoading = false,
+                        employees = result.data
                     )
                         .updateState()
-                    _eventFlow.emit(UiLoginEvents.FundNavigateEvent)
                 }
             }
         }

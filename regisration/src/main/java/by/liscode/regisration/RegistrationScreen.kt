@@ -10,12 +10,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import by.liscode.resources.R
 import by.liscode.resources.theme.MobileAppAndroidForTerminalTheme
 import by.liscode.resources.uikit.InputRow
-import by.liscode.resources.uikit.UiBaseScaffold
+import by.liscode.resources.uikit.ObserveAsEvents
 import by.liscode.resources.uikit.UiIconButton
 import by.liscode.resources.uikit.UiOutlandedButton
 import by.liscode.resources.uikit.UiTextField
@@ -37,9 +42,21 @@ fun RegistrationScreenRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val snakeBarHostState = remember { SnackbarHostState() }
+    val resources = LocalResources.current
+
+    ObserveAsEvents(viewModel.eventFlow) { event ->
+        when (event) {
+            UiRegestrationEvents.SuccessRegistrationTerminal ->  snakeBarHostState.showSnackbar(
+                resources.getString(R.string.success_registration_terminal)
+            )
+        }
+    }
+
     RegistrationScreenScreen(
         state = state,
         onAction = viewModel::onAction,
+        snakeBarHostState = snakeBarHostState,
         onNavigateToLogin = onNavigateToLogin
     )
 }
@@ -48,12 +65,13 @@ fun RegistrationScreenRoot(
 fun RegistrationScreenScreen(
     modifier: Modifier = Modifier,
     state: RegistrationScreenState,
+    snakeBarHostState: SnackbarHostState,
     onAction: (RegistrationScreenAction) -> Unit,
     onNavigateToLogin: () -> Unit,
 ) {
-    UiBaseScaffold(
-        message = state.message,
-        topBarContent = {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snakeBarHostState) },
+        topBar = {
             Row(
                 modifier = modifier
                     .statusBarsPadding()
@@ -138,9 +156,11 @@ fun RegistrationScreenScreen(
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
+    val snackBarState = remember { SnackbarHostState() }
     MobileAppAndroidForTerminalTheme {
         RegistrationScreenScreen(
             state = RegistrationScreenState(),
+            snakeBarHostState = snackBarState,
             onAction = {},
             onNavigateToLogin = {}
         )
